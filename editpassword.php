@@ -39,14 +39,14 @@ if(!empty($_POST["editpass"])){
             */
 
             //現在のパスワードを確認
-            $stmt1 = $pdo->prepare("SELECT * FROM test.userinfo WHERE id = :id");
+            $stmt1 = $pdo->prepare("SELECT * FROM userinfo WHERE id = :id");
             $stmt1 -> bindParam(":id", $_SESSION["user"]);
             $stmt1 -> execute();
             $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
 
             if(password_verify($pass, $result1["pass"])){
                 $passhash = password_hash($pass1, PASSWORD_DEFAULT);
-                $stmt2 = $pdo->prepare("UPDATE test.userinfo SET pass = :pass WHERE id = :id");
+                $stmt2 = $pdo->prepare("UPDATE userinfo SET pass = :pass WHERE id = :id");
                 $stmt2 -> bindParam(":pass", $passhash, PDO::PARAM_STR);
                 $stmt2 -> bindParam(":id", $_SESSION["user"]);
                 $stmt2 -> execute();

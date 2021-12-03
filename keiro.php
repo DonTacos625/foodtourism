@@ -44,37 +44,37 @@ try {
     ));
     */
 
-    $stmt1 = $pdo->prepare("SELECT * FROM test.minatomirai_station_data WHERE id = :id");
+    $stmt1 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
     $stmt1->bindParam(":id", $_SESSION["start_station_id"]);
     $stmt1->execute();
     $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
 
-    $stmt2 = $pdo->prepare("SELECT * FROM test.minatomirai_shop_data WHERE id = :id");
+    $stmt2 = $pdo->prepare("SELECT * FROM minatomirai_shop_data WHERE id = :id");
     $stmt2->bindParam(":id", $_SESSION["lanch_id"]);
     $stmt2->execute();
     $result2 = $stmt2->fetch(PDO::FETCH_ASSOC);
 
-    $stmt3 = $pdo->prepare("SELECT * FROM test.minatomirai_shop_data WHERE id = :id");
+    $stmt3 = $pdo->prepare("SELECT * FROM minatomirai_shop_data WHERE id = :id");
     $stmt3->bindParam(":id", $_SESSION["dinner_id"]);
     $stmt3->execute();
     $result3 = $stmt3->fetch(PDO::FETCH_ASSOC);
 
-    $stmt4 = $pdo->prepare("SELECT * FROM test.minatomirai_station_data WHERE id = :id");
+    $stmt4 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
     $stmt4->bindParam(":id", $_SESSION["goal_station_id"]);
     $stmt4->execute();
     $result4 = $stmt4->fetch(PDO::FETCH_ASSOC);
 
-    $stmt5 = $pdo->prepare("SELECT * FROM test.minatomirai_kankou_data WHERE id = :id");
+    $stmt5 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
     $stmt5->bindParam(":id", $_SESSION["s_l_kankou_spots_id"]);
     $stmt5->execute();
     $result5 = $stmt5->fetch(PDO::FETCH_ASSOC);
 
-    $stmt6 = $pdo->prepare("SELECT * FROM test.minatomirai_kankou_data WHERE id = :id");
+    $stmt6 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
     $stmt6->bindParam(":id", $_SESSION["l_d_kankou_spots_id"]);
     $stmt6->execute();
     $result6 = $stmt6->fetch(PDO::FETCH_ASSOC);
 
-    $stmt7 = $pdo->prepare("SELECT * FROM test.minatomirai_kankou_data WHERE id = :id");
+    $stmt7 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
     $stmt7->bindParam(":id", $_SESSION["d_g_kankou_spots_id"]);
     $stmt7->execute();
     $result7 = $stmt7->fetch(PDO::FETCH_ASSOC);
@@ -98,10 +98,10 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
 }
 
 $keikaku = array(
-    array($result1["X"], $result1["Y"], "1"), $s_l_kankou_spots_id,
-    array($result2["X"], $result2["Y"], "2"), $l_d_kankou_spots_id,
-    array($result3["X"], $result3["Y"], "3"), $d_g_kankou_spots_id,
-    array($result4["X"], $result4["Y"], "4")
+    array($result1["x"], $result1["y"], "1"), $s_l_kankou_spots_id,
+    array($result2["x"], $result2["y"], "2"), $l_d_kankou_spots_id,
+    array($result3["x"], $result3["y"], "3"), $d_g_kankou_spots_id,
+    array($result4["x"], $result4["y"], "4")
 );
 
 ?>
@@ -226,11 +226,11 @@ $keikaku = array(
                         label: "電話番号",
                         visible: true
                     }, {
-                        fieldName: "X",
+                        fieldName: "x",
                         label: "経度",
                         visible: true
                     }, {
-                        fieldName: "Y",
+                        fieldName: "y",
                         label: "緯度",
                         visible: true
                     }]
@@ -246,11 +246,11 @@ $keikaku = array(
                         label: "ID",
                         visible: true
                     }, {
-                        fieldName: "X",
+                        fieldName: "x",
                         label: "経度",
                         visible: true
                     }, {
-                        fieldName: "Y",
+                        fieldName: "y",
                         label: "緯度",
                         visible: true
                     }]
@@ -368,7 +368,7 @@ $keikaku = array(
             });
 
             // Define the symbology used to display the stops
-            const stopSymbol1 = {
+            const CheckSymbol = {
                 type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
                 style: "cross",
                 size: 15,
@@ -569,7 +569,7 @@ $keikaku = array(
                             };
                             const stop = new Graphic({
                                 geometry: point,
-                                symbol: stopSymbol1
+                                symbol: CheckSymbol
                             });
                             Layer.removeAll();
                             Layer.add(stop);
@@ -579,6 +579,8 @@ $keikaku = array(
             };
 
             //ポップアップからレイヤーに追加
+            //使ってない関数
+            /*
             view.popup.on("trigger-action", function(event) {
                 if (event.action.id === "route") {
                     popadd();
@@ -601,6 +603,7 @@ $keikaku = array(
                     route.solve(routeUrl, routeParams).then(showRoute);
                 }
             }
+            */
 
             //ルート形状沿いの観光地検索
             queryAroundSpot = (geom) => {

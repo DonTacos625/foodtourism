@@ -60,8 +60,8 @@ try {
     $keywordCondition = implode(' AND ', $keywordCondition);
 
     //sql文にする
-    $sql = 'SELECT * FROM test.minatomirai_shop_data WHERE ' . $keywordCondition . ' ';
-    //$sql = " SELECT * FROM test.minatomirai_shop_data WHERE $column LIKE '%" . $search_name . "%' ";
+    $sql = 'SELECT * FROM minatomirai_shop_data WHERE ' . $keywordCondition . ' ';
+    //$sql = " SELECT * FROM minatomirai_shop_data WHERE $column LIKE '%" . $search_name . "%' ";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
 } catch (PDOException $e) {

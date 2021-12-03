@@ -27,43 +27,43 @@ try {
     ));
     */
 
-    $framestmt = $pdo->prepare("SELECT * FROM test.userinfo WHERE id = :id");
+    $framestmt = $pdo->prepare("SELECT * FROM userinfo WHERE id = :id");
     $framestmt->bindParam(":id", $_SESSION["user"]);
     $framestmt->execute();
     $frameresult = $framestmt->fetch(PDO::FETCH_ASSOC);
 
-    $framestmt1 = $pdo->prepare("SELECT * FROM test.minatomirai_shop_data WHERE id = :id");
+    $framestmt1 = $pdo->prepare("SELECT * FROM minatomirai_shop_data WHERE id = :id");
     $framestmt1->bindParam(":id", $_SESSION["lanch_id"]);
     $framestmt1->execute();
     $frameresult1 = $framestmt1->fetch(PDO::FETCH_ASSOC);
 
-    $framestmt2 = $pdo->prepare("SELECT * FROM test.minatomirai_shop_data WHERE id = :id");
+    $framestmt2 = $pdo->prepare("SELECT * FROM minatomirai_shop_data WHERE id = :id");
     $framestmt2->bindParam(":id", $_SESSION["dinner_id"]);
     $framestmt2->execute();
     $frameresult2 = $framestmt2->fetch(PDO::FETCH_ASSOC);
 
-    $framestmt3 = $pdo->prepare("SELECT * FROM test.minatomirai_station_data WHERE id = :id");
+    $framestmt3 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
     $framestmt3->bindParam(":id", $_SESSION["start_station_id"]);
     $framestmt3->execute();
     $frameresult3 = $framestmt3->fetch(PDO::FETCH_ASSOC);
 
-    $framestmt4 = $pdo->prepare("SELECT * FROM test.minatomirai_station_data WHERE id = :id");
+    $framestmt4 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
     $framestmt4->bindParam(":id", $_SESSION["goal_station_id"]);
     $framestmt4->execute();
     $frameresult4 = $framestmt4->fetch(PDO::FETCH_ASSOC);
 
 
-    $framestmt5 = $pdo->prepare("SELECT * FROM test.minatomirai_kankou_data WHERE id = :id");
+    $framestmt5 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
     $framestmt5->bindParam(":id", $_SESSION["s_l_kankou_spots_id"]);
     $framestmt5->execute();
     $frameresult5 = $framestmt5->fetch(PDO::FETCH_ASSOC);
 
-    $framestmt6 = $pdo->prepare("SELECT * FROM test.minatomirai_kankou_data WHERE id = :id");
+    $framestmt6 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
     $framestmt6->bindParam(":id", $_SESSION["l_d_kankou_spots_id"]);
     $framestmt6->execute();
     $frameresult6 = $framestmt6->fetch(PDO::FETCH_ASSOC);
 
-    $framestmt7 = $pdo->prepare("SELECT * FROM test.minatomirai_kankou_data WHERE id = :id");
+    $framestmt7 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
     $framestmt7->bindParam(":id", $_SESSION["d_g_kankou_spots_id"]);
     $framestmt7->execute();
     $frameresult7 = $framestmt7->fetch(PDO::FETCH_ASSOC);

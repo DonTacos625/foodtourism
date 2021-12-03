@@ -57,7 +57,7 @@ if(!empty($_POST["signup"])){
             */
 
             //ID重複チェック準備
-            $stmt1 = $pdo->prepare("SELECT * FROM test.userinfo WHERE id = :id");
+            $stmt1 = $pdo->prepare("SELECT * FROM userinfo WHERE id = :id");
             $stmt1 -> bindParam(":id", $user);
             $stmt1 -> execute();
             $result = $stmt1->fetchAll(PDO::FETCH_ASSOC);
@@ -69,7 +69,7 @@ if(!empty($_POST["signup"])){
 
                 //ID,Pass書き込み
                 //ユーザー情報書き込み
-                $stmt3 = $pdo->prepare("INSERT INTO test.userinfo(id, pass, age, gender, survey) VALUES(:id, :pass, :age, :gender, :survey)");
+                $stmt3 = $pdo->prepare("INSERT INTO userinfo(id, pass, age, gender, survey) VALUES(:id, :pass, :age, :gender, :survey)");
                 $stmt3 -> bindParam(":id", $user, PDO::PARAM_STR);
                 $stmt3 -> bindParam(":pass", $passhash, PDO::PARAM_STR);
                 $stmt3 -> bindParam(":age", $age, PDO::PARAM_INT);
@@ -78,6 +78,7 @@ if(!empty($_POST["signup"])){
                 $stmt3 -> execute();
 
                 //DB作成
+                /*
                 $sql = "CREATE TABLE userdata.".$user." (
 		            id int,
 		            spot_name text,
@@ -85,6 +86,7 @@ if(!empty($_POST["signup"])){
 		            Y text
 	            )";
                 $res = $pdo->query($sql);
+                */
 
                 //ログイン画面へ移動
                 header("Location: login.php");

@@ -19,10 +19,10 @@ try {
     */
 
     //SQL文を実行して、結果を$stmtに代入する。
-    $stmt = $pdo->prepare(" SELECT * FROM test.minatomirai_station_data ");
+    $stmt = $pdo->prepare(" SELECT * FROM minatomirai_station_data ");
     $stmt->execute();
 
-    $stmt2 = $pdo->prepare(" SELECT * FROM test.minatomirai_station_data ");
+    $stmt2 = $pdo->prepare(" SELECT * FROM minatomirai_station_data ");
     $stmt2->execute();
 } catch (PDOException $e) {
     echo "失敗:" . $e->getMessage() . "\n";
