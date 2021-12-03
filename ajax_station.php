@@ -20,12 +20,12 @@ try{
     ));
     */
     
-    $stmt1 = $pdo->prepare("SELECT * FROM test.minatomirai_station_data where id = :id");
+    $stmt1 = $pdo->prepare("SELECT * FROM minatomirai_station_data where id = :id");
     $stmt1 -> bindParam(":id", $post_data_1, PDO::PARAM_INT);
     $stmt1 -> execute();
     $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
 
-    $stmt2 = $pdo->prepare("SELECT * FROM test.minatomirai_station_data where id = :id");
+    $stmt2 = $pdo->prepare("SELECT * FROM minatomirai_station_data where id = :id");
     $stmt2 -> bindParam(":id", $post_data_2, PDO::PARAM_INT);
     $stmt2 -> execute();
     $result2 = $stmt2->fetch(PDO::FETCH_ASSOC);
