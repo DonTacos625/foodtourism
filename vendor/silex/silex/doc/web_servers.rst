@@ -36,6 +36,25 @@ Alternatively, if you use Apache 2.2.16 or higher, you can use the
 
     If your site is not at the webroot level you will have to adjust the path to
     point to your directory, relative from the webroot.
+    
+Or if you're using a VirtualHost, you can add the same directive to the VirtualHost's Directory entry:
+
+.. code-block:: apache
+
+    <VirtualHost *:80>
+        # other directives
+
+        Alias /app/ /path/to/app/
+        <Directory /path/to/app>
+            # other directives
+
+            FallbackResource /app/index.php
+        </Directory>
+    </VirtualHost>
+
+.. note::
+
+    Note that you need the leading forward slash there, unlike with the .htaccess version
 
 nginx
 -----
@@ -132,13 +151,12 @@ point:
 
 .. _FallbackResource directive: http://www.adayinthelifeof.nl/2012/01/21/apaches-fallbackresource-your-new-htaccess-command/
 
-PHP 5.4
--------
+PHP
+---
 
-PHP 5.4 ships with a built-in webserver for development. This server allows
-you to run silex without any configuration. However, in order to serve static
-files, you'll have to make sure your front controller returns false in that
-case::
+PHP ships with a built-in webserver for development. This server allows you to
+run silex without any configuration. However, in order to serve static files,
+you'll have to make sure your front controller returns false in that case::
 
     // web/index.php
 

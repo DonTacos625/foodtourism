@@ -1,13 +1,121 @@
 Changelog
 =========
 
-1.3.6 (2016-04-30)
+2.3.0 (2018-04-20)
 ------------------
 
-**WARNING** This is the last release of the Silex 1.x branch. Please, upgrade
-to Silex 2.x.
+ * added support for defining users provider as a service ID
+ * fixed error when HttpKernelRuntime is not available
+ * allow setting custom status code on exception response with Symfony 3.3+
+ * made CSRF extension work with Validator translations domain
+ * fixed Security provider context usage
+ * dropped support for Twig < 2.0
+ * dropped support for PHP < 7.1
+ * dropped support for Symfony 2.x and 3.x
+ * added support for Symfony 4
+ * added support PSR-3 log levels in MonologServiceProvider
+ * exposed AuthenticationUtils in SecurityServiceProvider
 
-* minor docs/tests changes
+2.2.3 (2018-02-25)
+------------------
+
+ * fixed validator integration into the security provider (order of registration of the validator and security providers does not matter anymore)
+ * fixed compatibility issues with Symfony 3.4
+
+2.2.2 (2018-01-12)
+------------------
+
+* [SECURITY] fixed before handlers not executed under mounts
+
+2.2.1 (2017-12-14)
+------------------
+
+* added support for Swiftmailer SSL stream_context_options option
+* fixed usage of namespaces for Twig paths
+
+2.2.0 (2017-07-23)
+------------------
+
+* added json manifest version strategy support
+* fixed EsiFragment constructor
+* fixed RedirectableUrlMatcher compatibility with Symfony
+* fixed compatibility with Pimple 3.2
+* fixed WebTestCase compatibility with PHPUnit 6+
+
+2.1.0 (2017-05-03)
+------------------
+
+* added more options to security.firewalls
+* added WebLink component integration
+* added parameters to configure the Twig core extension behavior
+* fixed deprecation notices with symfony/twig-bridge 3.2+ in TwigServiceProvider
+* added FormRegistry as a service to enable the extension point
+* removed the build scripts
+* fixed some deprecation warnings
+* added support for registering Swiftmailer plugins
+
+2.0.4 (2016-11-06)
+------------------
+
+* fixed twig.app_variable definition
+* added support for latest versions of Twig 1.x and 2.0 (Twig runtime loaders)
+* added support for Symfony 2.3
+
+2.0.3 (2016-08-22)
+------------------
+
+* fixed lazy evaluation of 'monolog.use_error_handler'
+* fixed PHP7 type hint on controllers
+
+2.0.2 (2016-06-14)
+------------------
+
+* fixed Symfony 3.1 deprecations
+
+2.0.1 (2016-05-27)
+------------------
+
+* fixed the silex form extension registration to allow overriding default ones
+* removed support for the obsolete Locale Symfony component (uses the Intl one now)
+* added support for Symfony 3.1
+
+2.0.0 (2016-05-18)
+------------------
+
+* decoupled the exception handler from HttpKernelServiceProvider
+* Switched to BCrypt as the default encoder in the security provider
+* added full support for RequestMatcher
+* added support for Symfony Guard
+* added support for callables in CallbackResolver
+* added FormTrait::namedForm()
+* added support for delivery_addresses, delivery_whitelist, and sender_address
+* added support to register form types / form types extensions / form types guessers as services
+* added support for callable in mounts (allow nested route collection to be built easily)
+* added support for conditions on routes
+* added support for the Symfony VarDumper Component
+* added a global Twig variable (an AppVariable instance)
+* [BC BREAK] CSRF has been moved to a standalone provider (``form.secret`` is not available anymore)
+* added support for the Symfony HttpFoundation Twig bridge extension
+* added support for the Symfony Asset Component
+* bumped minimum version of Symfony to 2.8
+* bumped minimum version of PHP to 5.5.0
+* Updated Pimple to 3.0
+* Updated session listeners to extends HttpKernel ones
+* [BC BREAK] Locale management has been moved to LocaleServiceProvider which must be registered
+  if you want Silex to manage your locale (must also be registered for the translation service provider)
+* [BC BREAK] Provider interfaces moved to Silex\Api namespace, published as
+  separate package via subtree split
+* [BC BREAK] ServiceProviderInterface split in to EventListenerProviderInterface
+  and BootableProviderInterface
+* [BC BREAK] Service Provider support files moved under Silex\Provider
+  namespace, allowing publishing as separate package via sub-tree split
+* ``monolog.exception.logger_filter`` option added to Monolog service provider
+* [BC BREAK] ``$app['request']`` service removed, use ``$app['request_stack']`` instead
+
+1.3.6 (2016-XX-XX)
+------------------
+
+* n/a
 
 1.3.5 (2016-01-06)
 ------------------

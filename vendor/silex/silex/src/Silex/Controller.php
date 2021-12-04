@@ -27,6 +27,7 @@ use Silex\Exception\ControllerFrozenException;
  * @method Controller requireHttps()
  * @method Controller before(mixed $callback)
  * @method Controller after(mixed $callback)
+ * @method Controller when(string $condition)
  *
  * @author Igor Wiedler <igor@wiedler.ch>
  */
@@ -90,7 +91,7 @@ class Controller
             throw new \BadMethodCallException(sprintf('Method "%s::%s" does not exist.', get_class($this->route), $method));
         }
 
-        call_user_func_array(array($this->route, $method), $arguments);
+        call_user_func_array([$this->route, $method], $arguments);
 
         return $this;
     }
@@ -110,7 +111,7 @@ class Controller
         $methods = implode('_', $this->route->getMethods()).'_';
 
         $routeName = $methods.$prefix.$this->route->getPath();
-        $routeName = str_replace(array('/', ':', '|', '-'), '_', $routeName);
+        $routeName = str_replace(['/', ':', '|', '-'], '_', $routeName);
         $routeName = preg_replace('/[^a-z0-9A-Z_.]+/', '', $routeName);
 
         // Collapse consecutive underscores down into a single underscore.

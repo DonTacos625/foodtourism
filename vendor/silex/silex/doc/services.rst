@@ -53,10 +53,10 @@ Pimple
 Pimple makes strong use of closures and implements the ArrayAccess interface.
 
 We will start off by creating a new instance of Pimple -- and because
-``Silex\Application`` extends ``Pimple`` all of this applies to Silex as
-well::
+``Silex\Application`` extends ``Pimple\Container`` all of this applies to Silex
+as well::
 
-    $container = new Pimple();
+    $container = new Pimple\Container();
 
 or::
 
@@ -93,21 +93,21 @@ And to retrieve the service, use::
 
     $service = $app['some_service'];
 
-Every time you call ``$app['some_service']``, a new instance of the service is
-created.
+On first invocation, this will create the service; the same instance will then
+be returned on any subsequent access.
 
-Shared services
-~~~~~~~~~~~~~~~
+Factory services
+~~~~~~~~~~~~~~~~
 
-You may want to use the same instance of a service across all of your code. In
-order to do that you can make a *shared* service::
+If you want a different instance to be returned for each service access, wrap
+the service definition with the ``factory()`` method::
 
-    $app['some_service'] = $app->share(function () {
+    $app['some_service'] = $app->factory(function () {
         return new Service();
     });
 
-This will create the service on first invocation, and then return the existing
-instance on any subsequent access.
+Every time you call ``$app['some_service']``, a new instance of the service is
+created.
 
 Access container from closure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -128,17 +128,13 @@ options. The dependency is only created when ``some_service`` is accessed, and
 it is possible to replace either of the dependencies by simply overriding
 those definitions.
 
-.. note::
-
-    This also works for shared services.
-
 Going back to our initial example, here's how we could use the container
 to manage its dependencies::
 
     $app['user.persist_path'] = '/tmp/users';
-    $app['user.persister'] = $app->share(function ($app) {
+    $app['user.persister'] = function ($app) {
         return new JsonUserPersister($app['user.persist_path']);
-    });
+    };
 
 
 Protected closures
@@ -163,29 +159,66 @@ using the ``protect`` method::
     // calling it now
     echo $add(2, 3);
 
-Note that protected closures do not get access to the container.
+Note that the container is not provided as an argument to protected closures.
+However, you can inject it via `use($app)`::
+
+    $app['closure_parameter'] = $app->protect(function ($a, $b) use ($app) {
+        // ...
+    });
+
+Modify services after definition
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sometimes you want to alter a service after its definition. Pimple facilitates
+this by extending the already defined service.
+
+First argument of the ``extend`` method is the name of the service you want to
+modify. Second argument is a callable. This callable is executed with the service
+you want to alter as its first argument, the service container itself is provided
+in the second argument.
+
+.. note::
+
+    Be sure to return the modified service in the callable.
+
+You can use this pattern to add functionality to :doc:Twig <providers/twig> for
+example::
+
+    $app->extend('twig', function($twig, $app) {
+        $twig->addGlobal('pi', 3.14);
+        $twig->addFilter('levenshtein', new \Twig_Filter_Function('levenshtein'));
+        
+        return $twig;
+    });
 
 Core services
 -------------
 
 Silex defines a range of services.
 
-* **request**: Contains the current request object, which is an instance of
-  `Request
-  <http://api.symfony.com/master/Symfony/Component/HttpFoundation/Request.html>`_.
+* **request_stack**: Controls the lifecycle of requests, an instance of
+  `RequestStack <http://api.symfony.com/master/Symfony/Component/HttpFoundation/RequestStack.html>`_.
   It gives you access to ``GET``, ``POST`` parameters and lots more!
 
   Example usage::
 
-    $id = $app['request']->get('id');
+    $id = $app['request_stack']->getCurrentRequest()->get('id');
 
-  This is only available when a request is being served; you can only access
-  it from within a controller, an application before/after middlewares, or an
-  error handler.
+  A request is only available when a request is being served; you can only
+  access it from within a controller, an application before/after middlewares,
+  or an error handler.
 
 * **routes**: The `RouteCollection
   <http://api.symfony.com/master/Symfony/Component/Routing/RouteCollection.html>`_
   that is used internally. You can add, modify, read routes.
+
+* **url_generator**: An instance of `UrlGenerator
+  <http://api.symfony.com/master/Symfony/Component/Routing/Generator/UrlGenerator.html>`_,
+  using the `RouteCollection
+  <http://api.symfony.com/master/Symfony/Component/Routing/RouteCollection.html>`_
+  that is provided through the ``routes`` service. It has a ``generate``
+  method, which takes the route name as an argument, followed by an array of
+  route parameters.
 
 * **controllers**: The ``Silex\ControllerCollection`` that is used internally.
   Check the :doc:`Internals chapter <internals>` for more information.
@@ -206,7 +239,7 @@ Silex defines a range of services.
   Request as input and returns a Response as output.
 
 * **request_context**: The request context is a simplified representation of
-  the request that is used by the Router and the :doc:`UrlGenerator </providers/url_generator>`.
+  the request that is used by the router and the URL generator.
 
 * **exception_handler**: The Exception handler is the default handler that is
   used when you don't register one via the ``error()`` method or if your
@@ -218,9 +251,19 @@ Silex defines a range of services.
   the :doc:`MonologServiceProvider <providers/monolog>` or define your own ``logger`` service that
   conforms to the PSR logger interface.
 
-.. note::
+Core traits
+-----------
 
-    All of these Silex core services are shared.
+* ``Silex\Application\UrlGeneratorTrait`` adds the following shortcuts:
+
+  * **path**: Generates a path.
+
+  * **url**: Generates an absolute URL.
+
+  .. code-block:: php
+
+      $app->path('homepage');
+      $app->url('homepage');
 
 Core parameters
 ---------------
@@ -231,7 +274,7 @@ Core parameters
 
   Defaults to 80.
 
-  This parameter can be used by the ``UrlGeneratorProvider``.
+  This parameter can be used when generating URLs.
 
 * **request.https_port** (optional): Allows you to override the default port
   for HTTPS URLs. If the current request is HTTPS, it will always use the
@@ -239,12 +282,7 @@ Core parameters
 
   Defaults to 443.
 
-  This parameter can be used by the ``UrlGeneratorProvider``.
-
-* **locale** (optional): The locale of the user. When set before any request
-  handling, it defines the default locale (``en`` by default). When a request
-  is being handled, it is automatically set according to the ``_locale``
-  request attribute of the current route.
+  This parameter can be used when generating URLs.
 
 * **debug** (optional): Returns whether or not the application is running in
   debug mode.

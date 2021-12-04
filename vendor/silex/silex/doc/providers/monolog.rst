@@ -12,8 +12,8 @@ Parameters
 ----------
 
 * **monolog.logfile**: File where logs are written to.
-* **monolog.bubble**: (optional) Whether the messages that are handled can bubble up the stack or not.
-* **monolog.permission**: (optional) File permissions default (null), nothing change.
+* **monolog.bubble** (optional): Whether the messages that are handled can bubble up the stack or not.
+* **monolog.permission** (optional): File permissions default (null), nothing change.
 
 * **monolog.level** (optional): Level of logging, defaults
   to ``DEBUG``. Must be one of ``Logger::DEBUG``, ``Logger::INFO``,
@@ -25,8 +25,21 @@ Parameters
   level in string form, for example: ``"DEBUG"``, ``"INFO"``, ``"WARNING"``,
   ``"ERROR"``.
 
+  PSR-3 log levels from ``\Psr\Log\LogLevel::`` constants are also supported.
+
 * **monolog.name** (optional): Name of the monolog channel,
   defaults to ``myapp``.
+
+* **monolog.exception.logger_filter** (optional): An anonymous function that
+  returns an error level for on uncaught exception that should be logged.
+
+* **monolog.use_error_handler** (optional): Whether errors and uncaught exceptions
+  should be handled by the Monolog ``ErrorHandler`` class and added to the log.
+  By default the error handler is enabled unless the application ``debug`` parameter
+  is set to true.
+
+  Please note that enabling the error handler may silence some errors,
+  ignoring the PHP ``display_errors`` configuration setting.
 
 Services
 --------
@@ -50,8 +63,7 @@ Registering
 
 .. note::
 
-    Monolog comes with the "fat" Silex archive but not with the regular one.
-    If you are using Composer, add it as a dependency:
+    Add Monolog as a dependency:
 
     .. code-block:: bash
 
@@ -80,15 +92,15 @@ Customization
 You can configure Monolog (like adding or changing the handlers) before using
 it by extending the ``monolog`` service::
 
-    $app['monolog'] = $app->share($app->extend('monolog', function($monolog, $app) {
+    $app->extend('monolog', function($monolog, $app) {
         $monolog->pushHandler(...);
 
         return $monolog;
-    }));
+    });
 
 By default, all requests, responses and errors are logged by an event listener
 registered as a service called `monolog.listener`. You can replace or remove
-this service if you want to modify or disable the informations logged.
+this service if you want to modify or disable the logged information.
 
 Traits
 ------
