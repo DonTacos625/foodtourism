@@ -45,7 +45,7 @@ if(!empty($_POST["login"])){
                   
             $pass = $_POST["pass"];
 
-            $stmt1 = $pdo->prepare("SELECT * FROM test.userinfo WHERE id = :id");
+            $stmt1 = $pdo->prepare("SELECT * FROM userinfo WHERE id = :id");
             $stmt1 -> bindParam(":id", $user);
             $stmt1 -> execute();
 
