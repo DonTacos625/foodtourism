@@ -84,24 +84,24 @@ try {
 if (!isset($_SESSION["s_l_kankou_spots_id"])) {
     $s_l_kankou_spots_id = [0, 0];
 } else {
-    $s_l_kankou_spots_id = [$result5["X"], $result5["Y"], "11"];
+    $s_l_kankou_spots_id = [$result5["x"], $result5["y"], "11"];
 }
 if (!isset($_SESSION["l_d_kankou_spots_id"])) {
     $l_d_kankou_spots_id = [0, 0];
 } else {
-    $l_d_kankou_spots_id = [$result6["X"], $result6["Y"], "12"];
+    $l_d_kankou_spots_id = [$result6["x"], $result6["y"], "12"];
 }
 if (!isset($_SESSION["d_g_kankou_spots_id"])) {
     $d_g_kankou_spots_id = [0, 0];
 } else {
-    $d_g_kankou_spots_id = [$result7["X"], $result7["Y"], "13"];
+    $d_g_kankou_spots_id = [$result7["x"], $result7["y"], "13"];
 }
 
 $keikaku = array(
-    array($result1["X"], $result1["Y"], "1"), $s_l_kankou_spots_id,
-    array($result2["X"], $result2["Y"], "2"), $l_d_kankou_spots_id,
-    array($result3["X"], $result3["Y"], "3"), $d_g_kankou_spots_id,
-    array($result4["X"], $result4["Y"], "4")
+    array($result1["x"], $result1["y"], "1"), $s_l_kankou_spots_id,
+    array($result2["x"], $result2["y"], "2"), $l_d_kankou_spots_id,
+    array($result3["x"], $result3["y"], "3"), $d_g_kankou_spots_id,
+    array($result4["x"], $result4["y"], "4")
 );
 
 ?>
