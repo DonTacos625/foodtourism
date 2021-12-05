@@ -30,8 +30,13 @@ $_SESSION = array();
         <title>ログイン</title>
 
         <style>
+            body {
+                background: linear-gradient(45deg, #99ffff, #ffffff);
+            }
+
             #logoutbox{
                 width: 768px;
+                height: 500px;
                 margin: auto;
                 border: 1px solid #aaa;
                 text-align: center;
@@ -47,14 +52,14 @@ $_SESSION = array();
                 }
                 
                 #logoutbox{
-                    width: auto;
+                    width: 90%;
                 }
             }
         </style>
     </head>
 
     <body>
-        <div id="logoutbox">
+        <div id="logoutbox"><br><br><br>
             <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
             <h3>ログアウト</h3>
             <a href="login.php">ログイン画面</a>

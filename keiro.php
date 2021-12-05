@@ -110,6 +110,18 @@ $keikaku = array(
 
 <head>
     <meta charset="utf-8" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131239045-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-131239045-1');
+    </script>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>観光スポット選択 | 経路作成</title>
     <style>
@@ -132,6 +144,35 @@ $keikaku = array(
             margin: 0;
             height: 85%;
             width: 80%;
+        }
+
+        @media screen and (min-width:769px) and (max-width:1366px) {
+            h3 {
+                font-size: 18px;
+            }
+
+            #viewbox {
+                width: 70vw;
+                height: 70vh;
+            }
+        }
+
+        @media screen and (max-width:768px) {
+            h3 {
+                font-size: 15px;
+            }
+
+            #viewbox {
+                width: 110vw;
+                height: 80vh;
+                margin: 0px;
+            }
+
+            #viewbox #viewDiv {
+                width: 85%;
+                height: 85%;
+            }
+
         }
     </style>
 

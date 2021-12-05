@@ -6,11 +6,11 @@ session_start();
 //エラーメッセージ初期化
 $errormessage = "";
 
-/*
+
 if(!empty($_GET["register"])){
     $errormessage = "会員登録完了";
 }
-*/
+
 
 //ログインボタン
 if(!empty($_POST["login"])){
@@ -26,7 +26,7 @@ if(!empty($_POST["login"])){
         $user = $_POST["user"];
 
         //DB接続
-        require "cfg_test.php";
+        require "connect_database.php";
 
         try{
             /*
@@ -97,8 +97,13 @@ if(!empty($_POST["login"])){
         <title>ログイン</title>
 
         <style>
+            body {
+                background: linear-gradient(45deg, #99ffff, #ffffff);
+            }
+            
             #loginbox{
                 width: 768px;
+                height: 500px;
                 margin: auto;
                 border: 1px solid #aaa;
                 text-align: center;
@@ -125,17 +130,17 @@ if(!empty($_POST["login"])){
                 }
                 
                 #loginbox{
-                    width: auto;
+                    width: 90%;
                 }
             }
         </style>
     </head>
 
     <body>
-        <div id= "loginbox">
+        <div id= "loginbox"><br><br><br>
             <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
             <p>
-                こちらは横浜みなとみらい近隣の観光スポットを推薦するシステムです。<br>
+                こちらは横浜みなとみらい近隣でのフードツーリズム計画の作成を支援するシステムです。<br>
                 利用には<a href="signup.php">利用者登録</a>が必要となります。<br>
             </p>
 

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("cfg_test.php");
+require_once("connect_database.php");
 
 $post_data_1 = $_POST['post_data_1'];
 $post_data_2 = json_decode($_POST['post_data_2'], true);

@@ -39,7 +39,7 @@ if(!empty($_POST["signup"])){
         settype($gender, "int");
 
         //DB接続
-        require "cfg_test.php";
+        require "connect_database.php";
 
         try{
             /*
@@ -89,7 +89,7 @@ if(!empty($_POST["signup"])){
                 */
 
                 //ログイン画面へ移動
-                header("Location: login.php");
+                header("Location: login.php?register=1");
 
                 $signupmessage = "登録完了";
             }elseif(!empty($result)){
@@ -122,8 +122,13 @@ if(!empty($_POST["signup"])){
         <title>サインアップ</title>
 
         <style>
+            body {
+                background: linear-gradient(45deg, #99ffff, #ffffff);
+            }
+
             #signupbox{
                 width: 768px;
+                height: 500px;
                 margin: auto;
                 border: 1px solid #aaa;
                 text-align: center;

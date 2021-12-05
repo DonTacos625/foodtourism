@@ -2,6 +2,12 @@
 
 require "frame.php";
 
+if (!empty($_GET["not_set_station"])) {
+    $message = "観光を開始・終了する駅を設定してください";
+} else {
+    $message = "";
+}
+
 try {
 
     /*
@@ -34,6 +40,19 @@ try {
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131239045-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-131239045-1');
+    </script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <title>開始・終了駅決定</title>
 
@@ -123,14 +142,14 @@ try {
         if (!($start_id == "") && !($goal_id == "")) {
             post_stations($start_id, $goal_id);
         } else {
-            alert("開始駅と終了駅の両方を設定してください");
+            alert("先に開始駅と終了駅の両方を設定してください");
         }
     };
 
     function post_stations(start_id, goal_id) {
         jQuery(function($) {
             $.ajax({
-                url: "ajax_station.php",
+                url: "./ajax_station.php",
                 type: "POST",
                 dataType: "json",
                 data: {
@@ -166,12 +185,14 @@ try {
 </script>
 
 <body>
-   <!-- <button type="button" onclick="debug()">start更新</button>
+    <!-- <button type="button" onclick="debug()">start更新</button>
     <button type="button" onclick="debug2()">goal更新</button>
     <div id="debug">start現在</div><br>
     <div id="debug2">goal現在</div>
 -->
-
+    <div>
+        <font color="#ff0000"><?php echo htmlspecialchars($message, ENT_QUOTES); ?></font>
+    </div>
     <div id="editbox">
         <h2>開始駅を選択する：</h2>
         <select name="start_station_id" size="1" onclick="set_station(value, 'start')">
@@ -191,9 +212,9 @@ try {
         </select>
         <br><br>
 
-        <button type="button" onclick="stations()">決定</button>
+        <button type="button" onclick="stations() ; change_href()">決定</button>
         <div><br>
-        <a href="search_form.php">飲食店の検索・決定へ</a>
+            <a href="search_form.php" onclick="change_href()">飲食店の検索・決定へ</a>
 </body>
 
 </html>

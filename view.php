@@ -8,18 +8,31 @@ require "frame.php";
 
 <head>
     <meta charset="utf-8" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131239045-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-131239045-1');
+    </script>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>スポット一覧</title>
     <style>
+
         #viewbox {
-            position:absolute;	
+            position: absolute;
             float: left;
             width: 80vw;
             height: 80vh;
             margin-left: 5px;
         }
 
-        #viewbox h3{
+        #viewbox h3 {
             border-left: 5px solid #000080;
             margin: 0px;
         }
@@ -30,6 +43,35 @@ require "frame.php";
             margin: 0;
             height: 85%;
             width: 80%;
+        }
+
+        @media screen and (min-width:769px) and (max-width:1366px) {
+            h3 {
+                font-size: 18px;
+            }
+
+            #viewbox {
+                width: 70vw;
+                height: 70vh;
+            }
+        }
+
+        @media screen and (max-width:768px) {
+            h3 {
+                font-size: 15px;
+            }
+
+            #viewbox {
+                width: 110vw;
+                height: 160vh;
+                margin: 0px;
+            }
+
+            #viewbox #viewDiv {
+                width: 85%;
+                height: 85%;
+            }
+
         }
     </style>
 
@@ -50,7 +92,8 @@ require "frame.php";
             "esri/rest/support/RouteParameters",
             "esri/rest/support/FeatureSet",
             "esri/symbols/PictureMarkerSymbol",
-            "esri/symbols/CIMSymbol"
+            "esri/symbols/CIMSymbol",
+            "esri/widgets/LayerList"
         ], function(
             Map,
             MapView,
@@ -62,7 +105,8 @@ require "frame.php";
             RouteParameters,
             FeatureSet,
             PictureMarkerSymbol,
-            CIMSymbol
+            CIMSymbol,
+            LayerList
         ) {
 
             // Point the URL to a valid routing service
@@ -152,11 +196,11 @@ require "frame.php";
                         label: "ホームページ",
                         visible: true
                     }, {
-                        fieldName: "x",
+                        fieldName: "X",
                         label: "経度",
                         visible: false
                     }, {
-                        fieldName: "y",
+                        fieldName: "Y",
                         label: "緯度",
                         visible: false
                     }]
@@ -218,20 +262,48 @@ require "frame.php";
                 }
             }
 
-        });
 
+            var layerlist = new LayerList({
+                view: view,
+                listItemCreatedFunction: function(event) {
+
+                    // The event object contains properties of the
+                    // layer in the LayerList widget.
+
+                    let item = event.item;
+
+                    if (item.title === "Minatomirai kankou UTF 8") {
+                        // open the list item in the LayerList
+                        //item.open = true;
+                        // change the title to something more descriptive
+                        item.title = "観光スポット";
+                    } else if (item.title === "Minatomirai shop new UTF 8") {
+                        item.title = "飲食店";
+                    } else if (item.title === "Minatomirai station data") {
+                        item.title = "駅";
+                    }
+                }
+            });
+            layerlist.statusIndicatorsVisible = false;
+
+            view.ui.add(layerlist, "bottom-right");
+
+        });
     </script>
 
 </head>
 
 <body>
     <!--デバッグ用
-    <input type="text" name="Result" value=<?php //echo $_SESSION["s_l_kankou_spots_id"] ?>><br>
-    <input type="text" name="Result" value=<?php //echo $_SESSION["l_d_kankou_spots_id"] ?>><br>
-    <input type="text" name="Result" value=<?php //echo $_SESSION["d_g_kankou_spots_id"] ?>><br>
+    <input type="text" name="Result" value=<?php //echo $_SESSION["s_l_kankou_spots_id"] 
+                                            ?>><br>
+    <input type="text" name="Result" value=<?php //echo $_SESSION["l_d_kankou_spots_id"] 
+                                            ?>><br>
+    <input type="text" name="Result" value=<?php //echo $_SESSION["d_g_kankou_spots_id"] 
+                                            ?>><br>
     -->
     <div id="viewbox">
-        <h3>観光ルート</h3>
+        <h3>スポット一覧</h3>
         <div id="viewDiv"></div>
     </div>
 </body>

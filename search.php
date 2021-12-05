@@ -69,16 +69,33 @@ try {
     exit();
 }
 
-
-
 ?>
 
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131239045-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-131239045-1');
+    </script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <title>飲食店検索</title>
     <style>
+
+        h2 {
+            border-left: 5px solid #000080;
+            margin: 0px;
+        }
+        
         #detailbox {
             position: relative;
             float: left;
@@ -106,7 +123,7 @@ try {
 
         #detailbox #infobox table {
             width: 100%;
-            border: solid 3px #FFFFFF;
+            border: solid 3px #99ffff;
         }
 
         #detailbox #infobox table th {
@@ -130,83 +147,42 @@ try {
 
         #detailbox #infobox:hover {
             background: #000080;
-            border: solid 1px #FFFFFF;
+            border: solid 1px #99ffff;
         }
 
         #detailbox #infobox table td pre {
             white-space: pre-wrap;
         }
 
-        
-            #detailbox #viewbox{
-                float: left;
-                width: 20vw;
-                height: 20vw;
-                margin-left: 5px;
+        @media screen and (min-width:769px) and (max-width:1366px) {
+            h3 {
+                margin: 0px;
+                font-size: 18px;
+            }
+        }
+
+        @media screen and (max-width:768px) {
+            h3 {
+                margin: 0px;
+                font-size: 17px;
             }
 
-            #detailbox #viewbox #spotview{
+            #detailbox {
+                width: auto;
+                margin: 0px;
+                float: none;
+            }
+
+            #detailbox #infobox {
                 width: 100%;
-                height: 100%;
+                float: none;
             }
 
-             
-            #detailbox #commentbox{
-                float: left;
-                width: 40vw;
-                height: 20vw;
-                height: auto;
-                margin-left: 5px;
-                border: 1px solid #000080;
-                overflow: scroll;
+            #detailbox #infobox table {
+                font-size: 13px;
             }
 
-            @media screen and (min-width:769px) and (max-width:1366px){
-                h3{
-                    margin: 0px;
-                    font-size: 18px;
-                }
-            }
-            
-            @media screen and (max-width:768px){
-                h3{
-                    margin: 0px;
-                    font-size: 17px;
-                }
-
-                #detailbox{
-                    width: auto;
-                    margin: 0px;
-                    float: none;
-                }
-
-                #detailbox #imgbox{
-                    width: 100%;
-                    height: auto;
-                    float: none;
-                }
-
-                #detailbox #infobox{
-                    width: 100%;
-                    float: none;
-                }
-
-                #detailbox #infobox table{
-                    font-size: 13px;
-                }
-
-                #detailbox #viewbox{
-                    width: 100%;
-                    height: 90vw;
-                    float: none;
-                }
-
-                #detailbox #commentbox{
-                    width: 100%;
-                    float: none;
-                }
-            }
-            
+        }
     </style>
 </head>
 
@@ -266,7 +242,8 @@ try {
         <!-- 送信ボタンを用意する -->
         <input type="submit" name="submit" value="検索する"><br>
     </form>
-    <a href="keiro.php">観光スポットの選択へ</a><br><br>
+    <!--未完成 <a id="keiro2" onclick="change_href2()" href="">観光スポット選択へ</a><br> -->
+    <br>
 
     <?php foreach ($stmt as $row) : ?>
         <div id="detailbox">
@@ -318,8 +295,8 @@ try {
                         <tr>
                             <th>設定する</th>
                             <td>
-                                <button type="button" name="lanch_id" value=<?php echo $row["id"]; ?> onclick="post_food(value, '1')">昼食に設定する</button>
-                                <button type="button" name="dinner_id" value=<?php echo $row["id"]; ?> onclick="post_food(value, '2')">夕食に設定する</button>
+                                <button type="button" name="lanch_id" value=<?php echo $row["id"]; ?> onclick="post_food(value, '1') ; change_href()">昼食に設定する</button>
+                                <button type="button" name="dinner_id" value=<?php echo $row["id"]; ?> onclick="post_food(value, '2') ; change_href()">夕食に設定する</button>
                             </td>
                         </tr>
                     </table>
@@ -327,6 +304,48 @@ try {
             </div>
         </div>
     <?php endforeach; ?>
+
+    <script>
+        /*
+        //未完成
+        //観光スポット選択へのURLを変更する関数。「観光スポット選択へ」ボタンを押す直前のタイミングに実行できれば完成だが
+        function change_href2() {
+            jQuery(function($) {
+                var dummy = "1";
+                $.ajax({
+                    url: './ajax_change_href.php',
+                    type: "POST",
+                    dataType: 'json',
+                    data: {
+                        post_data_1: dummy
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert("ajax通信に失敗しました");
+                    },
+                    success: function(data) {
+                        //alert("返り値は" + data[1]);
+                        $not_set_station = data[0];
+                        $not_set_food = data[1];
+                        const target = document.getElementById("keiro2");
+                        $url = "keiro.php";
+                        if ($not_set_station == "1") {
+                            $url = "set_station.php?not_set_station=1";
+                        } else if ($not_set_food == "1") {
+                            $url = "search_form.php?not_set_food=1";
+                        } else {
+                            $url = "keiro.php";
+                        }
+                        alert($url);
+                        target.href = $url;
+                    }
+                });
+            });
+        };
+
+        change_href2();
+        */
+    </script>
+
 </body>
 
 </html>

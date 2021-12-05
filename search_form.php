@@ -2,9 +2,45 @@
 
 require "frame.php";
 
+if (!empty($_GET["not_set_food"])) {
+    $message = "先に昼食・夕食をする飲食店を設定してください";
+} else {
+    $message = "";
+}
+
 ?>
 
-<h2>検索</h2>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131239045-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-131239045-1');
+    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <title>飲食店検索</title>
+    <style>
+        h2 {
+            border-left: 5px solid #000080;
+            margin: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <font color="#ff0000"><?php echo htmlspecialchars($message, ENT_QUOTES); ?></font>
+    </div>
+    <h2>検索</h2>
     <form action="search.php" method="post">
         検索の設定：
         <input type="radio" id="name_genre" name="name_genre" value="0" checked="checked">ジャンルで検索
@@ -34,3 +70,6 @@ require "frame.php";
         <!-- 送信ボタンを用意する -->
         <input type="submit" name="submit" value="検索する"><br>
     </form><br>
+</body>
+
+</html>
