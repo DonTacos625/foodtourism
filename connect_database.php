@@ -1,14 +1,14 @@
 <?php
 
 /*
+//ローカル環境での接続用
 $dsn = 'pgsql:dbname=mydb; host=127.0.0.1';
 $username= 'postgres';
 $password= 'fadsh80fejhj@';
 $pdo = new PDO($dsn, $username, $password);
 */
 
-
-//恐らくherokuでのDB接続に必要
+//herokuでのDB接続に必要
 $db = parse_url(getenv("DATABASE_URL"));
 
 $pdo = new PDO("pgsql:" . sprintf(
@@ -19,5 +19,7 @@ $db["user"],
 $db["pass"],
 ltrim($db["path"], "/")
 ));
+
+
 
 ?>

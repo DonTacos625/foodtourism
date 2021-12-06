@@ -419,7 +419,7 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
         <?php
         if ($frameresult["survey"]) {
             print "<form action=\"\" method=\"POST\">";
-            print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://goo.gl/forms/ze7wIc42WS2JsPzk2','_blank')\"><br>";
+            print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://forms.gle/aQtfhGavNZKtX52J7','_blank')\"><br>";
             print "</form>";
             print "回答は<font color=\"red\">1回</font>のみです<br>";
             print "<b>システムを1度以上利用してからご回答ください</b>";

@@ -3,7 +3,7 @@
 require "frame.php";
 
 if (!empty($_GET["not_set_station"])) {
-    $message = "観光を開始・終了する駅を設定してください";
+    $message = "先に観光を開始・終了する駅を設定してください";
 } else {
     $message = "";
 }
@@ -142,7 +142,7 @@ try {
         if (!($start_id == "") && !($goal_id == "")) {
             post_stations($start_id, $goal_id);
         } else {
-            alert("先に開始駅と終了駅の両方を設定してください");
+            alert("開始駅と終了駅の両方を設定してください");
         }
     };
 

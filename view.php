@@ -150,11 +150,11 @@ require "frame.php";
                     }, {
                         fieldName: "X",
                         label: "経度",
-                        visible: false
+                        visible: true
                     }, {
                         fieldName: "Y",
                         label: "緯度",
-                        visible: false
+                        visible: true
                     }]
                 }]
             };
@@ -170,11 +170,11 @@ require "frame.php";
                     }, {
                         fieldName: "X",
                         label: "経度",
-                        visible: false
+                        visible: true
                     }, {
                         fieldName: "Y",
                         label: "緯度",
-                        visible: false
+                        visible: true
                     }]
                 }]
             };
@@ -198,11 +198,11 @@ require "frame.php";
                     }, {
                         fieldName: "X",
                         label: "経度",
-                        visible: false
+                        visible: true
                     }, {
                         fieldName: "Y",
                         label: "緯度",
-                        visible: false
+                        visible: true
                     }]
                 }]
             };

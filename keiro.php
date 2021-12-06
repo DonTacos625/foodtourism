@@ -223,19 +223,19 @@ $keikaku = array(
             var s_l_Action = {
                 title: "昼食前に訪れる",
                 id: "s_l",
-                className: "esri-icon-map-pin"
+                image: "pop_icon1.png"
             };
 
             var l_d_Action = {
                 title: "昼食後に訪れる",
                 id: "l_d",
-                className: "esri-icon-map-pin"
+                image: "pop_icon2.png"
             };
 
             var d_g_Action = {
                 title: "夕食後に訪れる",
                 id: "d_g",
-                className: "esri-icon-map-pin"
+                image: "pop_icon3.png"
             };
 
             var food_template = {
@@ -517,9 +517,14 @@ $keikaku = array(
                 zoom: 14
             });
 
-            //最初から経路表示のサンプル            
+            //phpの経路情報をjavascript用に変換           
             var keikaku = <?php echo json_encode($keikaku); ?>;
-
+            //開始駅と終了駅が同じの場合のフラグを設定
+            var mode_change = 0;
+            if (keikaku[0][0] == keikaku[6][0] && keikaku[0][1] == keikaku[6][1]) {
+                mode_change = 1;
+            }
+            //最初から経路表示
             for (var j = 0; j < keikaku.length; j++) {
                 if (!(keikaku[j][0] == 0)) {
                     var point = {
@@ -529,13 +534,21 @@ $keikaku = array(
                     };
                     if (keikaku[j].length > 2) {
                         if (keikaku[j][2] == 1) {
-                            pointpic = "./marker/start.png";
+                            if(mode_change == 1){
+                                pointpic = "./marker/start_and_goal.png";
+                            } else {
+                                pointpic = "./marker/start.png";
+                            }
                         } else if (keikaku[j][2] == 2) {
                             pointpic = "./marker/lanch.png";
                         } else if (keikaku[j][2] == 3) {
                             pointpic = "./marker/dinner.png";
                         } else if (keikaku[j][2] == 4) {
-                            pointpic = "./marker/goal.png";
+                            if(mode_change == 1){
+                                pointpic = "./marker/start_and_goal.png";
+                            } else {
+                                pointpic = "./marker/goal.png";
+                            }
                         } else if (keikaku[j][2] == 11) {
                             pointpic = "./marker/spot1.png";
                         } else if (keikaku[j][2] == 12) {
@@ -646,13 +659,14 @@ $keikaku = array(
             }
             */
 
+            $search_distance = 200;
             //ルート形状沿いの観光地検索
             queryAroundSpot = (geom) => {
                 //ルート形状から 100m のバッファ内の観光スポットを検索するための query式を作成
                 let query = spotLayer.createQuery();
                 query.geometry = geom;
                 query.outFields = ["*"]
-                query.distance = 200;
+                query.distance = $search_distance;
                 query.units = "meters";
                 //観光スポットに対する検索の実行
                 spotLayer.queryFeatures(query).then(function(featureSet) {
