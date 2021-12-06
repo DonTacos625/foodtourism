@@ -111,7 +111,7 @@ $keikaku = array(
 <head>
     <meta charset="utf-8" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131239045-1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-214561408-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
 
@@ -120,7 +120,7 @@ $keikaku = array(
         }
         gtag('js', new Date());
 
-        gtag('config', 'UA-131239045-1');
+        gtag('config', 'UA-214561408-1');
     </script>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>観光スポット選択 | 経路作成</title>
@@ -534,7 +534,7 @@ $keikaku = array(
                     };
                     if (keikaku[j].length > 2) {
                         if (keikaku[j][2] == 1) {
-                            if(mode_change == 1){
+                            if (mode_change == 1) {
                                 pointpic = "./marker/start_and_goal.png";
                             } else {
                                 pointpic = "./marker/start.png";
@@ -544,7 +544,7 @@ $keikaku = array(
                         } else if (keikaku[j][2] == 3) {
                             pointpic = "./marker/dinner.png";
                         } else if (keikaku[j][2] == 4) {
-                            if(mode_change == 1){
+                            if (mode_change == 1) {
                                 pointpic = "./marker/start_and_goal.png";
                             } else {
                                 pointpic = "./marker/goal.png";

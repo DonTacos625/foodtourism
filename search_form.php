@@ -15,7 +15,7 @@ if (!empty($_GET["not_set_food"])) {
 <head>
     <meta charset="UTF-8">
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131239045-1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-214561408-1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
 
@@ -24,7 +24,7 @@ if (!empty($_GET["not_set_food"])) {
         }
         gtag('js', new Date());
 
-        gtag('config', 'UA-131239045-1');
+        gtag('config', 'UA-214561408-1');
     </script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <title>飲食店検索</title>
