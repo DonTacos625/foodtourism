@@ -112,9 +112,27 @@ require "frame.php";
             const routeUrl = "https://utility.arcgis.com/usrsvcs/servers/4550df58672c4bc6b17607b947177b56/rest/services/World/Route/NAServer/Route_World";
             const MY_API_KEY = "AAPKfe5fdd5be2744698a188fcc0c7b7b1d742vtC5TsStg94fpwkldrfNo3SJn2jl_VuCOEEdcBiwR7dKOKxejIP_3EDj9IPSPg";
             //popup
-            var routeAction = {
-                title: "ルートに追加する",
-                id: "route",
+            var lanch_Action = {
+                title:"昼食に設定する",
+                id: "lanch_id",
+                className: "esri-icon-navigation"
+            };
+
+            var dinner_Action = {
+                title:"夕食に設定する",
+                id: "dinner_id",
+                className: "esri-icon-navigation"
+            };
+
+            var start_Action = {
+                title:"開始駅に設定する",
+                id: "start_station_id",
+                className: "esri-icon-navigation"
+            };
+
+            var goal_Action = {
+                title:"終了駅に設定する",
+                id: "goal_station_id",
                 className: "esri-icon-navigation"
             };
 
@@ -156,6 +174,7 @@ require "frame.php";
                         visible: true
                     }]
                 }]
+
             };
 
             const station_template = {
@@ -176,6 +195,7 @@ require "frame.php";
                         visible: true
                     }]
                 }]
+
             };
 
             const spots_template = {
@@ -214,7 +234,7 @@ require "frame.php";
             });
 
             var stationLayer = new FeatureLayer({
-                url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_station_data/FeatureServer",
+                url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_station/FeatureServer",
                 id: "stationLayer",
                 popupTemplate: station_template
             });
@@ -237,40 +257,51 @@ require "frame.php";
                 zoom: 14
             });
 
-            //ポップアップからレイヤーに追加
+
+            //ポップアップから追加
             view.popup.on("trigger-action", function(event) {
-                if (event.action.id === "route") {
-                    popadd();
+                if (event.action.id === "start_station_id") {
+                    add_spots("1");
+                }
+                if (event.action.id === "lanch_id") {
+                    add_spots("2");
+                }
+                if (event.action.id === "dinner_id") {
+                    add_spots("3");
+                }
+                if (event.action.id === "goal_station_id") {
+                    add_spots("4");
                 }
             });
 
-            function popadd(event) {
-                const point = {
-                    type: "point",
-                    x: view.popup.selectedFeature.attributes.X,
-                    y: view.popup.selectedFeature.attributes.Y
-                };
-                const stop = new Graphic({
-                    geometry: point,
-                    symbol: stopSymbol
+            function add_spots(num) {
+                //minatomirai_shopとminatomirai_kankouのレイヤーのIDは小文字のid
+                var spot_id = view.popup.selectedFeature.attributes.ID;
+                jQuery(function($) {
+                    $.ajax({
+                        url: "./ajax_view_addspots.php",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            post_data_1: spot_id,
+                            post_data_2: num
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert("ajax通信に失敗しました");
+                        },
+                        success: function(response) {
+                            //alert(response[0]);
+                            //esriの関数の外へ
+                            toframe(response[0], response[1]);
+                        }
+                    });
                 });
-                routeLayer.add(stop);
-                routeParams.stops.features.push(stop);
-                if (routeParams.stops.features.length >= 2) {
-                    route.solve(routeUrl, routeParams).then(showRoute);
-                }
-            }
-
+            };
 
             var layerlist = new LayerList({
                 view: view,
                 listItemCreatedFunction: function(event) {
-
-                    // The event object contains properties of the
-                    // layer in the LayerList widget.
-
                     let item = event.item;
-
                     if (item.title === "Minatomirai kankou UTF 8") {
                         // open the list item in the LayerList
                         //item.open = true;
@@ -286,8 +317,12 @@ require "frame.php";
             layerlist.statusIndicatorsVisible = false;
 
             view.ui.add(layerlist, "bottom-right");
-
         });
+
+        function toframe(data, id) {
+            //frameの関数
+            update_frame(data, id);
+        }
     </script>
 
 </head>

@@ -146,6 +146,23 @@ $keikaku = array(
             width: 80%;
         }
 
+        #viewbox #btn {
+            width: 80%;
+            height: 5vh;
+            color: #fff;
+            background-color: #3399ff;
+            border-bottom: 5px solid #33ccff;
+            -webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, .3);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, .3);
+        }
+
+        #viewbox #btn:hover {
+            margin-top: 3px;
+            color: #fff;
+            background: #0099ff;
+            border-bottom: 2px solid #00ccff;
+        }
+
         @media screen and (min-width:769px) and (max-width:1366px) {
             h3 {
                 font-size: 18px;
@@ -366,7 +383,7 @@ $keikaku = array(
             });
 
             var stationLayer = new FeatureLayer({
-                url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_station_data/FeatureServer",
+                url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_station/FeatureServer",
                 id: "stationLayer",
                 popupTemplate: station_template,
                 definitionExpression: station_feature_sql
@@ -659,6 +676,7 @@ $keikaku = array(
             }
             */
 
+            //初期検索範囲
             $search_distance = 200;
             //ルート形状沿いの観光地検索
             queryAroundSpot = (geom) => {
@@ -672,10 +690,12 @@ $keikaku = array(
                 spotLayer.queryFeatures(query).then(function(featureSet) {
                     var result_fs = featureSet.features;
 
+                    /*
                     //検索結果が0件だったら、何もしない
                     if (result_fs.length === 0) {
                         return;
                     }
+                    */
 
                     //前回の検索結果を、グラフィックスレイヤーから削除
                     resultsLayer.removeAll();
@@ -703,10 +723,16 @@ $keikaku = array(
                 const routeResult = data.routeResults[0].route;
                 routeResult.symbol = routeArrowSymbol;
                 routeLayer.add(routeResult);
-                queryAroundSpot(routeResult.geometry)
+                queryAroundSpot(routeResult.geometry);
+                $route_result_data = routeResult.geometry;
             }
 
         });
+
+        function changearound(distance) {
+            $search_distance = distance;
+            queryAroundSpot($route_result_data);
+        }
 
         function toframe(data, id) {
             //frameの関数
@@ -731,8 +757,16 @@ $keikaku = array(
     -->
     <div id="viewbox">
         <h3>観光ルート</h3>
+        <form action="">
+            観光スポットの表示範囲：
+            <input type="radio" id="distance" name="distance" value="50" onclick="changearound(value)">周囲50m
+            <input type="radio" id="distance" name="distance" value="100" onclick="changearound(value)">周囲100m
+            <input type="radio" id="distance" name="distance" value="200" onclick="changearound(value)" checked="checked">周囲200m
+            <input type="radio" id="distance" name="distance" value="300" onclick="changearound(value)">周囲300m
+            <input type="radio" id="distance" name="distance" value="500" onclick="changearound(value)">周囲500m<br>
+        </form>
         <div id="viewDiv"></div>
-        <button type="button" onclick="kousin()">観光経路更新</button>
+        <button type="button" id="btn" onclick="kousin()">観光経路更新</button>
     </div>
 </body>
 
