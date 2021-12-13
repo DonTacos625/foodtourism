@@ -53,20 +53,45 @@ try {
     $frameresult4 = $framestmt4->fetch(PDO::FETCH_ASSOC);
 
 
-    $framestmt5 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
-    $framestmt5->bindParam(":id", $_SESSION["s_l_kankou_spots_id"]);
-    $framestmt5->execute();
-    $frameresult5 = $framestmt5->fetch(PDO::FETCH_ASSOC);
+    //謎 データベース接続するとセッション変数の配列の値が「Array」に変わってしまう不具合があった
+    if (!isset($_SESSION["s_l_kankou_spots_id"])) {
+        $s_l_spots_name = [["設定されていません", 0]];
+    } else {
+        foreach ($_SESSION["s_l_kankou_spots_id"] as $s_l) {
+            $framestmt5 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
+            $framestmt5->bindParam(":id", $s_l);
+            $framestmt5->execute();
+            $frameresult5 = $framestmt5->fetch(PDO::FETCH_ASSOC);
+            //$spot_count +=1;
+            $s_l_spots_name[] = [$frameresult5["name"], $s_l];
+        }
+    }
 
-    $framestmt6 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
-    $framestmt6->bindParam(":id", $_SESSION["l_d_kankou_spots_id"]);
-    $framestmt6->execute();
-    $frameresult6 = $framestmt6->fetch(PDO::FETCH_ASSOC);
+    if (!isset($_SESSION["l_d_kankou_spots_id"])) {
+        $l_d_spots_name = [["設定されていません", 0]];
+    } else {
+        foreach ($_SESSION["l_d_kankou_spots_id"] as $l_d) {
+            $framestmt6 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
+            $framestmt6->bindParam(":id", $l_d);
+            $framestmt6->execute();
+            $frameresult6 = $framestmt6->fetch(PDO::FETCH_ASSOC);
+            //$spot_count +=1;
+            $l_d_spots_name[] = [$frameresult6["name"], $l_d];
+        }
+    }
 
-    $framestmt7 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
-    $framestmt7->bindParam(":id", $_SESSION["d_g_kankou_spots_id"]);
-    $framestmt7->execute();
-    $frameresult7 = $framestmt7->fetch(PDO::FETCH_ASSOC);
+    if (!isset($_SESSION["d_g_kankou_spots_id"])) {
+        $d_g_spots_name = [["設定されていません", 0]];
+    } else {
+        foreach ($_SESSION["d_g_kankou_spots_id"] as $d_g) {
+            $framestmt7 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
+            $framestmt7->bindParam(":id", $d_g);
+            $framestmt7->execute();
+            $frameresult7 = $framestmt7->fetch(PDO::FETCH_ASSOC);
+            //$spot_count +=1;
+            $d_g_spots_name[] = [$frameresult7["name"], $d_g];
+        }
+    }
 } catch (PDOException $e) {
 }
 
@@ -92,21 +117,21 @@ if (!isset($_SESSION["goal_station_id"])) {
     $goal_station_name = $frameresult4["name"];
 }
 
-if (!isset($_SESSION["s_l_kankou_spots_id"])) {
-    $s_l_spot_name = "設定されていません";
-} else {
-    $s_l_spot_name = $frameresult5["name"];
-}
-if (!isset($_SESSION["l_d_kankou_spots_id"])) {
-    $l_d_spot_name = "設定されていません";
-} else {
-    $l_d_spot_name = $frameresult6["name"];
-}
-if (!isset($_SESSION["d_g_kankou_spots_id"])) {
-    $d_g_spot_name = "設定されていません";
-} else {
-    $d_g_spot_name = $frameresult7["name"];
-}
+
+function display_frame($name_row, $mode)
+{
+    foreach ($name_row as $s_l_spot_name) {
+        $elementID = "s_l_id_" . $s_l_spot_name[1] . " ";
+        print "
+    <div id=$elementID>$s_l_spot_name[0]</div>
+    <button type=\"button\" id=$elementID value=$s_l_spot_name[1] onclick=\"remove_spot($mode, value, id)\">削除</button>
+    <button type=\"button\" id=$elementID value=$s_l_spot_name[1] onclick=\"swap_spots($mode, value, 'up', id)\">上</button>
+    <button type=\"button\" id=$elementID value=$s_l_spot_name[1] onclick=\"swap_spots($mode, value, 'down', id)\">下</button><br>
+    ";
+    };
+};
+
+
 ?>
 
 
@@ -325,27 +350,64 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
     <script>
         function update_frame(data, id) {
             const update = document.getElementById(id);
+            //const update = document.getElementsBy(id);
             update.innerHTML = data;
             console.log(update.innerHTML);
         }
 
-        function remove_spot(time) {
+        function update_spots_frame(data, elementby_id) {
+            const update = document.getElementById(id);
+            //const update = document.getElementsBy(id);
+            update.innerHTML = data;
+            console.log(update.innerHTML);
+        }
+
+        function remove_spot(time, num) {
             jQuery(function($) {
                 $.ajax({
                     url: './ajax_remove_spot.php',
                     type: "POST",
                     dataType: 'json',
                     data: {
-                        post_data_1: time
+                        post_data_1: time,
+                        post_data_2: num,
                     },
                     error: function(XMLHttpRequest, textStatus, errorThrown) {
                         alert("ajax通信に失敗しました");
                     },
                     success: function(data) {
-                        //alert("返り値は" + data);
+                        alert("削除されたのは" + data);
+                        /*
                         if (!(data == "")) {
                             update_frame("設定されていません", data);
                         }
+                        */
+                    }
+                });
+            });
+        };
+
+        function swap_spots(time, id, swapmode, elementby_id) {
+            jQuery(function($) {
+                $.ajax({
+                    url: './ajax_swap_spot.php',
+                    type: "POST",
+                    dataType: 'json',
+                    data: {
+                        post_data_1: time,
+                        post_data_2: id,
+                        post_data_3: swapmode
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert("ajax通信に失敗しました");
+                    },
+                    success: function(data) {
+                        alert("返り値は" + elementby_id);
+                        /*
+                        if (!(data == "")) {
+                            update_frame("設定されていません", data);
+                        }
+                        */
                     }
                 });
             });
@@ -364,13 +426,14 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
             <ul>
                 <li><a href="set_station.php">開始・終了駅の設定</a></li>
                 <li><a href="search_form.php">飲食店の検索・決定</a></li>
-                <li><a id="keiro" href="">観光スポット選択</a></li>
+                <li><a id="keiro" name="keiro" href="">観光スポット選択</a></li>
             </ul>
         </li>
         <li><a href="view.php">スポット一覧</a></li>
 
         <li><a>マイページ</a>
             <ul>
+                <li><a href="see_myroute.php">作成した観光経路を見る</a></li>
                 <li><a href="editpassword.php">パスワード変更</a></li>
                 <li><a href="logout.php">ログアウト</a></li>
             </ul>
@@ -397,20 +460,23 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
         <b>開始駅：</b>
         <div id="start_name"><?php echo htmlspecialchars($start_station_name, ENT_QUOTES); ?></div><br>
 
-        <b>経由地点1：</b><button type="button" id="remove_s_l" onclick="remove_spot('1')">削除</button>
-        <div id="s_l_name"><?php echo htmlspecialchars($s_l_spot_name, ENT_QUOTES); ?></div><br>
+        <b>昼食前に訪れる観光スポット：</b>
+        <?php display_frame($s_l_spots_name, 1) ?>
+        <br>
 
         <b>昼食予定地:</b>
         <div id="lanch_name"><?php echo htmlspecialchars($lanch_name, ENT_QUOTES); ?></div><br>
 
-        <b>経由地点2：</b><button type="button" id="remove_l_d" onclick="remove_spot('2')">削除</button>
-        <div id="l_d_name"><?php echo htmlspecialchars($l_d_spot_name, ENT_QUOTES); ?></div><br>
+        <b>昼食後に訪れる観光スポット：</b>
+        <?php display_frame($l_d_spots_name, 2) ?>
+        <br>
 
         <b>夕食予定地:</b>
         <div id="dinner_name"><?php echo htmlspecialchars($dinner_name, ENT_QUOTES); ?></div><br>
 
-        <b>経由地点3：</b><button type="button" id="remove_d_g" onclick="remove_spot('3')">削除</button>
-        <div id="d_g_name"><?php echo htmlspecialchars($d_g_spot_name, ENT_QUOTES); ?></div><br>
+        <b>夕食前に訪れる観光スポット：</b>
+        <?php display_frame($d_g_spots_name, 3) ?>
+        <br>
 
         <b>終了駅：</b>
         <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div><br>
@@ -443,7 +509,7 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
                     <ul>
                         <li><a href="set_station.php">開始・終了駅の設定</a></li>
                         <li><a href="search_form.php">飲食店の検索・決定</a></li>
-                        <li><a id="keiro" href="">観光スポット選択</a></li>
+                        <li><a id="toggle_keiro" name="toggle_keiro" href="">観光スポット選択</a></li>
                     </ul>
                 </li>
 
@@ -451,6 +517,7 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
 
                 <li><a>マイページ</a>
                     <ul>
+                        <li><a href="see_myroute.php">作成した観光経路を見る</a></li>
                         <li><a href="editpassword.php">パスワード変更</a></li>
                         <li><a href="logout.php">ログアウト</a></li>
                     </ul>
@@ -488,29 +555,31 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
                             <div id="start_name"><?php echo htmlspecialchars($start_station_name, ENT_QUOTES); ?></div>
                         </li>
 
-                        <li><b>経由地点1：</b><button type="button" id="remove_s_l" onclick="remove_spot('1')">削除</button>
-                            <div id="s_l_name"><?php echo htmlspecialchars($s_l_spot_name, ENT_QUOTES); ?></div>
-                        </li>
+                        <li>
+                            <b>昼食前に訪れる観光スポット：</b>
+                            <?php display_frame($s_l_spots_name, 1) ?>
+                        </li><br>
 
                         <li><b>昼食予定地:</b>
                             <div id="lanch_name"><?php echo htmlspecialchars($lanch_name, ENT_QUOTES); ?></div>
                         </li>
 
-                        <li><b>経由地点2：</b><button type="button" id="remove_l_d" onclick="remove_spot('2')">削除</button>
-                            <div id="l_d_name"><?php echo htmlspecialchars($l_d_spot_name, ENT_QUOTES); ?></div>
-                        </li>
+                        <li>
+                            <b>昼食後に訪れる観光スポット：</b>
+                            <?php display_frame($l_d_spots_name, 2) ?>
+                        </li><br>
 
                         <li><b>夕食予定地:</b>
                             <div id="dinner_name"><?php echo htmlspecialchars($dinner_name, ENT_QUOTES); ?></div>
                         </li>
 
-                        <li><b>経由地点3：</b><button type="button" id="remove_d_g" onclick="remove_spot('3')">削除</button>
-                            <div id="d_g_name"><?php echo htmlspecialchars($d_g_spot_name, ENT_QUOTES); ?></div>
-                        </li>
-
                         <li>
-                            <div id="d_g_name"><b>終了駅：</b>
-                                <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div>
+                            <b>夕食前に訪れる観光スポット：</b>
+                            <?php display_frame($d_g_spots_name, 3) ?>
+                        </li><br>
+
+                        <li><b>終了駅：</b>
+                            <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div>
                         </li>
                     </ul>
                 </li>
@@ -535,9 +604,10 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
     </div>
 
     <script>
-        function change_href() {
+        //条件を満たしていないとき観光スポット選択にアクセスできないようにhrefを変更する関数
+        function change_href(id_name) {
             jQuery(function($) {
-                var dummy ="1";
+                var dummy = "1";
                 $.ajax({
                     url: './ajax_change_href.php',
                     type: "POST",
@@ -552,7 +622,7 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
                         //alert("返り値は" + data[0]);
                         $not_set_station = data[0];
                         $not_set_food = data[1];
-                        const target = document.getElementById("keiro");
+                        const target = document.getElementById(id_name);
                         $url = "keiro.php";
                         if ($not_set_station == "1") {
                             $url = "set_station.php?not_set_station=1";
@@ -567,8 +637,10 @@ if (!isset($_SESSION["d_g_kankou_spots_id"])) {
                 });
             });
         };
-        
-        change_href();
+
+        change_href("toggle_keiro");
+        change_href("keiro");
+        change_next_href("next_keiro");
     </script>
 </body>
 

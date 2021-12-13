@@ -2,6 +2,18 @@
 
 require "frame.php";
 
+$spot_id = $_GET["spot_id"];
+
+try {
+
+    $stmt1 = $pdo->prepare("SELECT * FROM minatomirai_shop_data where id = :id");
+    $stmt1->bindParam(":id", $spot_id, PDO::PARAM_INT);
+    $stmt1->execute();
+    $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    //デバッグ用
+    echo $e->getMessage();
+}
 ?>
 
 <html>
@@ -23,52 +35,104 @@ require "frame.php";
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>スポット一覧</title>
     <style>
-        #viewbox {
-            position: absolute;
+        #detailbox {
+            position: relative;
             float: left;
-            width: 80vw;
-            height: 80vh;
             margin-left: 5px;
         }
 
-        #viewbox h3 {
+        #detailbox h3 {
             border-left: 5px solid #000080;
             margin: 0px;
         }
 
-        #viewbox #viewDiv {
+        #detailbox #imgbox #viewbox {
+            position: relative;
+            float: left;
+            width: 40vw;
+            height: 20vw;
+            margin-bottom: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #detailbox #imgbox #viewbox #viewDiv {
             position: relative;
             padding: 0;
             margin: 0;
-            height: 90%;
-            width: 95%;
+            height: 100%;
+            width: 100%;
+        }
+
+        #detailbox #infobox {
+            float: left;
+            width: 40vw;
+            margin-left: 5px;
+        }
+
+        .clearfix:after {
+            display: block;
+            clear: both;
+            height: 0px;
+            visibility: hidden;
+            content: ".";
+        }
+
+        #detailbox #infobox table {
+            width: 100%;
+            border: solid 3px #FFFFFF;
+        }
+
+        #detailbox #infobox table th {
+            white-space: nowrap;
+            background: #EEEEEE;
+        }
+
+        #detailbox #infobox table td {
+            background: #EEEEEE;
+            padding: 3px;
+        }
+
+        #detailbox #infobox table td ul {
+            margin: 0px;
+        }
+
+        #detailbox #infobox table td ul li {
+            display: inline-block;
         }
 
         @media screen and (min-width:769px) and (max-width:1366px) {
             h3 {
+                margin: 0px;
                 font-size: 18px;
-            }
-
-            #viewbox {
-                width: 70vw;
-                height: 70vh;
             }
         }
 
         @media screen and (max-width:768px) {
             h3 {
-                font-size: 15px;
-            }
-
-            #viewbox {
-                width: 95vw;
-                height: 100vh;
                 margin: 0px;
+                font-size: 17px;
             }
 
-            #viewbox #viewDiv {
-                width: 90%;
-                height: 85%;
+            #detailbox {
+                width: auto;
+                margin: 0px;
+                float: none;
+            }
+
+            #detailbox #infobox {
+                width: 100%;
+                float: none;
+            }
+
+            #detailbox #infobox table {
+                font-size: 13px;
+            }
+
+            #detailbox #viewbox {
+                width: 100%;
+                height: 70vw;
+                float: none;
             }
 
         }
@@ -79,7 +143,6 @@ require "frame.php";
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
     <script>
-        var pointpic = "";
         require([
             "esri/Map",
             "esri/views/MapView",
@@ -90,9 +153,7 @@ require "frame.php";
             "esri/rest/support/Query",
             "esri/rest/support/RouteParameters",
             "esri/rest/support/FeatureSet",
-            "esri/symbols/PictureMarkerSymbol",
-            "esri/symbols/CIMSymbol",
-            "esri/widgets/LayerList"
+            "esri/symbols/PictureMarkerSymbol"
         ], function(
             Map,
             MapView,
@@ -103,9 +164,7 @@ require "frame.php";
             Query,
             RouteParameters,
             FeatureSet,
-            PictureMarkerSymbol,
-            CIMSymbol,
-            LayerList
+            PictureMarkerSymbol
         ) {
 
             // Point the URL to a valid routing service
@@ -113,27 +172,15 @@ require "frame.php";
             const MY_API_KEY = "AAPKfe5fdd5be2744698a188fcc0c7b7b1d742vtC5TsStg94fpwkldrfNo3SJn2jl_VuCOEEdcBiwR7dKOKxejIP_3EDj9IPSPg";
             //popup
             var lanch_Action = {
-                title:"昼食に設定する",
+                title: "昼食に設定する",
                 id: "lanch_id",
-                image: "pop_lanch.png"
+                className: "esri-icon-navigation"
             };
 
             var dinner_Action = {
-                title:"夕食に設定する",
+                title: "夕食に設定する",
                 id: "dinner_id",
-                image: "pop_dinner.png"
-            };
-
-            var start_Action = {
-                title:"開始駅に設定する",
-                id: "start_station_id",
-                image: "pop_start.png"
-            };
-
-            var goal_Action = {
-                title:"終了駅に設定する",
-                id: "goal_station_id",
-                image: "pop_goal.png"
+                className: "esri-icon-navigation"
             };
 
             const food_template = {
@@ -177,86 +224,28 @@ require "frame.php";
                 actions: [lanch_Action, dinner_Action]
             };
 
-            const station_template = {
-                title: "{Name}",
-                content: [{
-                    type: "fields",
-                    fieldInfos: [{
-                        fieldName: "ID",
-                        label: "ID",
-                        visible: true
-                    }, {
-                        fieldName: "X",
-                        label: "経度",
-                        visible: true
-                    }, {
-                        fieldName: "Y",
-                        label: "緯度",
-                        visible: true
-                    }]
-                }],
-                actions: [start_Action, goal_Action]
-            };
-
-            const spots_template = {
-                title: "{Name}",
-                content: [{
-                    type: "fields",
-                    fieldInfos: [{
-                        fieldName: "ID",
-                        label: "ID",
-                        visible: true
-                    }, {
-                        fieldName: "category",
-                        label: "カテゴリー",
-                        visible: true
-                    }, {
-                        fieldName: "homepage",
-                        label: "ホームページ",
-                        visible: true
-                    }, {
-                        fieldName: "X",
-                        label: "経度",
-                        visible: true
-                    }, {
-                        fieldName: "Y",
-                        label: "緯度",
-                        visible: true
-                    }]
-                }]
-            };
+            var result1 = <?php echo json_encode($result1) ?>;
+            var food_feature_sql = "ID = " + result1["id"];
 
             //spotLayer
             var foodLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_shop_new_UTF_8/FeatureServer",
                 id: "foodLayer",
-                popupTemplate: food_template
-            });
-
-            var stationLayer = new FeatureLayer({
-                url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_station/FeatureServer",
-                id: "stationLayer",
-                popupTemplate: station_template
-            });
-
-            var spotLayer = new FeatureLayer({
-                url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_kankou_UTF_8/FeatureServer",
-                id: "spotLayer",
-                popupTemplate: spots_template
+                popupTemplate: food_template,
+                definitionExpression: food_feature_sql
             });
 
             const map = new Map({
                 basemap: "streets",
-                layers: [stationLayer, foodLayer, spotLayer]
+                layers: [foodLayer]
             });
 
             const view = new MapView({
                 container: "viewDiv", // Reference to the scene div created in step 5
                 map: map, // Reference to the map object created before the scene
-                center: [139.635, 35.453],
+                center: [result1["x"], result1["y"]],
                 zoom: 14
             });
-
 
             //ポップアップから追加
             view.popup.on("trigger-action", function(event) {
@@ -298,22 +287,6 @@ require "frame.php";
                 });
             };
 
-            var layerlist = new LayerList({
-                view: view,
-                listItemCreatedFunction: function(event) {
-                    let item = event.item;
-                    if (item.title === "Minatomirai shop new UTF 8") {
-                        item.title = "飲食店";
-                    } else if (item.title === "Minatomirai kankou UTF 8") {
-                        item.title = "観光スポット";
-                    } else if (item.title === "Minatomirai station") {
-                        item.title = "駅";
-                    }
-                }
-            });
-            layerlist.statusIndicatorsVisible = false;
-
-            view.ui.add(layerlist, "bottom-right");
         });
 
         function toframe(data, id) {
@@ -325,17 +298,64 @@ require "frame.php";
 </head>
 
 <body>
-    <!--デバッグ用
-    <input type="text" name="Result" value=<?php //echo $_SESSION["s_l_kankou_spots_id"] 
-                                            ?>><br>
-    <input type="text" name="Result" value=<?php //echo $_SESSION["l_d_kankou_spots_id"] 
-                                            ?>><br>
-    <input type="text" name="Result" value=<?php //echo $_SESSION["d_g_kankou_spots_id"] 
-                                            ?>><br>
-    -->
-    <div id="viewbox">
-        <h3>スポット一覧</h3>
-        <div id="viewDiv"></div>
+    <div id="detailbox">
+        <h3>観光スポットの詳細情報</h3>
+
+        <div id="box" class="clearfix">
+
+            <div id="imgbox">
+                <div id="viewbox">
+                    <div id="viewDiv"></div>
+                </div>
+            </div>
+
+            <div id="infobox">
+                <table>
+                    <tr>
+                        <th>名称</th>
+                        <td><?php echo $result1["name"]; ?></td>
+                    </tr>
+
+                    <tr>
+                        <th>ジャンル</th>
+                        <td><?php echo $result1["genre"]; ?></td>
+                    </tr>
+
+                    <tr>
+                        <th>営業時間</th>
+                        <td><?php echo nl2br($result1["time"]); ?></td>
+                    </tr>
+
+                    <tr>
+                        <th>予算</th>
+                        <td><?php echo nl2br($result1["money"]); ?></td>
+                    </tr>
+
+                    <tr>
+                        <th>予約</th>
+                        <td><?php echo nl2br($result1["yoyaku"]); ?></td>
+                    </tr>
+
+                    <tr>
+                        <th>お問い合わせ</th>
+                        <td><?php echo $result1["tel"]; ?></td>
+                    </tr>
+
+                    <tr>
+                        <th>ホームページURL</th>
+                        <td>
+                            <?php
+                            if (!empty($row["homepage"])) {
+                                print "<a href = " . $row["homepage"] . " target=_blank>ホームページにアクセスする</a>";
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                </table>
+                <li><a href="search_form.php">飲食店検索に戻る</a></li>
+            </div>
+        </div>
+
     </div>
 </body>
 

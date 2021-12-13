@@ -30,21 +30,38 @@ try{
     echo $e->getMessage();
 }
 
+//$_SESSION["s_l_kankou_spots_id"] = [1,2];
+
 switch ($post_data_2) {
     case "1":
-        $_SESSION["s_l_kankou_spots_id"] = $post_data_1;
+        //セッション変数を配列にする
+        if (isset($_SESSION["s_l_kankou_spots_id"]) && !(in_array($post_data_1, $_SESSION["s_l_kankou_spots_id"]))) {
+            $_SESSION["s_l_kankou_spots_id"][] = $post_data_1;
+            $spotname = $result1["name"];
+        } else {
+            $spotname = "";
+        }
         $frame_id = "s_l_name";
         break;
     case "2":
-        $_SESSION["l_d_kankou_spots_id"] = $post_data_1;
+        if (isset($_SESSION["s_l_kankou_spots_id"]) && !(in_array($post_data_1, $_SESSION["s_l_kankou_spots_id"]))) {
+            $_SESSION["l_d_kankou_spots_id"][] = $post_data_1;
+            $spotname = $result1["name"];
+        } else {
+            $spotname = "";
+        }
         $frame_id = "l_d_name";
         break;
     case "3":
-        $_SESSION["d_g_kankou_spots_id"] = $post_data_1;
+        if (isset($_SESSION["s_l_kankou_spots_id"]) && !(in_array($post_data_1, $_SESSION["s_l_kankou_spots_id"]))) {
+            $_SESSION["d_g_kankou_spots_id"][] = $post_data_1;
+            $spotname = $result1["name"];
+        } else {
+            $spotname = "";
+        }
         $frame_id = "d_g_name";
         break;
 }
-$return_array = array($result1["name"], $frame_id);
+$return_array = array($spotname, $frame_id);
 
 echo json_encode($return_array);
-?>

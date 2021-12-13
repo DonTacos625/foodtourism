@@ -127,6 +127,7 @@ try {
 </head>
 
 <script type="text/javascript">
+    //駅の初期値
     $start_id = "";
     $goal_id = "";
 
@@ -163,6 +164,7 @@ try {
                     //frameの関数
                     update_frame(response[0], "start_name");
                     update_frame(response[1], "goal_name");
+                    alert("開始駅と終了駅を設定しました");
                 }
             });
         });
@@ -182,6 +184,12 @@ try {
         console.log(update.innerHTML);
     };
     */
+   
+    function change_toggle_and_normal_href() {
+        //frame内の関数
+        change_href("toggle_keiro");
+        change_href("keiro")
+    }
 </script>
 
 <body>
@@ -212,9 +220,9 @@ try {
         </select>
         <br><br>
 
-        <button type="button" onclick="stations() ; change_href()">決定</button>
+        <button type="button" onclick="stations() ; change_toggle_and_normal_href()">決定</button>
         <div><br>
-            <a href="search_form.php" onclick="change_href()">飲食店の検索・決定へ</a>
+            <a href="search_form.php" onclick="change_toggle_and_normal_href()">飲食店の検索・決定へ</a>
 </body>
 
 </html>

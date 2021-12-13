@@ -206,12 +206,12 @@ if (!empty($_POST["signup"])) {
                 <tr>
                     <th>年代</th>
                     <td>
-                        <input type="radio" id="age" name="age" value="10" checked="checked">10
-                        <input type="radio" id="age" name="age" value="20">20
-                        <input type="radio" id="age" name="age" value="30">30<br>
-                        <input type="radio" id="age" name="age" value="40">40
-                        <input type="radio" id="age" name="age" value="50">50
-                        <input type="radio" id="age" name="age" value="60">60以上
+                        <input type="radio" id="age" name="age" value="10" checked="checked">10代
+                        <input type="radio" id="age" name="age" value="20">20代
+                        <input type="radio" id="age" name="age" value="30">30代<br>
+                        <input type="radio" id="age" name="age" value="40">40代
+                        <input type="radio" id="age" name="age" value="50">50代
+                        <input type="radio" id="age" name="age" value="60">60代以上
                     </td>
                 </tr>
 
