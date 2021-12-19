@@ -475,11 +475,6 @@ try {
         function toframe(data, id) {
             //frameの関数
             update_frame(data, id);
-            change_href("toggle_keiro");
-            change_href("keiro");
-
-            change_href("see_myroute");
-            change_href("toggle_see_myroute");
         }
     </script>
 

@@ -14,12 +14,6 @@ if (isset($_SESSION["goal_station_id"])) {
     $goal_station_id = 0;
 }
 
-if (!empty($_GET["not_set_station"])) {
-    $message = "先に観光を開始・終了する駅を設定してください";
-} else {
-    $message = "";
-}
-
 try {
 
     if ($start_station_id != 0) {
@@ -28,8 +22,10 @@ try {
         $stmt1->execute();
         $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
         $start_station_keikaku[] = [$result1["x"], $result1["y"], "start"];
+        $start_keep_name = [$start_station_id, $result1["name"]];
     } else {
         $start_station_keikaku[] = [0, 0, "start"];
+        $start_keep_name = [0, "開始駅を選択してください"];
     }
 
     if ($goal_station_id != 0) {
@@ -38,8 +34,10 @@ try {
         $stmt4->execute();
         $result4 = $stmt4->fetch(PDO::FETCH_ASSOC);
         $goal_station_keikaku[] = [$result4["x"], $result4["y"], "goal"];
+        $goal_keep_name = [$goal_station_id, $result4["name"]];
     } else {
         $goal_station_keikaku[] = [0, 0, "goal"];
+        $goal_keep_name = [0, "終了駅を選択してください"];
     }
 
     //SQL文を実行して、結果を$stmtに代入する。
@@ -75,26 +73,6 @@ try {
     <title>開始・終了駅決定</title>
 
     <style>
-        #viewbox {
-            position: absolute;
-            float: left;
-            width: 80vw;
-            height: 80vh;
-            margin-left: 5px;
-        }
-
-        #viewbox h3 {
-            border-left: 5px solid #000080;
-            margin: 0px;
-        }
-
-        #viewbox #viewDiv {
-            position: relative;
-            padding: 0;
-            margin: 0;
-            height: 90%;
-            width: 95%;
-        }
 
         #editbox {
             position: relative;
@@ -124,35 +102,11 @@ try {
             h2 {
                 font-size: 20px;
             }
-
-            h3 {
-                font-size: 18px;
-            }
-
-            #viewbox {
-                width: 70vw;
-                height: 70vh;
-            }
         }
 
         @media screen and (max-width:768px) {
             h2 {
                 font-size: 19px;
-            }
-
-            h3 {
-                font-size: 17px;
-            }
-
-            #viewbox {
-                width: 95vw;
-                height: 100vh;
-                margin: 0px;
-            }
-
-            #viewbox #viewDiv {
-                width: 90%;
-                height: 85%;
             }
 
         }
@@ -317,7 +271,6 @@ try {
             view.popup.on("trigger-action", function(event) {
                 if (event.action.id === "start_station_id") {
                     add_spots("1");
-                    change_toggle_and_normal_href();
 
                     const point = {
                         type: "point",
@@ -338,7 +291,6 @@ try {
                 }
                 if (event.action.id === "goal_station_id") {
                     add_spots("4");
-                    change_toggle_and_normal_href();
 
                     const point = {
                         type: "point",
@@ -421,36 +373,33 @@ try {
         };
 
         //セレクトボックスから駅を設定
-        function post_stations(start_id, goal_id) {
-            jQuery(function($) {
-                $.ajax({
-                    url: "./ajax_station.php",
-                    type: "POST",
-                    dataType: "json",
-                    data: {
-                        post_data_1: start_id,
-                        post_data_2: goal_id
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown) {
-                        alert("ajax通信に失敗しました");
-                    },
-                    success: function(response) {
-                        //frameの関数
-                        update_frame(response[0], "start_name");
-                        update_frame(response[1], "goal_name");
-                        alert("開始駅と終了駅を設定しました");
-                    }
+        function add_spots_select(id, num) {
+            if (id != "0") {
+                jQuery(function($) {
+                    $.ajax({
+                        url: "./ajax_view_addspots.php",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            post_data_1: id,
+                            post_data_2: num
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert("ajax通信に失敗しました");
+                        },
+                        success: function(response) {
+                            if (num == 1) {
+                                alert("「" + response[0] + "」を開始駅に設定しました");
+                            } else if (num == 4) {
+                                alert("「" + response[0] + "」を終了駅に設定しました");
+                            }
+                            update_frame(response[0], response[1]);
+                            location.reload();
+                        }
+                    });
                 });
-            });
+            }
         };
-
-        function change_toggle_and_normal_href() {
-            //frame内の関数
-            change_href("toggle_keiro");
-            change_href("keiro");
-            change_href("see_myroute");
-            change_href("toggle_see_myroute");
-        }
     </script>
 
 </head>
@@ -460,16 +409,11 @@ try {
         <main>
             <div id="viewbox">
                 <h3>スポット一覧</h3>
-                <div>
-                    <font color="#ff0000"><?php echo htmlspecialchars($message, ENT_QUOTES); ?></font>
-                </div>
-                <div id="viewDiv"></div>
                 <div id="editbox">
-
                     <div id="start_box">
                         <b>開始駅を選択する：</b><br>
-                        <select name="start_station_id" size="1" onclick="set_station(value, 'start')">
-                            <option value=""> 開始駅を選択してください </option>
+                        <select name="start_station_id" size="1" onchange="add_spots_select(value, '1')">
+                            <option value=<?php echo $start_keep_name[0]; ?>> <?php echo $start_keep_name[1]; ?> </option>
                             <?php foreach ($stmt as $row) : ?>
                                 <option value=<?php echo $row["id"]; ?>> <?php echo $row["name"]; ?> </option>
                             <?php endforeach; ?>
@@ -478,8 +422,8 @@ try {
 
                     <div id="goal_box">
                         <b>終了駅を選択する：</b><br>
-                        <select name="goal_station_id" size="1" onclick="set_station(value, 'goal')">
-                            <option value=""> 終了駅を選択してください </option>
+                        <select name="goal_station_id" size="1" onchange="add_spots_select(value, '4')">
+                            <option value=<?php echo $goal_keep_name[0]; ?>> <?php echo $goal_keep_name[1]; ?> </option>
                             <?php foreach ($stmt2 as $row2) : ?>
                                 <option value=<?php echo $row2["id"]; ?>> <?php echo $row2["name"]; ?> </option>
                             <?php endforeach; ?>
@@ -488,13 +432,12 @@ try {
 
                     <br><br>
 
-                    <div id="post_station">
-                        <button type="button" onclick="stations() ; change_toggle_and_normal_href()">決定</button>
-                    </div>
-
                     <div><br>
-                        <a href="search.php" onclick="change_toggle_and_normal_href()">飲食店の検索・決定へ</a>
+                        <a href="search.php">飲食店の検索・決定へ</a>
                     </div>
+                </div>
+                <div id="viewDiv"></div>
+            </div>
         </main>
         <footer>
             <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>

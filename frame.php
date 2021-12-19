@@ -122,14 +122,13 @@ function display_frame($name_row, $time)
 {
     $count = 0;
     foreach ($name_row as $spot_name) {
-        $elementID = "s_l_id_" . $spot_name[1] . " ";
         $count += 1;
         $frame_spot_name = " " . $count . ":" . $spot_name[0] . " ";
         print "
-    <div id=$elementID>$frame_spot_name</div>
-    <button type=\"button\" id=$elementID value=$spot_name[1] onclick=\"remove_spot($time, value)\">削除</button>
-    <button type=\"button\" id=$elementID value=$spot_name[1] onclick=\"swap_spots($time, value, 'up')\">↑</button>
-    <button type=\"button\" id=$elementID value=$spot_name[1] onclick=\"swap_spots($time, value, 'down')\">↓</button><br>
+    <div id=\"frame_spot_name\">$frame_spot_name</div>
+    <button class=\"btn2\" type=\"button\" id=\"removebtn\" value=$spot_name[1] onclick=\"remove_spot($time, value)\">×</button>
+    <button type=\"button\" id=\"swapupbtn\" value=$spot_name[1] onclick=\"swap_spots($time, value, 'up')\">↑</button>
+    <button type=\"button\" id=\"swapdownbtn\" value=$spot_name[1] onclick=\"swap_spots($time, value, 'down')\">↓</button><br>
     ";
     };
 };
@@ -256,6 +255,31 @@ function display_frame($name_row, $time)
             margin-left: 10px;
         }
 
+        /*
+        button.btn2 {
+            color: #fff;
+            background-color: #eb6100;
+        }
+
+        button.btn2:hover {
+            color: #fff;
+            background: #f56500;
+        }
+
+        button.btn2 {
+            -webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        button.btn2 {
+            border-radius: 50%;
+            line-height: 100px;
+            width: 20px;
+            height: 20px;
+            padding: 0;
+        }
+        */
+
         @media screen and (min-width:769px) {
             #toggle_menu {
                 display: none;
@@ -319,7 +343,6 @@ function display_frame($name_row, $time)
                 padding: 0px;
                 margin-bottom: 5px;
                 border-bottom: 1px solid #000000;
-                ;
             }
 
             #toggle_menu label {
@@ -443,11 +466,12 @@ function display_frame($name_row, $time)
                 const newDiv = document.createElement("div");
                 newDiv.innerHTML = `${i+1}:${name_array[i][0]}`;
                 const removeBtn = document.createElement("button");
-                removeBtn.innerHTML = "削除";
+                removeBtn.innerHTML = "×";
+                removeBtn.className = 'btn2';
                 const swapupBtn = document.createElement("button");
-                swapupBtn.innerHTML = "上";
+                swapupBtn.innerHTML = "↑";
                 const swapdownBtn = document.createElement("button");
-                swapdownBtn.innerHTML = "下";
+                swapdownBtn.innerHTML = "↓";
 
                 const spot_id = name_array[i][1];
                 removeBtn.onclick = () => {
@@ -483,14 +507,14 @@ function display_frame($name_row, $time)
             <ul>
                 <li><a href="set_station.php">開始・終了駅の設定</a></li>
                 <li><a href="search.php">飲食店の検索・決定</a></li>
-                <li><a id="keiro" name="keiro" href="">観光スポット選択</a></li>
+                <li><a id="keiro" name="keiro" href="keiro.php">観光スポット選択</a></li>
             </ul>
         </li>
         <li><a href="view.php">スポット一覧</a></li>
 
         <li><a>マイページ</a>
             <ul>
-                <li><a id="see_myroute" name="see_myroute" href="">作成した観光経路を見る</a></li>
+                <li><a id="see_myroute" name="see_myroute" href="see_myroute.php">作成した観光経路を見る</a></li>
                 <li><a href="editpassword.php">パスワード変更</a></li>
                 <li><a href="logout.php">ログアウト</a></li>
             </ul>
@@ -519,30 +543,36 @@ function display_frame($name_row, $time)
         <div id="start_name"><?php echo htmlspecialchars($start_station_name, ENT_QUOTES); ?></div><br>
 
         <b>昼食前に訪れる観光スポット：</b>
+        <img id="pin" width="20" height="30" src="./marker/s_l_icon_explain.png" alt="昼食前に訪れる観光スポットのアイコン" title="昼食前に訪れる観光スポット">
         <div id="s_l_spots_line">
             <?php display_frame($s_l_spots_name, 1) ?>
         </div>
         <br>
 
         <b>昼食予定地:</b>
+        <img id="pin" width="20" height="30" src="./marker/lanch.png" alt="昼食予定地のアイコン" title="昼食予定地">
         <div id="lanch_name"><?php echo htmlspecialchars($lanch_name, ENT_QUOTES); ?></div><br>
 
         <b>昼食後に訪れる観光スポット：</b>
+        <img id="pin" width="20" height="30" src="./marker/l_d_icon_explain.png" alt="昼食後に訪れる観光スポットのアイコン" title="昼食後に訪れる観光スポット">
         <div id="l_d_spots_line">
             <?php display_frame($l_d_spots_name, 2) ?>
         </div>
         <br>
 
         <b>夕食予定地:</b>
+        <img id="pin" width="20" height="30" src="./marker/dinner.png" alt="夕食予定地のアイコン" title="夕食予定地">
         <div id="dinner_name"><?php echo htmlspecialchars($dinner_name, ENT_QUOTES); ?></div><br>
 
         <b>夕食前に訪れる観光スポット：</b>
+        <img id="pin" width="20" height="30" src="./marker/d_g_icon_explain.png" alt="夕食後に訪れる観光スポットのアイコン" title="夕食後に訪れる観光スポット">
         <div id="d_g_spots_line">
             <?php display_frame($d_g_spots_name, 3) ?>
         </div>
         <br>
 
         <b>終了駅：</b>
+        <img id="pin" width="20" height="30" src="./marker/goal.png" alt="終了駅のアイコン" title="終了駅">
         <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div>
 
         <h2>アンケート</h2>
@@ -573,7 +603,7 @@ function display_frame($name_row, $time)
                     <ul>
                         <li><a href="set_station.php">開始・終了駅の設定</a></li>
                         <li><a href="search.php">飲食店の検索・決定</a></li>
-                        <li><a id="toggle_keiro" name="toggle_keiro" href="">観光スポット選択</a></li>
+                        <li><a id="toggle_keiro" name="toggle_keiro" href="keiro.php">観光スポット選択</a></li>
                     </ul>
                 </li>
 
@@ -586,7 +616,6 @@ function display_frame($name_row, $time)
                         <li><a href="logout.php">ログアウト</a></li>
                     </ul>
                 </li>
-
 
             </ul>
         </div>
@@ -672,58 +701,6 @@ function display_frame($name_row, $time)
             </ul>
         </div>
     </div>
-
-    <script>
-        //条件を満たしていないとき観光スポット選択にアクセスできないようにhrefを変更する関数
-        function change_href(id_name) {
-            jQuery(function($) {
-                var dummy = "1";
-                $.ajax({
-                    url: './ajax_change_href.php',
-                    type: "POST",
-                    dataType: 'json',
-                    data: {
-                        post_data_1: dummy
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown) {
-                        alert("ajax通信に失敗しました");
-                    },
-                    success: function(data) {
-                        //alert("返り値は" + data[0]);
-                        $not_set_station = data[0];
-                        $not_set_food = data[1];
-                        const target = document.getElementById(id_name);
-                        $url = "keiro.php";
-                        if ($not_set_station == "1") {
-                            $url = "set_station.php?not_set_station=1";
-                        } else if ($not_set_food == "1") {
-                            $url = "search.php?not_set_food=1";
-                        } else {
-                            
-                            if(id_name == "keiro" || id_name == "toggle_keiro"){
-                                $url = "keiro.php";
-                            } else if(id_name == "see_myroute" || id_name == "toggle_see_myroute"){
-                                $url = "see_myroute.php";
-                            }
-                            
-                            //$url = "keiro.php";
-                        }
-                        //alert($url);
-                        target.href = $url;
-                    }
-                });
-            });
-        };
-
-        change_href("toggle_keiro");
-        change_href("keiro");
-        
-        change_href("see_myroute");
-        change_href("toggle_see_myroute");
-        
-        //searchの関数
-        change_next_href("next_keiro");
-    </script>
 
 </body>
 

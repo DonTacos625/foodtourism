@@ -2,12 +2,6 @@
 
 require "frame.php";
 
-if (!empty($_GET["not_set_food"])) {
-    $message = "先に昼食・夕食をする飲食店を設定してください";
-} else {
-    $message = "";
-}
-
 //stations_id設定
 if (isset($_SESSION["start_station_id"])) {
     $start_station_id = $_SESSION["start_station_id"];
@@ -509,7 +503,6 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
                 if (event.action.id === "lanch_id") {
                     //add_spots("2");
                     post_food(view.popup.selectedFeature.attributes.id, '1');
-                    change_toggle_and_normal_href();
 
                     const point = {
                         type: "point",
@@ -531,7 +524,6 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
                 }
                 if (event.action.id === "dinner_id") {
                     post_food(view.popup.selectedFeature.attributes.id, '2');
-                    change_toggle_and_normal_href();
 
                     const point = {
                         type: "point",
@@ -610,16 +602,6 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
             const update = document.getElementById("search_name");
             update.value = word;
         };
-
-        function change_toggle_and_normal_href() {
-            //frame内の関数
-            change_href("toggle_keiro");
-            change_href("keiro");
-            change_href("see_myroute");
-            change_href("toggle_see_myroute");
-
-            change_next_href("next_keiro");
-        }
     </script>
 
 </head>
@@ -627,53 +609,52 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
 <body>
     <div class="container">
         <main>
-            <div>
-                <font color="#ff0000"><?php echo htmlspecialchars($message, ENT_QUOTES); ?></font>
-            </div>
             <h3 id="search_start">飲食店検索</h3>
             <a id="list_result" name="list_result" href="search.php">一覧で結果を表示</a><br>
-            <form action="search_viewmode.php" method="post">
-                予約の可否：
-                <input type="radio" id="yoyaku" name="yoyaku" value="0" <?php set_checked("search_yoyaku", "0"); ?>>指定なし
-                <input type="radio" id="yoyaku" name="yoyaku" value="予約可" <?php set_checked("search_yoyaku", "予約可"); ?>>予約可
-                <input type="radio" id="yoyaku" name="yoyaku" value="予約不可" <?php set_checked("search_yoyaku", "予約不可"); ?>>予約不可<br>
+            <div id="search_forms">
+                <form action="search_viewmode.php" method="post">
+                    予約の可否：
+                    <input type="radio" id="yoyaku" name="yoyaku" value="0" <?php set_checked("search_yoyaku", "0"); ?>>指定なし
+                    <input type="radio" id="yoyaku" name="yoyaku" value="予約可" <?php set_checked("search_yoyaku", "予約可"); ?>>予約可
+                    <input type="radio" id="yoyaku" name="yoyaku" value="予約不可" <?php set_checked("search_yoyaku", "予約不可"); ?>>予約不可<br>
 
-                昼食の予算：
-                <input type="radio" id="lanch_money" name="lanch_money" value="0" <?php set_checked("search_lanch_money", "0"); ?>>指定なし
-                <input type="radio" id="lanch_money" name="lanch_money" value="[昼]～￥999" <?php set_checked("search_lanch_money", "[昼]～￥999"); ?>>～￥999
-                <input type="radio" id="lanch_money" name="lanch_money" value="[昼]￥1,000～￥1,999" <?php set_checked("search_lanch_money", "[昼]￥1,000～￥1,999"); ?>>￥1,000～￥1,999
-                <input type="radio" id="lanch_money" name="lanch_money" value="[昼]￥2,000～￥2,999" <?php set_checked("search_lanch_money", "[昼]￥2,000～￥2,999"); ?>>￥2,000～￥2,999
-                <input type="radio" id="lanch_money" name="lanch_money" value="[昼]<3000" <?php set_checked("search_lanch_money", "[昼]<3000"); ?>>￥3,000～<br>
+                    昼食の予算：
+                    <input type="radio" id="lanch_money" name="lanch_money" value="0" <?php set_checked("search_lanch_money", "0"); ?>>指定なし
+                    <input type="radio" id="lanch_money" name="lanch_money" value="[昼]～￥999" <?php set_checked("search_lanch_money", "[昼]～￥999"); ?>>～￥999
+                    <input type="radio" id="lanch_money" name="lanch_money" value="[昼]￥1,000～￥1,999" <?php set_checked("search_lanch_money", "[昼]￥1,000～￥1,999"); ?>>￥1,000～￥1,999
+                    <input type="radio" id="lanch_money" name="lanch_money" value="[昼]￥2,000～￥2,999" <?php set_checked("search_lanch_money", "[昼]￥2,000～￥2,999"); ?>>￥2,000～￥2,999
+                    <input type="radio" id="lanch_money" name="lanch_money" value="[昼]<3000" <?php set_checked("search_lanch_money", "[昼]<3000"); ?>>￥3,000～<br>
 
-                夕食の予算：
-                <input type="radio" id="dinner_money" name="dinner_money" value="0" <?php set_checked("search_dinner_money", "0"); ?>>指定なし
-                <input type="radio" id="dinner_money" name="dinner_money" value="[夜]～￥999" <?php set_checked("search_dinner_money", "[夜]～￥999"); ?>>～￥999
-                <input type="radio" id="dinner_money" name="dinner_money" value="[夜]￥1,000～￥1,999" <?php set_checked("search_dinner_money", "[夜]￥1,000～￥1,999"); ?>>￥1,000～￥1,999
-                <input type="radio" id="dinner_money" name="dinner_money" value="[夜]￥2,000～￥2,999" <?php set_checked("search_dinner_money", "[夜]￥2,000～￥2,999"); ?>>￥2,000～￥2,999
-                <input type="radio" id="dinner_money" name="dinner_money" value="[夜]<3000" <?php set_checked("search_dinner_money", "[夜]<3000"); ?>>￥3,000～<br>
+                    夕食の予算：
+                    <input type="radio" id="dinner_money" name="dinner_money" value="0" <?php set_checked("search_dinner_money", "0"); ?>>指定なし
+                    <input type="radio" id="dinner_money" name="dinner_money" value="[夜]～￥999" <?php set_checked("search_dinner_money", "[夜]～￥999"); ?>>～￥999
+                    <input type="radio" id="dinner_money" name="dinner_money" value="[夜]￥1,000～￥1,999" <?php set_checked("search_dinner_money", "[夜]￥1,000～￥1,999"); ?>>￥1,000～￥1,999
+                    <input type="radio" id="dinner_money" name="dinner_money" value="[夜]￥2,000～￥2,999" <?php set_checked("search_dinner_money", "[夜]￥2,000～￥2,999"); ?>>￥2,000～￥2,999
+                    <input type="radio" id="dinner_money" name="dinner_money" value="[夜]<3000" <?php set_checked("search_dinner_money", "[夜]<3000"); ?>>￥3,000～<br>
 
-                検索の設定：
-                <input type="radio" id="name_genre" name="name_genre" value="0" <?php set_checked("search_name_genre", "0"); ?>>ジャンルで検索
-                <input type="radio" id="name_genre" name="name_genre" value="1" <?php set_checked("search_name_genre", "1"); ?>>店名で検索<br>
+                    検索の設定：
+                    <input type="radio" id="name_genre" name="name_genre" value="0" <?php set_checked("search_name_genre", "0"); ?>>ジャンルで検索
+                    <input type="radio" id="name_genre" name="name_genre" value="1" <?php set_checked("search_name_genre", "1"); ?>>店名で検索<br>
 
-                検索ワード：
-                <input type="text" value="<?php echo $search_word; ?>" id="search_name" name="search_name">
-                <select name="genre_example" size="1" onclick="input_search_name(value)">
-                    <option value=""> ワードを入力するか以下から選択してください </option>
-                    <option value="中華"> 中華 </option>
-                    <option value="和食"> 和食 </option>
-                    <option value="洋食"> 洋食 </option>
-                    <option value="イタリアン"> イタリアン </option>
-                    <option value="フレンチ"> フレンチ </option>
-                    <option value="居酒屋"> 居酒屋 </option>
-                    <option value="バイキング"> バイキング </option>
-                    <option value="カフェ"> カフェ </option>
-                </select>
-                <br>
-                <input type="submit" name="submit" value="検索する"><br>
-            </form>
-
-            <a id="next_keiro" name="next_keiro" href="">観光スポット選択へ</a><br>
+                    検索ワード：
+                    <input type="text" value="<?php echo $search_word; ?>" id="search_name" name="search_name">
+                    <select name="genre_example" size="1" onclick="input_search_name(value)">
+                        <option value=""> ワードを入力するか以下から選択してください </option>
+                        <option value="中華"> 中華 </option>
+                        <option value="和食"> 和食 </option>
+                        <option value="洋食"> 洋食 </option>
+                        <option value="イタリアン"> イタリアン </option>
+                        <option value="フレンチ"> フレンチ </option>
+                        <option value="居酒屋"> 居酒屋 </option>
+                        <option value="バイキング"> バイキング </option>
+                        <option value="カフェ"> カフェ </option>
+                    </select>
+                    <br>
+                    <input type="submit" name="submit" value="検索する"><br>
+                </form>
+            </div>
+            <a id="prev_station" name="prev_station" href="set_station.php">開始・終了駅選択に戻る</a>
+            <a id="next_keiro" name="next_keiro" href="keiro.php">観光スポット選択へ</a><br>
             <?php
             if ($count == 0) {
                 echo "検索条件に該当する飲食店はありませんでした";
@@ -682,43 +663,7 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
             <div id="viewbox">
                 <div id="viewDiv"></div>
             </div>
-            <script>
-                //登録状況によって観光地選択へのURLを変える関数
-                function change_next_href(id_name) {
-                    jQuery(function($) {
-                        var dummy = "1";
-                        $.ajax({
-                            url: './ajax_change_href.php',
-                            type: "POST",
-                            dataType: 'json',
-                            data: {
-                                post_data_1: dummy
-                            },
-                            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                                alert("ajax通信に失敗しました");
-                            },
-                            success: function(data) {
-                                //alert("返り値は" + data[0]);
-                                $not_set_station = data[0];
-                                $not_set_food = data[1];
-                                const target = document.getElementById(id_name);
-                                $url = "keiro.php";
-                                if ($not_set_station == "1") {
-                                    $url = "set_station.php?not_set_station=1";
-                                } else if ($not_set_food == "1") {
-                                    $url = "search.php?not_set_food=1";
-                                } else {
-                                    $url = "keiro.php";
-                                }
-                                //alert($url);
-                                target.href = $url;
-                            }
-                        });
-                    });
-                };
 
-                change_next_href("next_keiro");
-            </script>
         </main>
         <footer>
             <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>

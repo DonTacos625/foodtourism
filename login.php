@@ -76,13 +76,13 @@ if (!empty($_POST["login"])) {
                     $userdatastmt3 = $pdo->prepare("SELECT * FROM userdata.$user_id WHERE d_g_ids IS NOT NULL ");
                     $userdatastmt3->execute();
                     foreach ($userdatastmt1 as $row1) {
-                        $_SESSION["s_l_kankou_spots_id"] = $row1["s_l_ids"];
+                        $_SESSION["s_l_kankou_spots_id"][] = $row1["s_l_ids"];
                     }
                     foreach ($userdatastmt2 as $row2) {
-                        $_SESSION["l_d_kankou_spots_id"] = $row2["l_d_ids"];
+                        $_SESSION["l_d_kankou_spots_id"][] = $row2["l_d_ids"];
                     }
                     foreach ($userdatastmt3 as $row3) {
-                        $_SESSION["d_g_kankou_spots_id"] = $row3["d_g_ids"];
+                        $_SESSION["d_g_kankou_spots_id"][] = $row3["d_g_ids"];
                     }
 
                     //ログイン成功でホームに移動
