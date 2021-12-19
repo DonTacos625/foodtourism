@@ -118,22 +118,23 @@ if (!isset($_SESSION["goal_station_id"])) {
 }
 
 
-function display_frame($name_row, $mode)
+function display_frame($name_row, $time)
 {
-    foreach ($name_row as $s_l_spot_name) {
-        $elementID = "s_l_id_" . $s_l_spot_name[1] . " ";
+    $count = 0;
+    foreach ($name_row as $spot_name) {
+        $elementID = "s_l_id_" . $spot_name[1] . " ";
+        $count += 1;
+        $frame_spot_name = " " . $count . ":" . $spot_name[0] . " ";
         print "
-    <div id=$elementID>$s_l_spot_name[0]</div>
-    <button type=\"button\" id=$elementID value=$s_l_spot_name[1] onclick=\"remove_spot($mode, value, id)\">削除</button>
-    <button type=\"button\" id=$elementID value=$s_l_spot_name[1] onclick=\"swap_spots($mode, value, 'up', id)\">上</button>
-    <button type=\"button\" id=$elementID value=$s_l_spot_name[1] onclick=\"swap_spots($mode, value, 'down', id)\">下</button><br>
+    <div id=$elementID>$frame_spot_name</div>
+    <button type=\"button\" id=$elementID value=$spot_name[1] onclick=\"remove_spot($time, value)\">削除</button>
+    <button type=\"button\" id=$elementID value=$spot_name[1] onclick=\"swap_spots($time, value, 'up')\">↑</button>
+    <button type=\"button\" id=$elementID value=$spot_name[1] onclick=\"swap_spots($time, value, 'down')\">↓</button><br>
     ";
     };
 };
 
-
 ?>
-
 
 <!doctype html>
 <html>
@@ -141,10 +142,11 @@ function display_frame($name_row, $mode)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
-    <!--<link rel="stylesheet" href="style.css">-->
+    <link rel="stylesheet" type="text/css" href="css/copyright.css">
+    <link rel="stylesheet" type="text/css" href="css/viewbox.css">
     <style>
         body {
-            background: linear-gradient(90deg, #99ffff, #ffffff);
+            background: #99ffff;
         }
 
         h1 {
@@ -154,7 +156,7 @@ function display_frame($name_row, $mode)
         #dropmenu {
             list-style-type: none;
             position: relative;
-            width: 78vw;
+            width: 75vw;
             height: 35px;
             padding: 0;
             background: #0099ff;
@@ -170,7 +172,7 @@ function display_frame($name_row, $mode)
             margin: 0;
             padding: 0;
             text-align: center;
-            border-right: 1px solid #FFFFFF;
+            border-right: 1px solid #99ffff;
             box-sizing: border-box;
         }
 
@@ -236,6 +238,7 @@ function display_frame($name_row, $mode)
 
         #leftbox {
             position: relative;
+            top: -70px;
             float: right;
             width: 20vw;
             border-right: 3px solid #0099FF;
@@ -348,6 +351,7 @@ function display_frame($name_row, $mode)
 <body>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
+        //leftの情報を上書きする
         function update_frame(data, id) {
             const update = document.getElementById(id);
             //const update = document.getElementsBy(id);
@@ -355,14 +359,8 @@ function display_frame($name_row, $mode)
             console.log(update.innerHTML);
         }
 
-        function update_spots_frame(data, elementby_id) {
-            const update = document.getElementById(id);
-            //const update = document.getElementsBy(id);
-            update.innerHTML = data;
-            console.log(update.innerHTML);
-        }
-
-        function remove_spot(time, num) {
+        //time(1,2,3)の時間帯のidが一致するスポットを削除する
+        function remove_spot(time, id) {
             jQuery(function($) {
                 $.ajax({
                     url: './ajax_remove_spot.php',
@@ -370,24 +368,27 @@ function display_frame($name_row, $mode)
                     dataType: 'json',
                     data: {
                         post_data_1: time,
-                        post_data_2: num,
+                        post_data_2: id,
                     },
                     error: function(XMLHttpRequest, textStatus, errorThrown) {
                         alert("ajax通信に失敗しました");
                     },
-                    success: function(data) {
-                        alert("削除されたのは" + data);
+                    success: function(response) {
+                        //alert("削除されたのは" + response[0][0]);
                         /*
-                        if (!(data == "")) {
-                            update_frame("設定されていません", data);
+                        if (!(response == "")) {
+                            update_frame("設定されていません", response);
                         }
                         */
+                        overwrite(time, response, 0);
+                        overwrite(time, response, 1);
                     }
                 });
             });
         };
 
-        function swap_spots(time, id, swapmode, elementby_id) {
+        //time(1,2,3)の時間帯のidが一致するスポットをswapmode(up,down)によって上か下に入れ替える
+        function swap_spots(time, id, swapmode) {
             jQuery(function($) {
                 $.ajax({
                     url: './ajax_swap_spot.php',
@@ -401,17 +402,73 @@ function display_frame($name_row, $mode)
                     error: function(XMLHttpRequest, textStatus, errorThrown) {
                         alert("ajax通信に失敗しました");
                     },
-                    success: function(data) {
-                        alert("返り値は" + elementby_id);
+                    success: function(response) {
+                        //alert("返り値は" + response);
                         /*
-                        if (!(data == "")) {
-                            update_frame("設定されていません", data);
+                        if (!(response == "")) {
+                            update_frame("設定されていません", response);
                         }
                         */
+                        overwrite(time, response, 0);
+                        overwrite(time, response, 1);
                     }
                 });
             });
         };
+
+        //name_array = [["スポット名", "スポットID"]]
+        //time(1,2,3)の時間帯のleftboxの内容を上書きする
+        function overwrite(time, name_array, toggle) {
+            //alert(time);
+            if (toggle == 0) {
+                if (time == 1) {
+                    $div1 = document.getElementById("s_l_spots_line");
+                } else if (time == 2) {
+                    $div1 = document.getElementById("l_d_spots_line");
+                } else if (time == 3) {
+                    $div1 = document.getElementById("d_g_spots_line");
+                }
+            } else {
+                if (time == 1) {
+                    $div1 = document.getElementById("toggle_s_l_spots_line");
+                } else if (time == 2) {
+                    $div1 = document.getElementById("toggle_l_d_spots_line");
+                } else if (time == 3) {
+                    $div1 = document.getElementById("toggle_d_g_spots_line");
+                }
+            }
+            $div1.innerHTML = "";
+            for (var i = 0; i < name_array.length; i++) {
+                //alert(name_array[i][1]);
+                const newDiv = document.createElement("div");
+                newDiv.innerHTML = `${i+1}:${name_array[i][0]}`;
+                const removeBtn = document.createElement("button");
+                removeBtn.innerHTML = "削除";
+                const swapupBtn = document.createElement("button");
+                swapupBtn.innerHTML = "上";
+                const swapdownBtn = document.createElement("button");
+                swapdownBtn.innerHTML = "下";
+
+                const spot_id = name_array[i][1];
+                removeBtn.onclick = () => {
+                    remove_spot(time, spot_id, toggle);
+                }
+                swapupBtn.onclick = () => {
+                    swap_spots(time, spot_id, 'up', toggle);
+                }
+                swapdownBtn.onclick = () => {
+                    swap_spots(time, spot_id, 'down', toggle);
+                }
+
+                newDiv.appendChild(document.createElement("br"));
+                newDiv.appendChild(removeBtn);
+                newDiv.appendChild(swapupBtn);
+                newDiv.appendChild(swapdownBtn);
+
+                $div1.appendChild(newDiv);
+            }
+
+        }
     </script>
 
 
@@ -425,7 +482,7 @@ function display_frame($name_row, $mode)
         <li><a>観光計画作成</a>
             <ul>
                 <li><a href="set_station.php">開始・終了駅の設定</a></li>
-                <li><a href="search_form.php">飲食店の検索・決定</a></li>
+                <li><a href="search.php">飲食店の検索・決定</a></li>
                 <li><a id="keiro" name="keiro" href="">観光スポット選択</a></li>
             </ul>
         </li>
@@ -433,7 +490,7 @@ function display_frame($name_row, $mode)
 
         <li><a>マイページ</a>
             <ul>
-                <li><a href="see_myroute.php">作成した観光経路を見る</a></li>
+                <li><a id="see_myroute" name="see_myroute" href="">作成した観光経路を見る</a></li>
                 <li><a href="editpassword.php">パスワード変更</a></li>
                 <li><a href="logout.php">ログアウト</a></li>
             </ul>
@@ -458,28 +515,35 @@ function display_frame($name_row, $mode)
         <h2>現在の観光計画</h2>
 
         <b>開始駅：</b>
+        <img id="pin" width="20" height="30" src="./marker/start.png" alt="開始駅のアイコン" title="開始駅">
         <div id="start_name"><?php echo htmlspecialchars($start_station_name, ENT_QUOTES); ?></div><br>
 
         <b>昼食前に訪れる観光スポット：</b>
-        <?php display_frame($s_l_spots_name, 1) ?>
+        <div id="s_l_spots_line">
+            <?php display_frame($s_l_spots_name, 1) ?>
+        </div>
         <br>
 
         <b>昼食予定地:</b>
         <div id="lanch_name"><?php echo htmlspecialchars($lanch_name, ENT_QUOTES); ?></div><br>
 
         <b>昼食後に訪れる観光スポット：</b>
-        <?php display_frame($l_d_spots_name, 2) ?>
+        <div id="l_d_spots_line">
+            <?php display_frame($l_d_spots_name, 2) ?>
+        </div>
         <br>
 
         <b>夕食予定地:</b>
         <div id="dinner_name"><?php echo htmlspecialchars($dinner_name, ENT_QUOTES); ?></div><br>
 
         <b>夕食前に訪れる観光スポット：</b>
-        <?php display_frame($d_g_spots_name, 3) ?>
+        <div id="d_g_spots_line">
+            <?php display_frame($d_g_spots_name, 3) ?>
+        </div>
         <br>
 
         <b>終了駅：</b>
-        <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div><br>
+        <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div>
 
         <h2>アンケート</h2>
         <?php
@@ -508,7 +572,7 @@ function display_frame($name_row, $mode)
                 <li><a>観光計画作成</a>
                     <ul>
                         <li><a href="set_station.php">開始・終了駅の設定</a></li>
-                        <li><a href="search_form.php">飲食店の検索・決定</a></li>
+                        <li><a href="search.php">飲食店の検索・決定</a></li>
                         <li><a id="toggle_keiro" name="toggle_keiro" href="">観光スポット選択</a></li>
                     </ul>
                 </li>
@@ -517,7 +581,7 @@ function display_frame($name_row, $mode)
 
                 <li><a>マイページ</a>
                     <ul>
-                        <li><a href="see_myroute.php">作成した観光経路を見る</a></li>
+                        <li><a id="toggle_see_myroute" name="toggle_see_myroute" href="see_myroute.php">作成した観光経路を見る</a></li>
                         <li><a href="editpassword.php">パスワード変更</a></li>
                         <li><a href="logout.php">ログアウト</a></li>
                     </ul>
@@ -557,7 +621,9 @@ function display_frame($name_row, $mode)
 
                         <li>
                             <b>昼食前に訪れる観光スポット：</b>
-                            <?php display_frame($s_l_spots_name, 1) ?>
+                            <div id="toggle_s_l_spots_line">
+                                <?php display_frame($s_l_spots_name, 1) ?>
+                            </div>
                         </li><br>
 
                         <li><b>昼食予定地:</b>
@@ -566,7 +632,9 @@ function display_frame($name_row, $mode)
 
                         <li>
                             <b>昼食後に訪れる観光スポット：</b>
-                            <?php display_frame($l_d_spots_name, 2) ?>
+                            <div id="toggle_l_d_spots_line">
+                                <?php display_frame($l_d_spots_name, 2) ?>
+                            </div>
                         </li><br>
 
                         <li><b>夕食予定地:</b>
@@ -575,7 +643,9 @@ function display_frame($name_row, $mode)
 
                         <li>
                             <b>夕食前に訪れる観光スポット：</b>
-                            <?php display_frame($d_g_spots_name, 3) ?>
+                            <div id="toggle_d_g_spots_line">
+                                <?php display_frame($d_g_spots_name, 3) ?>
+                            </div>
                         </li><br>
 
                         <li><b>終了駅：</b>
@@ -627,9 +697,16 @@ function display_frame($name_row, $mode)
                         if ($not_set_station == "1") {
                             $url = "set_station.php?not_set_station=1";
                         } else if ($not_set_food == "1") {
-                            $url = "search_form.php?not_set_food=1";
+                            $url = "search.php?not_set_food=1";
                         } else {
-                            $url = "keiro.php";
+                            
+                            if(id_name == "keiro" || id_name == "toggle_keiro"){
+                                $url = "keiro.php";
+                            } else if(id_name == "see_myroute" || id_name == "toggle_see_myroute"){
+                                $url = "see_myroute.php";
+                            }
+                            
+                            //$url = "keiro.php";
                         }
                         //alert($url);
                         target.href = $url;
@@ -640,8 +717,14 @@ function display_frame($name_row, $mode)
 
         change_href("toggle_keiro");
         change_href("keiro");
+        
+        change_href("see_myroute");
+        change_href("toggle_see_myroute");
+        
+        //searchの関数
         change_next_href("next_keiro");
     </script>
+
 </body>
 
 </html>

@@ -2,6 +2,78 @@
 
 require "frame.php";
 
+//stations_id設定
+if (isset($_SESSION["start_station_id"])) {
+    $start_station_id = $_SESSION["start_station_id"];
+} else {
+    $start_station_id = 0;
+}
+if (isset($_SESSION["goal_station_id"])) {
+    $goal_station_id = $_SESSION["goal_station_id"];
+} else {
+    $goal_station_id = 0;
+}
+$station_id = [$start_station_id, $goal_station_id];
+
+//food_shops_id設定
+if (isset($_SESSION["lanch_id"])) {
+    $lanch_shop_id = $_SESSION["lanch_id"];
+} else {
+    $lanch_shop_id = 0;
+}
+if (isset($_SESSION["dinner_id"])) {
+    $dinner_shop_id = $_SESSION["dinner_id"];
+} else {
+    $dinner_shop_id = 0;
+}
+$food_shop_id = [$lanch_shop_id, $dinner_shop_id];
+
+try {
+    if ($start_station_id != 0) {
+        $stmt1 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
+        $stmt1->bindParam(":id", $start_station_id);
+        $stmt1->execute();
+        $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
+        $start_station_keikaku[] = [$result1["x"], $result1["y"], "start"];
+    } else {
+        $start_station_keikaku[] = [0, 0, "start"];
+    }
+
+    if ($lanch_shop_id != 0) {
+        $stmt2 = $pdo->prepare("SELECT * FROM minatomirai_shop_data WHERE id = :id");
+        $stmt2->bindParam(":id", $lanch_shop_id);
+        $stmt2->execute();
+        $result2 = $stmt2->fetch(PDO::FETCH_ASSOC);
+        $lanch_keikaku[] = [$result2["x"], $result2["y"], "lanch"];
+    } else {
+        $lanch_keikaku[] = [0, 0, "lanch"];
+    }
+
+    if ($dinner_shop_id != 0) {
+        $stmt3 = $pdo->prepare("SELECT * FROM minatomirai_shop_data WHERE id = :id");
+        $stmt3->bindParam(":id", $dinner_shop_id);
+        $stmt3->execute();
+        $result3 = $stmt3->fetch(PDO::FETCH_ASSOC);
+        $dinner_keikaku[] = [$result3["x"], $result3["y"], "dinner"];
+    } else {
+        $dinner_keikaku[] = [0, 0, "dinner"];
+    }
+
+    if ($goal_station_id != 0) {
+        $stmt4 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
+        $stmt4->bindParam(":id", $goal_station_id);
+        $stmt4->execute();
+        $result4 = $stmt4->fetch(PDO::FETCH_ASSOC);
+        $goal_station_keikaku[] = [$result4["x"], $result4["y"], "goal"];
+    } else {
+        $goal_station_keikaku[] = [0, 0, "goal"];
+    }
+} catch (PDOException $e) {
+    echo "失敗:" . $e->getMessage() . "\n";
+    exit();
+}
+
+
 ?>
 
 <html>
@@ -23,55 +95,7 @@ require "frame.php";
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>スポット一覧</title>
     <style>
-        #viewbox {
-            position: absolute;
-            float: left;
-            width: 80vw;
-            height: 80vh;
-            margin-left: 5px;
-        }
 
-        #viewbox h3 {
-            border-left: 5px solid #000080;
-            margin: 0px;
-        }
-
-        #viewbox #viewDiv {
-            position: relative;
-            padding: 0;
-            margin: 0;
-            height: 90%;
-            width: 95%;
-        }
-
-        @media screen and (min-width:769px) and (max-width:1366px) {
-            h3 {
-                font-size: 18px;
-            }
-
-            #viewbox {
-                width: 70vw;
-                height: 70vh;
-            }
-        }
-
-        @media screen and (max-width:768px) {
-            h3 {
-                font-size: 15px;
-            }
-
-            #viewbox {
-                width: 95vw;
-                height: 100vh;
-                margin: 0px;
-            }
-
-            #viewbox #viewDiv {
-                width: 90%;
-                height: 85%;
-            }
-
-        }
     </style>
 
     <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css" />
@@ -110,28 +134,27 @@ require "frame.php";
 
             // Point the URL to a valid routing service
             const routeUrl = "https://utility.arcgis.com/usrsvcs/servers/4550df58672c4bc6b17607b947177b56/rest/services/World/Route/NAServer/Route_World";
-            const MY_API_KEY = "AAPKfe5fdd5be2744698a188fcc0c7b7b1d742vtC5TsStg94fpwkldrfNo3SJn2jl_VuCOEEdcBiwR7dKOKxejIP_3EDj9IPSPg";
             //popup
             var lanch_Action = {
-                title:"昼食に設定する",
+                title: "昼食に設定する",
                 id: "lanch_id",
                 image: "pop_lanch.png"
             };
 
             var dinner_Action = {
-                title:"夕食に設定する",
+                title: "夕食に設定する",
                 id: "dinner_id",
                 image: "pop_dinner.png"
             };
 
             var start_Action = {
-                title:"開始駅に設定する",
+                title: "開始駅に設定する",
                 id: "start_station_id",
                 image: "pop_start.png"
             };
 
             var goal_Action = {
-                title:"終了駅に設定する",
+                title: "終了駅に設定する",
                 id: "goal_station_id",
                 image: "pop_goal.png"
             };
@@ -245,34 +268,134 @@ require "frame.php";
                 popupTemplate: spots_template
             });
 
+            //選択したスポットの表示レイヤー
+            const start_station_pointLayer = new GraphicsLayer();
+            start_station_pointLayer.listMode = "hide";
+            const goal_station_pointLayer = new GraphicsLayer();
+            goal_station_pointLayer.listMode = "hide";
+            const lanch_pointLayer = new GraphicsLayer();
+            lanch_pointLayer.listMode = "hide";
+            const dinner_pointLayer = new GraphicsLayer();
+            dinner_pointLayer.listMode = "hide";
+
             const map = new Map({
                 basemap: "streets",
-                layers: [stationLayer, foodLayer, spotLayer]
+                //layers: [stationLayer, foodLayer, spotLayer],
+                layers: [foodLayer, stationLayer, spotLayer, start_station_pointLayer, goal_station_pointLayer, lanch_pointLayer, dinner_pointLayer]
             });
 
             const view = new MapView({
                 container: "viewDiv", // Reference to the scene div created in step 5
                 map: map, // Reference to the map object created before the scene
                 center: [139.635, 35.453],
-                zoom: 14
+                zoom: 14,
+                popup: {
+                    dockEnabled: true,
+                    dockOptions: {
+                        breakpoint: false
+                    }
+                }
             });
+
+            //phpの経路情報をjavascript用に変換           
+            var start_station_keikaku = <?php echo json_encode($start_station_keikaku); ?>;
+            var goal_station_keikaku = <?php echo json_encode($goal_station_keikaku); ?>;
+            var lanch_keikaku = <?php echo json_encode($lanch_keikaku); ?>;
+            var dinner_keikaku = <?php echo json_encode($dinner_keikaku); ?>;
+            //開始駅と終了駅が同じの場合のフラグを設定
+            var start_point = start_station_keikaku[0];
+            var goal_point = goal_station_keikaku[0];
+            var mode_change = 0;
+            if (start_point[0] == goal_point[0] && start_point[1] == goal_point[1]) {
+                mode_change = 1;
+            }
+            //最初に経路表示する処理
+            function start_map(keikaku, Layer) {
+                for (var j = 0; j < keikaku.length; j++) {
+                    if (!(keikaku[j][0] == 0)) {
+                        var point = {
+                            type: "point",
+                            x: keikaku[j][0],
+                            y: keikaku[j][1]
+                        };
+                        if (keikaku[j].length > 2) {
+                            if (keikaku[j][2] == "start") {
+                                if (mode_change == 1) {
+                                    pointpic = "./marker/start_and_goal.png";
+                                } else {
+                                    pointpic = "./marker/start.png";
+                                }
+                            } else if (keikaku[j][2] == "lanch") {
+                                pointpic = "./marker/lanch.png";
+                            } else if (keikaku[j][2] == "dinner") {
+                                pointpic = "./marker/dinner.png";
+                            } else if (keikaku[j][2] == "goal") {
+                                if (mode_change == 1) {
+                                    pointpic = "./marker/start_and_goal.png";
+                                } else {
+                                    pointpic = "./marker/goal.png";
+                                }
+                            } else {
+                                pointpic = "./marker/ltblue.png";
+                            }
+                        }
+                        var stopSymbol = new PictureMarkerSymbol({
+                            url: pointpic,
+                            width: "20px",
+                            height: "31px"
+                        });
+                        var stop = new Graphic({
+                            geometry: point,
+                            symbol: stopSymbol
+                        });
+                        Layer.add(stop);
+                    }
+                }
+            }
+            start_map(start_station_keikaku, start_station_pointLayer);
+            start_map(goal_station_keikaku, goal_station_pointLayer);
+            start_map(lanch_keikaku, lanch_pointLayer);
+            start_map(dinner_keikaku, dinner_pointLayer);
 
 
             //ポップアップから追加
             view.popup.on("trigger-action", function(event) {
                 if (event.action.id === "start_station_id") {
                     add_spots("1");
+                    add_point("./marker/start.png", start_station_pointLayer);
                 }
                 if (event.action.id === "lanch_id") {
                     add_spots("2");
+                    add_point("./marker/lanch.png", lanch_pointLayer);
                 }
                 if (event.action.id === "dinner_id") {
                     add_spots("3");
+                    add_point("./marker/dinner.png", dinner_pointLayer);
                 }
                 if (event.action.id === "goal_station_id") {
                     add_spots("4");
+                    add_point("./marker/goal.png", goal_station_pointLayer);
                 }
             });
+
+            function add_point(pic, Layer) {
+                const point = {
+                    type: "point",
+                    x: view.popup.selectedFeature.attributes.X,
+                    y: view.popup.selectedFeature.attributes.Y
+                };
+                var stopSymbol = new PictureMarkerSymbol({
+                    url: pic,
+                    width: "20px",
+                    height: "31px"
+                });
+                var stop = new Graphic({
+                    geometry: point,
+                    symbol: stopSymbol
+                });
+                Layer.removeAll();
+                Layer.add(stop);
+            }
 
             function add_spots(num) {
                 //minatomirai_shopとminatomirai_kankouのレイヤーのIDは小文字のid
@@ -290,7 +413,15 @@ require "frame.php";
                             alert("ajax通信に失敗しました");
                         },
                         success: function(response) {
-                            //alert(response[0]);
+                            if (num == 1) {
+                                alert("「" + response[0] + "」を開始駅に設定しました");
+                            } else if (num == 4) {
+                                alert("「" + response[0] + "」を終了駅に設定しました");
+                            } else if (num == 2) {
+                                alert("「" + response[0] + "」を昼食に設定しました");
+                            } else if (num == 3) {
+                                alert("「" + response[0] + "」を夕食に設定しました");
+                            }
                             //esriの関数の外へ
                             toframe(response[0], response[1]);
                         }
@@ -298,16 +429,19 @@ require "frame.php";
                 });
             };
 
+            
             var layerlist = new LayerList({
                 view: view,
                 listItemCreatedFunction: function(event) {
-                    let item = event.item;
-                    if (item.title === "Minatomirai shop new UTF 8") {
-                        item.title = "飲食店";
-                    } else if (item.title === "Minatomirai kankou UTF 8") {
-                        item.title = "観光スポット";
-                    } else if (item.title === "Minatomirai station") {
-                        item.title = "駅";
+                    if(event.item.title != "") {
+                        let item = event.item;
+                        if (item.title === "Minatomirai shop new UTF 8") {
+                            item.title = "飲食店";
+                        } else if (item.title === "Minatomirai kankou UTF 8") {
+                            item.title = "観光スポット";
+                        } else if (item.title === "Minatomirai station") {
+                            item.title = "駅";
+                        }
                     }
                 }
             });
@@ -315,6 +449,7 @@ require "frame.php";
 
             view.ui.add(layerlist, "bottom-right");
         });
+
 
         function toframe(data, id) {
             //frameの関数
@@ -325,17 +460,16 @@ require "frame.php";
 </head>
 
 <body>
-    <!--デバッグ用
-    <input type="text" name="Result" value=<?php //echo $_SESSION["s_l_kankou_spots_id"] 
-                                            ?>><br>
-    <input type="text" name="Result" value=<?php //echo $_SESSION["l_d_kankou_spots_id"] 
-                                            ?>><br>
-    <input type="text" name="Result" value=<?php //echo $_SESSION["d_g_kankou_spots_id"] 
-                                            ?>><br>
-    -->
-    <div id="viewbox">
-        <h3>スポット一覧</h3>
-        <div id="viewDiv"></div>
+    <div class="container">
+        <main>
+            <div id="viewbox">
+                <h3>スポット一覧</h3>
+                <div id="viewDiv"></div>
+            </div>
+        </main>
+        <footer>
+            <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>
+        </footer>
     </div>
 </body>
 

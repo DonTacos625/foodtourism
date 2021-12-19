@@ -1,0 +1,26 @@
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 110vh;
+        }
+
+        footer {
+            margin-top: auto;
+
+            /* 背景色などは割愛します */
+        }
+        
+        @media screen and (min-width:769px) and (max-width:1366px) {
+            .container {
+                min-height: 110vh;
+            }
+        }
+
+        @media screen and (max-width:768px) {
+            .container {
+                display: flex;
+                flex-direction: column;
+                min-height: 180vh;
+            }
+
+        }

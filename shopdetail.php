@@ -4,7 +4,40 @@ require "frame.php";
 
 $spot_id = $_GET["spot_id"];
 
+//stations_id設定
+if (isset($_SESSION["start_station_id"])) {
+    $start_station_id = $_SESSION["start_station_id"];
+} else {
+    $start_station_id = 0;
+}
+if (isset($_SESSION["goal_station_id"])) {
+    $goal_station_id = $_SESSION["goal_station_id"];
+} else {
+    $goal_station_id = 0;
+}
+$station_id = [$start_station_id, $goal_station_id];
+
 try {
+
+    if ($start_station_id != 0) {
+        $stmt2 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
+        $stmt2->bindParam(":id", $start_station_id);
+        $stmt2->execute();
+        $result2 = $stmt2->fetch(PDO::FETCH_ASSOC);
+        $station_keikaku[] = [$result2["x"], $result2["y"], "start"];
+    } else {
+        $station_keikaku[] = [0, 0, "start"];
+    }
+
+    if ($goal_station_id != 0) {
+        $stmt4 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
+        $stmt4->bindParam(":id", $goal_station_id);
+        $stmt4->execute();
+        $result4 = $stmt4->fetch(PDO::FETCH_ASSOC);
+        $station_keikaku[] = [$result4["x"], $result4["y"], "goal"];
+    } else {
+        $station_keikaku[] = [0, 0, "goal"];
+    }
 
     $stmt1 = $pdo->prepare("SELECT * FROM minatomirai_shop_data where id = :id");
     $stmt1->bindParam(":id", $spot_id, PDO::PARAM_INT);
@@ -49,8 +82,8 @@ try {
         #detailbox #imgbox #viewbox {
             position: relative;
             float: left;
-            width: 40vw;
-            height: 20vw;
+            width: 75vw;
+            height: 40vw;
             margin-bottom: 15px;
             justify-content: center;
             align-items: center;
@@ -66,7 +99,7 @@ try {
 
         #detailbox #infobox {
             float: left;
-            width: 40vw;
+            width: 75vw;
             margin-left: 5px;
         }
 
@@ -120,8 +153,18 @@ try {
                 float: none;
             }
 
+            #detailbox #imgbox #viewbox {
+                position: relative;
+                float: left;
+                width: 95%;
+                height: 50vw;
+                margin-bottom: 15px;
+                justify-content: center;
+                align-items: center;
+            }
+
             #detailbox #infobox {
-                width: 100%;
+                width: 95%;
                 float: none;
             }
 
@@ -131,7 +174,7 @@ try {
 
             #detailbox #viewbox {
                 width: 100%;
-                height: 70vw;
+                height: 80vw;
                 float: none;
             }
 
@@ -169,18 +212,17 @@ try {
 
             // Point the URL to a valid routing service
             const routeUrl = "https://utility.arcgis.com/usrsvcs/servers/4550df58672c4bc6b17607b947177b56/rest/services/World/Route/NAServer/Route_World";
-            const MY_API_KEY = "AAPKfe5fdd5be2744698a188fcc0c7b7b1d742vtC5TsStg94fpwkldrfNo3SJn2jl_VuCOEEdcBiwR7dKOKxejIP_3EDj9IPSPg";
             //popup
             var lanch_Action = {
                 title: "昼食に設定する",
                 id: "lanch_id",
-                className: "esri-icon-navigation"
+                image: "pop_lanch.png"
             };
 
             var dinner_Action = {
                 title: "夕食に設定する",
                 id: "dinner_id",
-                className: "esri-icon-navigation"
+                image: "pop_dinner.png"
             };
 
             const food_template = {
@@ -224,6 +266,42 @@ try {
                 actions: [lanch_Action, dinner_Action]
             };
 
+            const station_template = {
+                title: "{Name}",
+                content: [{
+                    type: "fields",
+                    fieldInfos: [{
+                        fieldName: "ID",
+                        label: "ID",
+                        visible: true
+                    }, {
+                        fieldName: "X",
+                        label: "経度",
+                        visible: true
+                    }, {
+                        fieldName: "Y",
+                        label: "緯度",
+                        visible: true
+                    }]
+                }]
+            };
+
+            //スタートとゴールの駅を決める
+            var station_id = <?php echo json_encode($station_id); ?>;
+            var station_feature_sql = "";
+
+            for (var i = 0; i < station_id.length; i++) {
+                if (i != station_id.length - 1) {
+                    station_feature_sql += "ID = "
+                    station_feature_sql += station_id[i];
+                    station_feature_sql += " OR "
+                } else if (i == station_id.length - 1) {
+                    station_feature_sql += "ID = "
+                    station_feature_sql += station_id[i];
+                }
+            }
+
+            //飲食店のIDから表示するスポットを決める
             var result1 = <?php echo json_encode($result1) ?>;
             var food_feature_sql = "ID = " + result1["id"];
 
@@ -235,35 +313,134 @@ try {
                 definitionExpression: food_feature_sql
             });
 
+            var stationLayer = new FeatureLayer({
+                url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_station/FeatureServer",
+                id: "stationLayer",
+                popupTemplate: station_template,
+                definitionExpression: station_feature_sql
+            });
+
+            //選択したスポットの表示レイヤー
+            const station_pointLayer = new GraphicsLayer();
+            const food_pointLayer = new GraphicsLayer();
+
             const map = new Map({
                 basemap: "streets",
-                layers: [foodLayer]
+                layers: [foodLayer, stationLayer, station_pointLayer, food_pointLayer]
             });
 
             const view = new MapView({
                 container: "viewDiv", // Reference to the scene div created in step 5
                 map: map, // Reference to the map object created before the scene
                 center: [result1["x"], result1["y"]],
-                zoom: 14
+                zoom: 14,
+                popup: {
+                    dockEnabled: true,
+                    dockOptions: {
+                        breakpoint: false
+                    }
+                }
             });
+
+            //phpの経路情報をjavascript用に変換           
+            var station_keikaku = <?php echo json_encode($station_keikaku); ?>;
+            //開始駅と終了駅が同じの場合のフラグを設定
+            var start_point = station_keikaku[0];
+            var goal_point = station_keikaku.slice(-1)[0];
+            var mode_change = 0;
+            if (start_point[0] == goal_point[0] && start_point[1] == goal_point[1]) {
+                mode_change = 1;
+            }
+            //最初に経路表示する処理
+            function start_map(keikaku, Layer) {
+                for (var j = 0; j < keikaku.length; j++) {
+                    if (!(keikaku[j][0] == 0)) {
+                        var point = {
+                            type: "point",
+                            x: keikaku[j][0],
+                            y: keikaku[j][1]
+                        };
+                        if (keikaku[j].length > 2) {
+                            if (keikaku[j][2] == "start") {
+                                if (mode_change == 1) {
+                                    pointpic = "./marker/start_and_goal.png";
+                                } else {
+                                    pointpic = "./marker/start.png";
+                                }
+                            } else if (keikaku[j][2] == "lanch") {
+                                pointpic = "./marker/lanch.png";
+                            } else if (keikaku[j][2] == "dinner") {
+                                pointpic = "./marker/dinner.png";
+                            } else if (keikaku[j][2] == "goal") {
+                                if (mode_change == 1) {
+                                    pointpic = "./marker/start_and_goal.png";
+                                } else {
+                                    pointpic = "./marker/goal.png";
+                                }
+                            } else {
+                                pointpic = "./marker/ltblue.png";
+                            }
+                        }
+                        var stopSymbol = new PictureMarkerSymbol({
+                            url: pointpic,
+                            width: "20px",
+                            height: "31px"
+                        });
+                        var stop = new Graphic({
+                            geometry: point,
+                            symbol: stopSymbol
+                        });
+                        Layer.add(stop);
+                    }
+                }
+            }
+
+            start_map(station_keikaku, station_pointLayer);
 
             //ポップアップから追加
             view.popup.on("trigger-action", function(event) {
-                if (event.action.id === "start_station_id") {
-                    add_spots("1");
-                }
                 if (event.action.id === "lanch_id") {
                     add_spots("2");
+                    const point = {
+                        type: "point",
+                        x: view.popup.selectedFeature.attributes.X,
+                        y: view.popup.selectedFeature.attributes.Y
+                    };
+                    var stopSymbol = new PictureMarkerSymbol({
+                        url: "./marker/lanch.png",
+                        width: "20px",
+                        height: "31px"
+                    });
+                    var stop = new Graphic({
+                        geometry: point,
+                        symbol: stopSymbol
+                    });
+                    food_pointLayer.removeAll();
+                    food_pointLayer.add(stop);
                 }
                 if (event.action.id === "dinner_id") {
                     add_spots("3");
-                }
-                if (event.action.id === "goal_station_id") {
-                    add_spots("4");
+                    const point = {
+                        type: "point",
+                        x: view.popup.selectedFeature.attributes.X,
+                        y: view.popup.selectedFeature.attributes.Y
+                    };
+                    var stopSymbol = new PictureMarkerSymbol({
+                        url: "./marker/dinner.png",
+                        width: "20px",
+                        height: "31px"
+                    });
+                    var stop = new Graphic({
+                        geometry: point,
+                        symbol: stopSymbol
+                    });
+                    food_pointLayer.removeAll();
+                    food_pointLayer.add(stop);
                 }
             });
 
-            function add_spots(num) {
+            //マップ上から昼食・夕食を設定する
+            function add_spots(mode) {
                 //minatomirai_shopとminatomirai_kankouのレイヤーのIDは小文字のid
                 var spot_id = view.popup.selectedFeature.attributes.id;
                 jQuery(function($) {
@@ -273,7 +450,7 @@ try {
                         dataType: "json",
                         data: {
                             post_data_1: spot_id,
-                            post_data_2: num
+                            post_data_2: mode
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown) {
                             alert("ajax通信に失敗しました");
@@ -282,6 +459,11 @@ try {
                             //alert(response[0]);
                             //esriの関数の外へ
                             toframe(response[0], response[1]);
+                            if (mode == "2") {
+                                alert("「" + response[0] + "」を昼食に設定しました");
+                            } else if(mode == "3"){
+                                alert("「" + response[0] + "」を夕食に設定しました");
+                            }
                         }
                     });
                 });
@@ -289,73 +471,85 @@ try {
 
         });
 
+        //表示を更新する
         function toframe(data, id) {
             //frameの関数
             update_frame(data, id);
+            change_href("toggle_keiro");
+            change_href("keiro");
+
+            change_href("see_myroute");
+            change_href("toggle_see_myroute");
         }
     </script>
 
 </head>
 
 <body>
-    <div id="detailbox">
-        <h3>観光スポットの詳細情報</h3>
+    <div class="container">
+        <main>
+            <div id="detailbox">
+                <h3>観光スポットの詳細情報</h3>
 
-        <div id="box" class="clearfix">
+                <div id="box" class="clearfix">
 
-            <div id="imgbox">
-                <div id="viewbox">
-                    <div id="viewDiv"></div>
+                    <div id="imgbox">
+                        <div id="viewbox">
+                            <div id="viewDiv"></div>
+                        </div>
+                    </div>
+
+                    <div id="infobox">
+                        <table>
+                            <tr>
+                                <th>名称</th>
+                                <td><?php echo $result1["name"]; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>ジャンル</th>
+                                <td><?php echo $result1["genre"]; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>営業時間</th>
+                                <td><?php echo nl2br($result1["time"]); ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>予算</th>
+                                <td><?php echo nl2br($result1["money"]); ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>予約</th>
+                                <td><?php echo nl2br($result1["yoyaku"]); ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>お問い合わせ</th>
+                                <td><?php echo $result1["tel"]; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>ホームページURL</th>
+                                <td>
+                                    <?php
+                                    if (!empty($row["homepage"])) {
+                                        print "<a href = " . $row["homepage"] . " target=_blank>ホームページにアクセスする</a>";
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                        </table>
+                        <li><a href="search.php">飲食店検索に戻る</a></li>
+                    </div>
                 </div>
             </div>
-
-            <div id="infobox">
-                <table>
-                    <tr>
-                        <th>名称</th>
-                        <td><?php echo $result1["name"]; ?></td>
-                    </tr>
-
-                    <tr>
-                        <th>ジャンル</th>
-                        <td><?php echo $result1["genre"]; ?></td>
-                    </tr>
-
-                    <tr>
-                        <th>営業時間</th>
-                        <td><?php echo nl2br($result1["time"]); ?></td>
-                    </tr>
-
-                    <tr>
-                        <th>予算</th>
-                        <td><?php echo nl2br($result1["money"]); ?></td>
-                    </tr>
-
-                    <tr>
-                        <th>予約</th>
-                        <td><?php echo nl2br($result1["yoyaku"]); ?></td>
-                    </tr>
-
-                    <tr>
-                        <th>お問い合わせ</th>
-                        <td><?php echo $result1["tel"]; ?></td>
-                    </tr>
-
-                    <tr>
-                        <th>ホームページURL</th>
-                        <td>
-                            <?php
-                            if (!empty($row["homepage"])) {
-                                print "<a href = " . $row["homepage"] . " target=_blank>ホームページにアクセスする</a>";
-                            }
-                            ?>
-                        </td>
-                    </tr>
-                </table>
-                <li><a href="search_form.php">飲食店検索に戻る</a></li>
-            </div>
-        </div>
-
+        </main>
+        <footer>
+            <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>
+        </footer>
     </div>
 </body>
 

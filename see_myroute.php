@@ -63,22 +63,22 @@ try {
     */
 
     $stmt1 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
-    $stmt1->bindParam(":id", $_SESSION["start_station_id"]);
+    $stmt1->bindParam(":id", $start_station_id);
     $stmt1->execute();
     $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
 
     $stmt2 = $pdo->prepare("SELECT * FROM minatomirai_shop_data WHERE id = :id");
-    $stmt2->bindParam(":id", $_SESSION["lanch_id"]);
+    $stmt2->bindParam(":id", $lanch_shop_id);
     $stmt2->execute();
     $result2 = $stmt2->fetch(PDO::FETCH_ASSOC);
 
     $stmt3 = $pdo->prepare("SELECT * FROM minatomirai_shop_data WHERE id = :id");
-    $stmt3->bindParam(":id", $_SESSION["dinner_id"]);
+    $stmt3->bindParam(":id", $dinner_shop_id);
     $stmt3->execute();
     $result3 = $stmt3->fetch(PDO::FETCH_ASSOC);
 
     $stmt4 = $pdo->prepare("SELECT * FROM minatomirai_station_data WHERE id = :id");
-    $stmt4->bindParam(":id", $_SESSION["goal_station_id"]);
+    $stmt4->bindParam(":id", $goal_station_id);
     $stmt4->execute();
     $result4 = $stmt4->fetch(PDO::FETCH_ASSOC);
 
@@ -91,7 +91,7 @@ try {
             $stmt5->bindParam(":id", $s_l);
             $stmt5->execute();
             $result5 = $stmt5->fetch(PDO::FETCH_ASSOC);
-            $spot_count +=1;
+            $spot_count += 1;
             $s_l_kankou_spots_id[] = [$result5["x"], $result5["y"], $spot_count];
         }
     }
@@ -104,7 +104,7 @@ try {
             $stmt6->bindParam(":id", $l_d);
             $stmt6->execute();
             $result6 = $stmt6->fetch(PDO::FETCH_ASSOC);
-            $spot_count +=1;
+            $spot_count += 1;
             $l_d_kankou_spots_id[] = [$result6["x"], $result6["y"], $spot_count];
         }
     }
@@ -117,14 +117,15 @@ try {
             $stmt7->bindParam(":id", $d_g);
             $stmt7->execute();
             $result7 = $stmt7->fetch(PDO::FETCH_ASSOC);
-            $spot_count +=1;
+            $spot_count += 1;
             $d_g_kankou_spots_id[] = [$result7["x"], $result7["y"], $spot_count];
         }
     }
-
 } catch (PDOException $e) {
 }
 
+//keikakuは目的地の配列
+//keikakuの配列作成
 $keikaku[] = [$result1["x"], $result1["y"], "start"];
 
 foreach ($s_l_kankou_spots_id as $s_l_add) {
@@ -166,27 +167,6 @@ $keikaku[] = [$result4["x"], $result4["y"], "goal"];
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>作成した観光経路を見る</title>
     <style>
-        #viewbox {
-            position: absolute;
-            float: left;
-            width: 80vw;
-            height: 80vh;
-            margin-left: 5px;
-        }
-
-        #viewbox h3 {
-            border-left: 5px solid #000080;
-            margin: 0px;
-        }
-
-        #viewbox #viewDiv {
-            position: relative;
-            padding: 0;
-            margin: 0;
-            height: 90%;
-            width: 95%;
-        }
-
         #viewbox #btn {
             width: 80%;
             height: 5vh;
@@ -204,34 +184,14 @@ $keikaku[] = [$result4["x"], $result4["y"], "goal"];
             border-bottom: 2px solid #00ccff;
         }
 
-        @media screen and (min-width:769px) and (max-width:1366px) {
-            h3 {
-                font-size: 18px;
-            }
-
-            #viewbox {
-                width: 70vw;
-                height: 70vh;
-            }
+        #viewbox #pin {
+            width: 30px;
+            height: 45px;
         }
 
-        @media screen and (max-width:768px) {
-            h3 {
-                font-size: 15px;
-            }
+        @media screen and (min-width:769px) and (max-width:1366px) {}
 
-            #viewbox {
-                width: 95vw;
-                height: 100vh;
-                margin: 0px;
-            }
-
-            #viewbox #viewDiv {
-                width: 90%;
-                height: 85%;
-            }
-
-        }
+        @media screen and (max-width:768px) {}
     </style>
 
     <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css" />
@@ -430,10 +390,6 @@ $keikaku[] = [$result4["x"], $result4["y"], "goal"];
             //ルート表示のレイヤー
             const routeLayer = new GraphicsLayer();
 
-            const s_l_pointLayer = new GraphicsLayer();
-            const l_d_pointLayer = new GraphicsLayer();
-            const d_g_pointLayer = new GraphicsLayer();
-
             // Setup the route parameters
             const routeParams = new RouteParameters({
                 // An authorization string used to access the routing service
@@ -562,7 +518,13 @@ $keikaku[] = [$result4["x"], $result4["y"], "goal"];
                 container: "viewDiv", // Reference to the scene div created in step 5
                 map: map, // Reference to the map object created before the scene
                 center: [139.635, 35.453],
-                zoom: 14
+                zoom: 14,
+                popup: {
+                    dockEnabled: true,
+                    dockOptions: {
+                        breakpoint: false
+                    }
+                }
             });
 
             //phpの経路情報をjavascript用に変換           
@@ -651,14 +613,50 @@ $keikaku[] = [$result4["x"], $result4["y"], "goal"];
 
         });
 
+        //データベースに観光計画を保存する
+        function database_hozon() {
+            var dummy = "観光計画を保存しました";
+            jQuery(function($) {
+                $.ajax({
+                    url: "./ajax_userdata_keep.php",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        post_data_1: dummy
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert("ajax通信に失敗しました");
+                    },
+                    success: function(response) {
+                        alert(response);
+                    }
+                });
+            });
+        }
     </script>
 
 </head>
 
 <body>
-    <div id="viewbox">
-        <h3>作成した観光計画</h3>
-        <div id="viewDiv"></div>
+    <div class="container">
+        <main>
+            <div id="viewbox">
+                <h3>作成した観光計画</h3>
+                <button type="button" onclick="database_hozon()">観光経路を保存する</button>
+                <div id="viewDiv"></div>
+                <img id="pin" src="./marker/start.png" alt="開始駅のアイコン" title="開始駅">開始駅
+                <img id="pin" src="./marker/goal.png" alt="終了駅のアイコン" title="終了駅">終了駅
+                <img id="pin" src="./marker/start_and_goal.png" alt="開始駅と終了駅のアイコン" title="開始・終了駅">開始駅と終了駅が同じ場合
+                <img id="pin" src="./marker/lanch.png" alt="昼食のアイコン" title="昼食">昼食
+                <img id="pin" src="./marker/dinner.png" alt="夕食のアイコン" title="夕食">夕食<br>
+                <img id="pin" src="./marker/s_l_icon_explain.png" alt="昼食前に訪れるスポットのアイコン" title="昼食前に訪れるスポット">昼食前に訪れるスポット
+                <img id="pin" src="./marker/l_d_icon_explain.png" alt="昼食後に訪れるスポットのアイコン" title="昼食後に訪れるスポット">昼食後に訪れるスポット
+                <img id="pin" src="./marker/d_g_icon_explain.png" alt="夕食前に訪れるスポットのアイコン" title="夕食前に訪れるスポット">夕食前に訪れるスポット
+            </div>
+        </main>
+        <footer>
+            <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>
+        </footer>
     </div>
 </body>
 

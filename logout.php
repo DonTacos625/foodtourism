@@ -33,6 +33,7 @@ $_SESSION = array();
 
     <title>ログイン</title>
 
+    <link rel="stylesheet" type="text/css" href="css/copyright.css">
     <style>
         body {
             background: linear-gradient(45deg, #99ffff, #ffffff);
@@ -63,11 +64,18 @@ $_SESSION = array();
 </head>
 
 <body>
-    <div id="logoutbox"><br><br><br>
-        <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
-        <h3>ログアウト</h3>
-        <a href="login.php">ログイン画面</a>
-        <div><?php echo htmlspecialchars($errormessage, ENT_QUOTES); ?></div>
+    <div class="container">
+        <main>
+            <div id="logoutbox"><br><br><br>
+                <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
+                <h3>ログアウト</h3>
+                <a href="login.php">ログイン画面</a>
+                <div><?php echo htmlspecialchars($errormessage, ENT_QUOTES); ?></div>
+            </div>
+        </main>
+        <footer>
+            <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>
+        </footer>
     </div>
 </body>
 

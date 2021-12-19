@@ -57,10 +57,35 @@ if (!empty($_POST["login"])) {
                     $_SESSION["age"] = $result1["age"];
                     $_SESSION["gender"] = $result1["gender"];
 
-                    for ($i = 1; $i <= $data_num; $i++) {
-                        $_SESSION["info" . $i] = $result1["info" . $i];
+                    //ユーザーのデータベースから値を入れる
+                    //開始・終了駅と昼食・夕食店舗をセッション変数に格納
+                    $user_id = $_SESSION["user"];
+                    $userdatastmt = $pdo->prepare("SELECT * FROM userdata.$user_id WHERE start_id IS NOT NULL ");
+                    $userdatastmt->execute();
+                    foreach ($userdatastmt as $row) {
+                        $_SESSION["start_station_id"] = $row["start_id"];
+                        $_SESSION["lanch_id"] = $row["lanch_id"];
+                        $_SESSION["dinner_id"] = $row["dinner_id"];
+                        $_SESSION["goal_station_id"] = $row["goal_id"];
+                    }
+                    //各スポットIdをセッション変数に格納
+                    $userdatastmt1 = $pdo->prepare("SELECT * FROM userdata.$user_id WHERE s_l_ids IS NOT NULL ");
+                    $userdatastmt1->execute();
+                    $userdatastmt2 = $pdo->prepare("SELECT * FROM userdata.$user_id WHERE l_d_ids IS NOT NULL ");
+                    $userdatastmt2->execute();
+                    $userdatastmt3 = $pdo->prepare("SELECT * FROM userdata.$user_id WHERE d_g_ids IS NOT NULL ");
+                    $userdatastmt3->execute();
+                    foreach ($userdatastmt1 as $row1) {
+                        $_SESSION["s_l_kankou_spots_id"] = $row1["s_l_ids"];
+                    }
+                    foreach ($userdatastmt2 as $row2) {
+                        $_SESSION["l_d_kankou_spots_id"] = $row2["l_d_ids"];
+                    }
+                    foreach ($userdatastmt3 as $row3) {
+                        $_SESSION["d_g_kankou_spots_id"] = $row3["d_g_ids"];
                     }
 
+                    //ログイン成功でホームに移動
                     header("Location: home.php");
                     exit();
                 } else if (!password_verify($pass, $result1[0]["pass"])) {
@@ -100,6 +125,7 @@ if (!empty($_POST["login"])) {
 
     <title>ログイン</title>
 
+    <link rel="stylesheet" type="text/css" href="css/copyright.css">
     <style>
         body {
             background: linear-gradient(45deg, #99ffff, #ffffff);
@@ -141,46 +167,53 @@ if (!empty($_POST["login"])) {
 </head>
 
 <body>
-    <div id="loginbox"><br><br><br>
-        <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
-        <p>
-            こちらは横浜みなとみらい近隣でのフードツーリズム計画の作成を支援するシステムです。<br>
-            利用には<a href="signup.php">利用者登録</a>が必要となります。<br>
-        </p>
+    <div class="container">
+        <main>
+            <div id="loginbox"><br><br><br>
+                <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
+                <p>
+                    こちらは横浜みなとみらい近隣でのフードツーリズム計画の作成を支援するシステムです。<br>
+                    利用には<a href="signup.php">利用者登録</a>が必要となります。<br>
+                </p>
 
-        <h3>ログイン</h3>
-        <form id="loginform" name="loginform" action="" method="POST" autocomplete="off">
-            <table>
-                <tr>
-                    <th><label for="user">ID</label></th>
-                    <td>
-                        <input type="text" id="user" name="user" placeholder="IDを入力" value="<?php if (!empty($_POST["userid"])) {
-                                                                                                echo htmlspecialchars($_POST["userid"], ENT_QUOTES);
-                                                                                            } ?>" required>
-                    </td>
-                </tr>
+                <h3>ログイン</h3>
+                <form id="loginform" name="loginform" action="" method="POST" autocomplete="off">
+                    <table>
+                        <tr>
+                            <th><label for="user">ID</label></th>
+                            <td>
+                                <input type="text" id="user" name="user" placeholder="IDを入力" value="<?php if (!empty($_POST["userid"])) {
+                                                                                                        echo htmlspecialchars($_POST["userid"], ENT_QUOTES);
+                                                                                                    } ?>" required>
+                            </td>
+                        </tr>
 
-                <tr>
-                    <th><label for="pass">パスワード</label></th>
-                    <td>
-                        <input type="password" id="pass" name="pass" placeholder="パスワードを入力" value="" required>
-                    </td>
-                </tr>
+                        <tr>
+                            <th><label for="pass">パスワード</label></th>
+                            <td>
+                                <input type="password" id="pass" name="pass" placeholder="パスワードを入力" value="" required>
+                            </td>
+                        </tr>
 
-                <tr>
-                    <td></td>
-                    <td><input type="submit" id="login" name="login" value="ログイン"></td>
-                </tr>
-            </table>
-        </form>
+                        <tr>
+                            <td></td>
+                            <td><input type="submit" id="login" name="login" value="ログイン"></td>
+                        </tr>
+                    </table>
+                </form>
 
-        <div>
-            <font color="#ff0000"><?php echo htmlspecialchars($errormessage, ENT_QUOTES); ?></font>
-        </div>
-        <div>
-            <font color="#ff0000"><?php //echo htmlspecialchars($signupmessage, ENT_QUOTES); 
-                                    ?></font>
-        </div>
+                <div>
+                    <font color="#ff0000"><?php echo htmlspecialchars($errormessage, ENT_QUOTES); ?></font>
+                </div>
+                <div>
+                    <font color="#ff0000"><?php //echo htmlspecialchars($signupmessage, ENT_QUOTES); 
+                                            ?></font>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>
+        </footer>
     </div>
 </body>
 

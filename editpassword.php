@@ -143,50 +143,57 @@ if (!empty($_POST["editpass"])) {
 </head>
 
 <body>
-    <div id="editbox">
-        <h2>パスワード変更</h2>
-        <form id="editform" name="editform" action="" method="POST">
-            <table>
-                <tr>
-                    <th rowspan="2" scope="rowgroup"><label for="pass">旧パスワード</label></th>
-                    <td scope="row"><small>現在のパスワードを入力して下さい</small></td>
-                </tr>
+    <div class="container">
+        <main>
+            <div id="editbox">
+                <h2>パスワード変更</h2>
+                <form id="editform" name="editform" action="" method="POST">
+                    <table>
+                        <tr>
+                            <th rowspan="2" scope="rowgroup"><label for="pass">旧パスワード</label></th>
+                            <td scope="row"><small>現在のパスワードを入力して下さい</small></td>
+                        </tr>
 
-                </tr>
-                <td><input type="password" id="pass" name="pass" placeholder="現在のパスワードを入力" value="" required></td>
-                </tr>
+                        </tr>
+                        <td><input type="password" id="pass" name="pass" placeholder="現在のパスワードを入力" value="" required></td>
+                        </tr>
 
-                <tr>
-                    <th rowspan="2" scope="rowgroup"><label for="pass1">新パスワード</label></th>
-                    <td scope="row"><small>半角英数字をそれぞれ1種類以上含む6~15文字</small></td>
-                </tr>
+                        <tr>
+                            <th rowspan="2" scope="rowgroup"><label for="pass1">新パスワード</label></th>
+                            <td scope="row"><small>半角英数字をそれぞれ1種類以上含む6~15文字</small></td>
+                        </tr>
 
-                </tr>
-                <td><input type="password" id="pass1" name="pass1" placeholder="新しいパスワードを入力" value="" required></td>
-                </tr>
+                        </tr>
+                        <td><input type="password" id="pass1" name="pass1" placeholder="新しいパスワードを入力" value="" required></td>
+                        </tr>
 
-                <tr>
-                    <th rowspan="2" scope="rowgroup"><label for="pass2">新パスワード(確認)</label></th>
-                    <td scope="row"><small>パスワードを再入力して下さい</small></td>
-                </tr>
+                        <tr>
+                            <th rowspan="2" scope="rowgroup"><label for="pass2">新パスワード(確認)</label></th>
+                            <td scope="row"><small>パスワードを再入力して下さい</small></td>
+                        </tr>
 
-                </tr>
-                <td><input type="password" id="pass2" name="pass2" placeholder="新しいパスワードを再入力" value="" required></td>
-                </tr>
+                        </tr>
+                        <td><input type="password" id="pass2" name="pass2" placeholder="新しいパスワードを再入力" value="" required></td>
+                        </tr>
 
-                <tr>
-                    <td></td>
-                    <td><input type="submit" id="editpass" name="editpass" value="変更"></td>
-                </tr>
-            </table>
-        </form>
+                        <tr>
+                            <td></td>
+                            <td><input type="submit" id="editpass" name="editpass" value="変更"></td>
+                        </tr>
+                    </table>
+                </form>
 
-        <div>
-            <font color="#ff0000"><?php echo htmlspecialchars($errormessage, ENT_QUOTES); ?></font>
-        </div>
-        <div>
-            <font color="#0000ff"><?php echo htmlspecialchars($editmessage, ENT_QUOTES); ?></font>
-        </div>
+                <div>
+                    <font color="#ff0000"><?php echo htmlspecialchars($errormessage, ENT_QUOTES); ?></font>
+                </div>
+                <div>
+                    <font color="#0000ff"><?php echo htmlspecialchars($editmessage, ENT_QUOTES); ?></font>
+                </div>
+        </main>
+        <footer>
+            <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>
+        </footer>
+    </div>
 </body>
 
 </html>

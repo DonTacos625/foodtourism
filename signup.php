@@ -78,15 +78,16 @@ if (!empty($_POST["signup"])) {
                 $stmt3->execute();
 
                 //DB作成
-                /*
-                $sql = "CREATE TABLE userdata.".$user." (
-		            id int,
-		            spot_name text,
-		            X text,
-		            Y text
+                $sql = "CREATE TABLE userdata." . $user . " (
+		            start_id int,
+                    s_l_ids int,
+                    lanch_id int,
+                    l_d_ids int,
+                    dinner_id int,
+                    d_g_ids int,
+                    goal_id int
 	            )";
                 $res = $pdo->query($sql);
-                */
 
                 //ログイン画面へ移動
                 header("Location: login.php?register=1");
@@ -125,6 +126,7 @@ if (!empty($_POST["signup"])) {
 
     <title>サインアップ</title>
 
+    <link rel="stylesheet" type="text/css" href="css/copyright.css">
     <style>
         body {
             background: linear-gradient(45deg, #99ffff, #ffffff);
@@ -170,71 +172,78 @@ if (!empty($_POST["signup"])) {
 </head>
 
 <body>
-    <div id="signupbox">
-        <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
+    <div class="container">
+        <main>
+            <div id="signupbox">
+                <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
 
-        <h3>利用者登録</h3>
-        <form id="signupform" name="signupForm" action="" method="POST" autocomplete="off">
-            <table>
-                <tr>
-                    <th rowspan="2" scope="rowgroup"><label for="user">ID</label></th>
-                    <td scope="row"><small>半角英数字4~10文字</small></td>
-                </tr>
+                <h3>利用者登録</h3>
+                <form id="signupform" name="signupForm" action="" method="POST" autocomplete="off">
+                    <table>
+                        <tr>
+                            <th rowspan="2" scope="rowgroup"><label for="user">ID</label></th>
+                            <td scope="row"><small>半角英数字4~10文字</small></td>
+                        </tr>
 
-                <tr>
-                    <td scope="row"><input type="text" id="user" name="user" placeholder="IDを入力" value="" required></td>
-                </tr>
+                        <tr>
+                            <td scope="row"><input type="text" id="user" name="user" placeholder="IDを入力" value="" required></td>
+                        </tr>
 
-                <tr>
-                    <th rowspan="2" scope="rowgroup"><label for="pass">パスワード</label></th>
-                    <td scope="row"><small>半角英数字をそれぞれ1種類以上含む6~15文字</small></td>
-                </tr>
+                        <tr>
+                            <th rowspan="2" scope="rowgroup"><label for="pass">パスワード</label></th>
+                            <td scope="row"><small>半角英数字をそれぞれ1種類以上含む6~15文字</small></td>
+                        </tr>
 
-                <tr>
-                    <td scope="row"><input type="password" id="pass" name="pass" placeholder="パスワードを入力" value="" required></td>
-                </tr>
+                        <tr>
+                            <td scope="row"><input type="password" id="pass" name="pass" placeholder="パスワードを入力" value="" required></td>
+                        </tr>
 
-                <tr>
-                    <th rowspan="2" scope="rowgroup"><label for="pass2">パスワード(確認)</label></th>
-                    <td scope="row"><small>パスワードを再入力して下さい</small></td>
-                </tr>
+                        <tr>
+                            <th rowspan="2" scope="rowgroup"><label for="pass2">パスワード(確認)</label></th>
+                            <td scope="row"><small>パスワードを再入力して下さい</small></td>
+                        </tr>
 
-                <tr>
-                    <td scope="row"><input type="password" id="pass2" name="pass2" placeholder="パスワードを再入力" value="" required></td>
-                </tr>
+                        <tr>
+                            <td scope="row"><input type="password" id="pass2" name="pass2" placeholder="パスワードを再入力" value="" required></td>
+                        </tr>
 
-                <tr>
-                    <th>年代</th>
-                    <td>
-                        <input type="radio" id="age" name="age" value="10" checked="checked">10代
-                        <input type="radio" id="age" name="age" value="20">20代
-                        <input type="radio" id="age" name="age" value="30">30代<br>
-                        <input type="radio" id="age" name="age" value="40">40代
-                        <input type="radio" id="age" name="age" value="50">50代
-                        <input type="radio" id="age" name="age" value="60">60代以上
-                    </td>
-                </tr>
+                        <tr>
+                            <th>年代</th>
+                            <td>
+                                <input type="radio" id="age" name="age" value="10" checked="checked">10代
+                                <input type="radio" id="age" name="age" value="20">20代
+                                <input type="radio" id="age" name="age" value="30">30代<br>
+                                <input type="radio" id="age" name="age" value="40">40代
+                                <input type="radio" id="age" name="age" value="50">50代
+                                <input type="radio" id="age" name="age" value="60">60代以上
+                            </td>
+                        </tr>
 
-                <tr>
-                    <th>性別</th>
-                    <td>
-                        <input type="radio" id="gender" name="gender" value="0" checked="checked">男性
-                        <input type="radio" id="gender" name="gender" value="1">女性
-                    </td>
-                </tr>
+                        <tr>
+                            <th>性別</th>
+                            <td>
+                                <input type="radio" id="gender" name="gender" value="0" checked="checked">男性
+                                <input type="radio" id="gender" name="gender" value="1">女性
+                            </td>
+                        </tr>
 
-                <tr>
-                    <td></td>
-                    <td><input type="submit" id="signup" name="signup" value="登録"><a href="login.php">ログイン画面</a></td>
-                </tr>
-            </table>
-        </form>
-        <div>
-            <font color="#ff0000"><?php echo htmlspecialchars($errormessage, ENT_QUOTES); ?></font>
-        </div>
-        <div>
-            <font color="#0000ff"><?php echo htmlspecialchars($signupmessage, ENT_QUOTES); ?></font>
-        </div>
+                        <tr>
+                            <td></td>
+                            <td><input type="submit" id="signup" name="signup" value="登録"><a href="login.php">ログイン画面</a></td>
+                        </tr>
+                    </table>
+                </form>
+                <div>
+                    <font color="#ff0000"><?php echo htmlspecialchars($errormessage, ENT_QUOTES); ?></font>
+                </div>
+                <div>
+                    <font color="#0000ff"><?php echo htmlspecialchars($signupmessage, ENT_QUOTES); ?></font>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>
+        </footer>
     </div>
 </body>
 
