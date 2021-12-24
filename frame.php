@@ -144,12 +144,12 @@ function display_frame($name_row, $time)
     <link rel="stylesheet" type="text/css" href="css/copyright.css">
     <link rel="stylesheet" type="text/css" href="css/viewbox.css">
     <style>
-        body {
-            background: #99ffff;
-        }
-
         h1 {
             margin: 0px;
+        }
+
+        .search_form {
+            line-height: 200%;
         }
 
         #dropmenu {
@@ -377,9 +377,8 @@ function display_frame($name_row, $time)
         //leftの情報を上書きする
         function update_frame(data, id) {
             const update = document.getElementById(id);
-            //const update = document.getElementsBy(id);
             update.innerHTML = data;
-            console.log(update.innerHTML);
+            //console.log(update.innerHTML);
         }
 
         //time(1,2,3)の時間帯のidが一致するスポットを削除する
@@ -399,12 +398,15 @@ function display_frame($name_row, $time)
                     success: function(response) {
                         //alert("削除されたのは" + response[0][0]);
                         /*
-                        if (!(response == "")) {
-                            update_frame("設定されていません", response);
+                        if (response.length < 1) {
+                            alert("「" + response[0][0] + "」が削除されました");
                         }
                         */
                         overwrite(time, response, 0);
                         overwrite(time, response, 1);
+
+                        //keiroの関数
+                        kousin();
                     }
                 });
             });
@@ -434,6 +436,9 @@ function display_frame($name_row, $time)
                         */
                         overwrite(time, response, 0);
                         overwrite(time, response, 1);
+
+                        //keiroの関数
+                        kousin();
                     }
                 });
             });
@@ -464,7 +469,8 @@ function display_frame($name_row, $time)
             for (var i = 0; i < name_array.length; i++) {
                 //alert(name_array[i][1]);
                 const newDiv = document.createElement("div");
-                newDiv.innerHTML = `${i+1}:${name_array[i][0]}`;
+                var j = i + 1;
+                newDiv.innerHTML = j + ":" + name_array[i][0];
                 const removeBtn = document.createElement("button");
                 removeBtn.innerHTML = "×";
                 removeBtn.className = 'btn2';
@@ -514,7 +520,7 @@ function display_frame($name_row, $time)
 
         <li><a>マイページ</a>
             <ul>
-                <li><a id="see_myroute" name="see_myroute" href="see_myroute.php">作成した観光経路を見る</a></li>
+                <li><a id="see_myroute" name="see_myroute" href="see_myroute.php">作成した観光計画を見る</a></li>
                 <li><a href="editpassword.php">パスワード変更</a></li>
                 <li><a href="logout.php">ログアウト</a></li>
             </ul>
@@ -575,6 +581,7 @@ function display_frame($name_row, $time)
         <img id="pin" width="20" height="30" src="./marker/goal.png" alt="終了駅のアイコン" title="終了駅">
         <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div>
 
+
         <h2>アンケート</h2>
         <?php
         if ($frameresult["survey"]) {
@@ -611,7 +618,7 @@ function display_frame($name_row, $time)
 
                 <li><a>マイページ</a>
                     <ul>
-                        <li><a id="toggle_see_myroute" name="toggle_see_myroute" href="see_myroute.php">作成した観光経路を見る</a></li>
+                        <li><a id="toggle_see_myroute" name="toggle_see_myroute" href="see_myroute.php">作成した観光計画を見る</a></li>
                         <li><a href="editpassword.php">パスワード変更</a></li>
                         <li><a href="logout.php">ログアウト</a></li>
                     </ul>
@@ -645,39 +652,46 @@ function display_frame($name_row, $time)
                     <h2>現在の観光計画</h2>
                     <ul>
                         <li><b>開始駅：</b>
+                            <img id="pin" width="20" height="20" src="./pop_start.png" alt="開始駅のアイコン" title="開始駅">
                             <div id="start_name"><?php echo htmlspecialchars($start_station_name, ENT_QUOTES); ?></div>
-                        </li>
+                        </li><br>
 
                         <li>
                             <b>昼食前に訪れる観光スポット：</b>
+                            <img id="pin" width="20" height="20" src="./marker/pop_icon1_f.png" alt="昼食前に訪れる観光スポットのアイコン" title="昼食前に訪れる観光スポット">
                             <div id="toggle_s_l_spots_line">
                                 <?php display_frame($s_l_spots_name, 1) ?>
                             </div>
                         </li><br>
 
                         <li><b>昼食予定地:</b>
+                            <img id="pin" width="20" height="20" src="./pop_lanch.png" alt="昼食予定地のアイコン" title="昼食予定地">
                             <div id="lanch_name"><?php echo htmlspecialchars($lanch_name, ENT_QUOTES); ?></div>
-                        </li>
+                        </li><br>
 
                         <li>
                             <b>昼食後に訪れる観光スポット：</b>
+                            <img id="pin" width="20" height="20" src="./marker/pop_icon2_f.png" alt="昼食後に訪れる観光スポットのアイコン" title="昼食後に訪れる観光スポット">
                             <div id="toggle_l_d_spots_line">
                                 <?php display_frame($l_d_spots_name, 2) ?>
                             </div>
                         </li><br>
 
                         <li><b>夕食予定地:</b>
+                            <img id="pin" width="20" height="20" src="./pop_dinner.png" alt="夕食予定地のアイコン" title="夕食予定地">
                             <div id="dinner_name"><?php echo htmlspecialchars($dinner_name, ENT_QUOTES); ?></div>
-                        </li>
+                        </li><br>
 
                         <li>
                             <b>夕食前に訪れる観光スポット：</b>
+                            <img id="pin" width="20" height="20" src="./marker/pop_icon3_f.png" alt="夕食後に訪れる観光スポットのアイコン" title="夕食後に訪れる観光スポット">
                             <div id="toggle_d_g_spots_line">
                                 <?php display_frame($d_g_spots_name, 3) ?>
                             </div>
                         </li><br>
 
                         <li><b>終了駅：</b>
+                            <img id="pin" width="20" height="20" src="./pop_goal.png" alt="終了駅のアイコン" title="終了駅">
                             <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div>
                         </li>
                     </ul>

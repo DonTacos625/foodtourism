@@ -2,31 +2,18 @@
 
 require "frame.php";
 
-$message = "";
-$set_stations = 0;
-$set_foods = 0;
-if (!isset($_SESSION["start_station_id"]) || !isset($_SESSION["goal_station_id"])) {
-    $message = "開始・終了駅が設定されていません";
-} else if (!isset($_SESSION["lanch_id"]) || !isset($_SESSION["dinner_id"])) {
-    $message = "昼食・夕食予定地が設定されていません";
-}
-if (isset($_SESSION["start_station_id"]) && isset($_SESSION["goal_station_id"])) {
-    $set_stations = 1;
-}
-if (isset($_SESSION["lanch_id"]) && isset($_SESSION["dinner_id"])) {
-    $set_foods = 1;
-}
+$spot_id = $_GET["spot_id"];
 
 //stations_id設定
-if (!isset($_SESSION["start_station_id"])) {
-    $start_station_id = 0;
-} else {
+if (isset($_SESSION["start_station_id"])) {
     $start_station_id = $_SESSION["start_station_id"];
-}
-if (!isset($_SESSION["goal_station_id"])) {
-    $goal_station_id = 0;
 } else {
+    $start_station_id = 0;
+}
+if (isset($_SESSION["goal_station_id"])) {
     $goal_station_id = $_SESSION["goal_station_id"];
+} else {
+    $goal_station_id = 0;
 }
 $station_id = [$start_station_id, $goal_station_id];
 
@@ -43,25 +30,6 @@ if (!isset($_SESSION["dinner_id"])) {
 }
 $food_shop_id = [$lanch_shop_id, $dinner_shop_id];
 
-//kankou_spots_id設定
-if (!isset($_SESSION["s_l_kankou_spots_id"])) {
-    $s_l_ids = [0];
-} else {
-    $s_l_ids = $_SESSION["s_l_kankou_spots_id"];
-}
-if (!isset($_SESSION["l_d_kankou_spots_id"])) {
-    $l_d_ids = [0];
-} else {
-    $l_d_ids = $_SESSION["l_d_kankou_spots_id"];
-}
-if (!isset($_SESSION["d_g_kankou_spots_id"])) {
-    $d_g_ids = [0];
-} else {
-    $d_g_ids = $_SESSION["d_g_kankou_spots_id"];
-}
-$spots_id = array_merge($s_l_ids, $l_d_ids, $d_g_ids);
-
-//DB接続
 try {
 
     if (!isset($_SESSION["start_station_id"])) {
@@ -104,62 +72,22 @@ try {
         $goal_station_info = [$result4["x"], $result4["y"], "goal"];
     }
 
-    $spot_count = 10;
-    if (!isset($_SESSION["s_l_kankou_spots_id"])) {
-        $s_l_kankou_spots_id = [[0, 0, 0]];
-    } else {
-        foreach ($_SESSION["s_l_kankou_spots_id"] as $s_l) {
-            $stmt5 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
-            $stmt5->bindParam(":id", $s_l);
-            $stmt5->execute();
-            $result5 = $stmt5->fetch(PDO::FETCH_ASSOC);
-            $spot_count += 1;
-            $s_l_kankou_spots_id[] = [$result5["x"], $result5["y"], $spot_count];
-        }
-    }
-    $spot_count = 20;
-    if (!isset($_SESSION["l_d_kankou_spots_id"])) {
-        $l_d_kankou_spots_id = [[0, 0, 0]];
-    } else {
-        foreach ($_SESSION["l_d_kankou_spots_id"] as $l_d) {
-            $stmt6 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
-            $stmt6->bindParam(":id", $l_d);
-            $stmt6->execute();
-            $result6 = $stmt6->fetch(PDO::FETCH_ASSOC);
-            $spot_count += 1;
-            $l_d_kankou_spots_id[] = [$result6["x"], $result6["y"], $spot_count];
-        }
-    }
-    $spot_count = 30;
-    if (!isset($_SESSION["d_g_kankou_spots_id"])) {
-        $d_g_kankou_spots_id = [[0, 0, 0]];
-    } else {
-        foreach ($_SESSION["d_g_kankou_spots_id"] as $d_g) {
-            $stmt7 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data WHERE id = :id");
-            $stmt7->bindParam(":id", $d_g);
-            $stmt7->execute();
-            $result7 = $stmt7->fetch(PDO::FETCH_ASSOC);
-            $spot_count += 1;
-            $d_g_kankou_spots_id[] = [$result7["x"], $result7["y"], $spot_count];
-        }
-    }
+    $stmt = $pdo->prepare("SELECT * FROM minatomirai_kankou_data where id = :id");
+    $stmt->bindParam(":id", $spot_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
+    //デバッグ用
+    echo $e->getMessage();
 }
 
-//keikakuは目的地の配列
 //keikakuの配列作成
 $keikaku[] = $start_station_info;
-foreach ($s_l_kankou_spots_id as $s_l_add) {
-    $keikaku[] = $s_l_add;
-}
+
 $keikaku[] = $lanch_info;
-foreach ($l_d_kankou_spots_id as $l_d_add) {
-    $keikaku[] = $l_d_add;
-}
+
 $keikaku[] = $dinner_info;
-foreach ($d_g_kankou_spots_id as $d_g_add) {
-    $keikaku[] = $d_g_add;
-}
+
 $keikaku[] = $goal_station_info;
 
 ?>
@@ -181,55 +109,118 @@ $keikaku[] = $goal_station_info;
         gtag('config', 'UA-214561408-1');
     </script>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>作成した観光計画を見る</title>
+    <title>観光スポット詳細</title>
     <style>
-        .icon_explain {
+        #detailbox {
             position: relative;
             float: left;
+            margin-left: 5px;
+        }
+
+        #detailbox h3 {
+            border-left: 5px solid #000080;
+            margin: 0px;
+        }
+
+        #detailbox #imgbox #viewbox {
+            position: relative;
+            float: left;
+            width: 75vw;
+            height: 40vw;
+            margin-bottom: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #detailbox #imgbox #viewbox #viewDiv {
+            position: relative;
+            padding: 0;
+            margin: 0;
+            height: 100%;
             width: 100%;
-            height: 15%;
         }
 
-        .pin_list1 {
-            width: 315px;
-            height: 75px;
+        #detailbox #infobox {
+            float: left;
+            width: 75vw;
+            margin-left: 5px;
         }
 
-        .pin_list2 {
-            width: 390px;
-            height: 75px;
+        .clearfix:after {
+            display: block;
+            clear: both;
+            height: 0px;
+            visibility: hidden;
+            content: ".";
         }
 
-        .pin_list3 {
-            width: 192px;
-            height: 75px;
+        #detailbox #infobox table {
+            width: 100%;
+            border: solid 3px #FFFFFF;
         }
 
-        #viewbox #btn {
-            width: 80%;
-            height: 10%;
-            color: #fff;
-            background-color: #3399ff;
-            border-bottom: 5px solid #33ccff;
-            -webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, .3);
-            box-shadow: 0 3px 5px rgba(0, 0, 0, .3);
+        #detailbox #infobox table th {
+            white-space: nowrap;
+            background: #EEEEEE;
         }
 
-        #viewbox #btn:hover {
-            margin-top: 3px;
-            color: #fff;
-            background: #0099ff;
-            border-bottom: 2px solid #00ccff;
+        #detailbox #infobox table td {
+            background: #EEEEEE;
+            padding: 3px;
         }
 
-        @media screen and (min-width:769px) and (max-width:1366px) {}
+        #detailbox #infobox table td ul {
+            margin: 0px;
+        }
+
+        #detailbox #infobox table td ul li {
+            display: inline-block;
+        }
+
+        @media screen and (min-width:769px) and (max-width:1366px) {
+            h3 {
+                margin: 0px;
+                font-size: 18px;
+            }
+        }
 
         @media screen and (max-width:768px) {
-
-            .icon_explain {
-                width: 50%;
-                height: 20%;
+            h3 {
+                margin: 0px;
+                font-size: 17px;
             }
+
+            #detailbox {
+                width: auto;
+                margin: 0px;
+                float: none;
+            }
+
+            #detailbox #imgbox #viewbox {
+                position: relative;
+                float: left;
+                width: 95%;
+                height: 50vw;
+                margin-bottom: 15px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #detailbox #infobox {
+                width: 95%;
+                float: none;
+            }
+
+            #detailbox #infobox table {
+                font-size: 13px;
+            }
+
+            #detailbox #viewbox {
+                width: 100%;
+                height: 80vw;
+                float: none;
+            }
+
         }
     </style>
 
@@ -238,8 +229,6 @@ $keikaku[] = $goal_station_info;
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
     <script>
-        var pointpic = "";
-        $totalLength = 0;
         require([
             "esri/Map",
             "esri/views/MapView",
@@ -248,11 +237,9 @@ $keikaku[] = $goal_station_info;
             "esri/Graphic",
             "esri/layers/GraphicsLayer",
             "esri/rest/support/Query",
-            "esri/rest/route",
             "esri/rest/support/RouteParameters",
             "esri/rest/support/FeatureSet",
-            "esri/symbols/PictureMarkerSymbol",
-            "esri/symbols/CIMSymbol"
+            "esri/symbols/PictureMarkerSymbol"
         ], function(
             Map,
             MapView,
@@ -261,18 +248,33 @@ $keikaku[] = $goal_station_info;
             Graphic,
             GraphicsLayer,
             Query,
-            route,
             RouteParameters,
             FeatureSet,
-            PictureMarkerSymbol,
-            CIMSymbol
+            PictureMarkerSymbol
         ) {
 
             // Point the URL to a valid routing service
             const routeUrl = "https://utility.arcgis.com/usrsvcs/servers/4550df58672c4bc6b17607b947177b56/rest/services/World/Route/NAServer/Route_World";
-            const MY_API_KEY = "AAPKfe5fdd5be2744698a188fcc0c7b7b1d742vtC5TsStg94fpwkldrfNo3SJn2jl_VuCOEEdcBiwR7dKOKxejIP_3EDj9IPSPg";
+            //popup
+            var s_l_Action = {
+                title: "昼食前に訪れる",
+                id: "s_l",
+                image: "pop_icon1.png"
+            };
 
-            var food_template = {
+            var l_d_Action = {
+                title: "昼食後に訪れる",
+                id: "l_d",
+                image: "pop_icon2.png"
+            };
+
+            var d_g_Action = {
+                title: "夕食後に訪れる",
+                id: "d_g",
+                image: "pop_icon3.png"
+            };
+
+            const food_template = {
                 title: "{Name}",
                 content: [{
                     type: "fields",
@@ -357,7 +359,8 @@ $keikaku[] = $goal_station_info;
                         label: "緯度",
                         visible: true
                     }]
-                }]
+                }],
+                actions: [s_l_Action, l_d_Action, d_g_Action]
             };
 
             //スタートとゴールの駅を決める
@@ -375,6 +378,7 @@ $keikaku[] = $goal_station_info;
                 }
             }
 
+
             //飲食店のIDから表示するスポットを決める
             var food_shop_id = <?php echo json_encode($food_shop_id); ?>;
             var food_feature_sql = "";
@@ -390,20 +394,9 @@ $keikaku[] = $goal_station_info;
                 }
             }
 
-            //観光スポットのIDから表示するスポットを決める
-            var spots_id = <?php echo json_encode($spots_id); ?>;
-            var spots_feature_sql = "";
-
-            for (var i = 0; i < spots_id.length; i++) {
-                if (i != spots_id.length - 1) {
-                    spots_feature_sql += "ID = "
-                    spots_feature_sql += spots_id[i];
-                    spots_feature_sql += " OR "
-                } else if (i == spots_id.length - 1) {
-                    spots_feature_sql += "ID = "
-                    spots_feature_sql += spots_id[i];
-                }
-            }
+            //飲食店のIDから表示するスポットを決める
+            var result = <?php echo json_encode($result) ?>;
+            var spots_feature_sql = "ID = " + result["id"];
 
             //spotLayer
             var foodLayer = new FeatureLayer({
@@ -427,140 +420,25 @@ $keikaku[] = $goal_station_info;
                 definitionExpression: spots_feature_sql
             });
 
-            //ルート表示のレイヤー
+            //選択したスポットの表示レイヤー
             const routeLayer = new GraphicsLayer();
 
-            // Setup the route parameters
-            const routeParams = new RouteParameters({
-                // An authorization string used to access the routing service
-                apiKey: MY_API_KEY,
-                attributeParameterValues: [{
-                    parameterName: "Restriction Usage",
-                    attributeName: "Walking",
-                    value: "PROHIBITED"
-                }, {
-                    parameterName: "Restriction Usage",
-                    attributeName: "Preferred for Pedestrians",
-                    value: "PREFER_LOW"
-                }],
-                restrictionAttributes: ["Walking", "Preferred for Pedestrians"],
+            //選択したスポットの表示レイヤー
+            const s_l_pointLayer = new GraphicsLayer();
+            const l_d_pointLayer = new GraphicsLayer();
+            const d_g_pointLayer = new GraphicsLayer();
 
-                stops: new FeatureSet(),
-                outSpatialReference: {
-                    // autocasts as new SpatialReference()
-                    wkid: 3857
-                },
-                directionsLengthUnits: "kilometers"
-            });
-            routeParams.returnDirections = true;
-
-            // Define the symbology used to display the stops
-            const CheckSymbol = {
-                type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-                style: "cross",
-                size: 15,
-                outline: {
-                    // autocasts as new SimpleLineSymbol()
-                    width: 4
-                }
-            };
-
-            // Define the symbology used to display the route
-            const routeSymbol = {
-                type: "simple-line", // autocasts as SimpleLineSymbol()
-                color: [0, 0, 255, 0.5],
-                width: 3
-            };
-
-            const routeArrowSymbol = new CIMSymbol({
-                data: {
-                    type: "CIMSymbolReference",
-                    symbol: {
-                        type: "CIMLineSymbol",
-                        symbolLayers: [{
-                                // black 1px line symbol
-                                type: "CIMSolidStroke",
-                                enable: true,
-                                width: 1,
-                                color: [
-                                    0,
-                                    0,
-                                    0,
-                                    255
-                                ]
-                            },
-                            {
-                                // arrow symbol
-                                type: "CIMVectorMarker",
-                                enable: true,
-                                size: 5,
-                                markerPlacement: {
-                                    type: "CIMMarkerPlacementAlongLineSameSize", // places same size markers along the line
-                                    endings: "WithMarkers",
-                                    placementTemplate: [69.5], // determines space between each arrow
-                                    angleToLine: true // symbol will maintain its angle to the line when map is rotated
-                                },
-                                frame: {
-                                    xmin: -5,
-                                    ymin: -5,
-                                    xmax: 5,
-                                    ymax: 5
-                                },
-                                markerGraphics: [{
-                                    type: "CIMMarkerGraphic",
-                                    geometry: {
-                                        rings: [
-                                            [
-                                                [
-                                                    -8,
-                                                    -5.47
-                                                ],
-                                                [
-                                                    -8,
-                                                    5.6
-                                                ],
-                                                [
-                                                    1.96,
-                                                    -0.03
-                                                ],
-                                                [
-                                                    -8,
-                                                    -5.47
-                                                ]
-                                            ]
-                                        ]
-                                    },
-                                    symbol: {
-                                        // black fill for the arrow symbol
-                                        type: "CIMPolygonSymbol",
-                                        symbolLayers: [{
-                                            type: "CIMSolidFill",
-                                            enable: true,
-                                            color: [
-                                                0,
-                                                0,
-                                                0,
-                                                255
-                                            ]
-                                        }]
-                                    }
-                                }]
-                            }
-                        ]
-                    }
-                }
-            });
-
+            const center_pointLayer = new GraphicsLayer();
 
             const map = new Map({
                 basemap: "streets",
-                layers: [stationLayer, foodLayer, spotLayer, routeLayer]
+                layers: [foodLayer, stationLayer, spotLayer, routeLayer, s_l_pointLayer, l_d_pointLayer, d_g_pointLayer, center_pointLayer]
             });
 
             const view = new MapView({
                 container: "viewDiv", // Reference to the scene div created in step 5
                 map: map, // Reference to the map object created before the scene
-                center: [139.635, 35.453],
+                center: [result["x"], result["y"]],
                 zoom: 14,
                 popup: {
                     dockEnabled: true,
@@ -569,6 +447,26 @@ $keikaku[] = $goal_station_info;
                     }
                 }
             });
+
+            //中心地点にマーカーを
+            function make_center_maker(pic, Layer, X, Y) {
+                const point = {
+                    type: "point",
+                    x: X,
+                    y: Y
+                };
+                var stopSymbol = new PictureMarkerSymbol({
+                    url: pic,
+                    width: "20px",
+                    height: "31px"
+                });
+                var stop = new Graphic({
+                    geometry: point,
+                    symbol: stopSymbol
+                });
+                Layer.add(stop);
+            }
+            make_center_maker("./marker/red_pin.png", center_pointLayer, result["x"], result["y"])
 
             //phpの経路情報をjavascript用に変換           
             var keikaku = <?php echo json_encode($keikaku); ?>;
@@ -638,74 +536,100 @@ $keikaku[] = $goal_station_info;
                             symbol: stopSymbol
                         });
                         routeLayer.add(stop);
+                        /*
                         routeParams.stops.features.push(stop);
+                        if (routeParams.stops.features.length >= 2) {
+                            route.solve(routeUrl, routeParams).then(showRoute);
+                        }
+                        */
                     }
-                }
-                if (routeParams.stops.features.length >= 2) {
-                    route.solve(routeUrl, routeParams).then(showRoute);
                 }
             }
             display_route(keikaku);
 
-            // ルート表示用のレイヤーにデータを追加
-            function showRoute(data) {
-                const routeResult = data.routeResults[0].route;
-                routeResult.symbol = routeArrowSymbol;
-                routeLayer.add(routeResult);
-                //$route_result_data = routeResult.geometry;
-                //総距離
-                $totalLength = data.routeResults[0].directions.totalLength;
-                doc();
+            //押したボタンによって
+            view.popup.on("trigger-action", function(event) {
+                if (event.action.id === "s_l") {
+                    hozon("1", s_l_pointLayer);
+                }
+                if (event.action.id === "l_d") {
+                    hozon("2", l_d_pointLayer);
+                }
+                if (event.action.id === "d_g") {
+                    hozon("3", d_g_pointLayer);
+                }
+            });
+
+            function add_point(pic, Layer) {
+                const point = {
+                    type: "point",
+                    x: view.popup.selectedFeature.attributes.X,
+                    y: view.popup.selectedFeature.attributes.Y
+                };
+                var stopSymbol = new PictureMarkerSymbol({
+                    url: pic,
+                    width: "20px",
+                    height: "31px"
+                });
+                var stop = new Graphic({
+                    geometry: point,
+                    symbol: stopSymbol
+                });
+                Layer.removeAll();
+                Layer.add(stop);
             }
 
-        });
-
-        //データベースに観光計画を保存する
-        //phpの情報をjavascript用に変換           
-        var set_stations = <?php echo json_encode($set_stations); ?>;
-        var set_foods = <?php echo json_encode($set_foods); ?>;
-
-        function database_hozon() {
-            if (set_stations == 1 && set_foods == 1) {
-                var dummy = "観光計画を保存しました";
+            function hozon(time, Layer) {
+                //スポット取得
+                const spot_id = view.popup.selectedFeature.attributes.id;
                 jQuery(function($) {
                     $.ajax({
-                        url: "./ajax_userdata_keep.php",
+                        url: "./ajax_addspot.php",
                         type: "POST",
                         dataType: "json",
                         data: {
-                            post_data_1: dummy
+                            post_data_1: spot_id,
+                            post_data_2: time
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown) {
                             alert("ajax通信に失敗しました");
                         },
                         success: function(response) {
-                            alert(response);
+                            //alert(response[0]);
+                            //esriの関数の外へ
+                            toframe(time, response[1]);
+
+                            if (response[0] == "") {
+                                alert("同じスポットは登録できません");
+                            } else if (response[0] == "3") {
+                                alert("各時間帯に登録できるスポットは3つまでです");
+                            } else {
+                                alert("「" + response[0] + "」を訪問する観光スポットに追加しました");
+                                //選択したスポットの座標に印を
+                                const point = {
+                                    type: "point",
+                                    x: view.popup.selectedFeature.attributes.X,
+                                    y: view.popup.selectedFeature.attributes.Y
+                                };
+                                const stop = new Graphic({
+                                    geometry: point,
+                                    symbol: CheckSymbol
+                                });
+                                //Layer.removeAll();
+                                Layer.add(stop);
+                            }
                         }
                     });
                 });
-            } else {
-                alert("開始・終了駅か昼食・夕食予定地が設定されていません");
-            }
-        }
+            };
 
-        function decimalPart(num, decDigits) {
-            var decPart = num - ((num >= 0) ? Math.floor(num) : Math.ceil(num));
-            return decPart.toFixed(decDigits);
-        }
+        });
 
-        function doc() {
-            var km = $totalLength.toPrecision(3);
-            $length = "総歩行距離：" + km + " km";
-            //alert($length);
-            var time = ($totalLength / 4.8);
-            var hour = Math.trunc(time);
-            var mini = 60 * decimalPart(time, 1);
-            $time = "総歩行時間：" + hour + "時間" + mini + "分";
-            //alert($time);
+        //frame関数内のoverwriteを実行する
+        function toframe(time, response) {
             //frameの関数
-            update_frame($length, "length_km");
-            update_frame($time, "time_h_m");
+            overwrite(time, response, 0);
+            overwrite(time, response, 1);
         }
     </script>
 
@@ -714,26 +638,44 @@ $keikaku[] = $goal_station_info;
 <body>
     <div class="container">
         <main>
-            <div>
-                <font color="#ff0000"><?php echo htmlspecialchars($message, ENT_QUOTES); ?></font>
-            </div>
-            <h3>作成した観光計画</h3>
-            <div class="icon_explain">
-                <img class="pin_list1" src="./marker/icon_explain_s_f.png" alt="昼食予定地のアイコン" title="アイコン説明１">
-                <img class="pin_list2" src="./marker/icon_explain_spots.png" alt="昼食予定地のアイコン" title="アイコン説明２">
-            <b>
-                <div id="length_km">総歩行距離：0.00 km</div>
-            </b>
-            <b>
-                <div id="time_h_m">総歩行時間：0時間0分</div>
-            </b><br>
-            </div>
-            <div class="move_box">
-                <a class="prev_page" name="prev_keiro" href="keiro.php">観光スポット選択に戻る</a>
-            </div><br>
-            <div id="viewbox">
-                <div id="viewDiv"></div>
-                <button type="button" id="btn" onclick="database_hozon()">観光計画を保存する</button>
+            <div id="detailbox">
+                <h3>観光スポットの詳細情報</h3>
+
+                <div id="box" class="clearfix">
+
+                    <div id="imgbox">
+                        <div id="viewbox">
+                            <div id="viewDiv"></div>
+                        </div>
+                    </div>
+
+                    <div id="infobox">
+                        <table>
+                            <tr>
+                                <th>名称</th>
+                                <td><?php echo $result["name"]; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>カテゴリー</th>
+                                <td><?php echo $result["category"]; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>ホームページURL</th>
+                                <td>
+                                    <?php
+                                    if (!empty($result["homepage"])) {
+                                        print "<a href = " . $result["homepage"] . " target=_blank>ホームページにアクセスする</a>";
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+
+                        </table>
+                        <li><a href="keiro_list.php">観光スポット選択に戻る</a></li>
+                    </div>
+                </div>
             </div>
         </main>
         <footer>

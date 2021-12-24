@@ -1,7 +1,26 @@
+        body {
+            background: #ffffff;
+            font-family: sans-serif;
+        }
+        
         .container {
             display: flex;
             flex-direction: column;
-            min-height: 110vh;
+            min-height: 130vh;
+        }
+
+        .move_box {
+            position: relative;
+            width: 75vw;
+            float: left;
+        }
+
+        .prev_page {
+            float: left;
+        }
+
+        .next_page {
+            float: right;
         }
 
         footer {
@@ -20,7 +39,11 @@
             .container {
                 display: flex;
                 flex-direction: column;
-                min-height: 180vh;
+                min-height: 250vh;
+            }
+
+            .move_box {
+                width: 100%;
             }
 
         }

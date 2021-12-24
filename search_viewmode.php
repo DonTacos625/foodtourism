@@ -185,7 +185,7 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
 <html>
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-214561408-1"></script>
     <script>
@@ -199,11 +199,29 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
         gtag('config', 'UA-214561408-1');
     </script>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>スポット一覧</title>
+    <title>飲食店の検索・決定（地図上表示）</title>
     <style>
         h3 {
             border-left: 5px solid #000080;
             margin: 0px;
+        }
+
+        .move_box {
+            position: relative;
+            width: 76vw;
+            float: left;
+        }
+
+        @media screen and (max-width:768px) {
+            .container {
+                display: flex;
+                flex-direction: column;
+                min-height: 250vh;
+            }
+
+            .move_box {
+                width: 100%;
+            }
         }
     </style>
 
@@ -501,59 +519,43 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
             //ポップアップから追加
             view.popup.on("trigger-action", function(event) {
                 if (event.action.id === "lanch_id") {
-                    //add_spots("2");
                     post_food(view.popup.selectedFeature.attributes.id, '1');
-
-                    const point = {
-                        type: "point",
-                        x: view.popup.selectedFeature.attributes.X,
-                        y: view.popup.selectedFeature.attributes.Y
-                    };
-                    var stopSymbol = new PictureMarkerSymbol({
-                        url: "./marker/lanch.png",
-                        width: "20px",
-                        height: "31px"
-                    });
-                    var stop = new Graphic({
-                        geometry: point,
-                        symbol: stopSymbol
-                    });
-                    lanch_pointLayer.removeAll();
-                    lanch_pointLayer.add(stop);
-
+                    add_point("./marker/lanch.png", lanch_pointLayer);
                 }
                 if (event.action.id === "dinner_id") {
                     post_food(view.popup.selectedFeature.attributes.id, '2');
-
-                    const point = {
-                        type: "point",
-                        x: view.popup.selectedFeature.attributes.X,
-                        y: view.popup.selectedFeature.attributes.Y
-                    };
-                    var stopSymbol = new PictureMarkerSymbol({
-                        url: "./marker/dinner.png",
-                        width: "20px",
-                        height: "31px"
-                    });
-                    var stop = new Graphic({
-                        geometry: point,
-                        symbol: stopSymbol
-                    });
-                    dinner_pointLayer.removeAll();
-                    dinner_pointLayer.add(stop);
-
+                    add_point("./marker/dinner.png", dinner_pointLayer);
                 }
                 if (event.action.id === "detail") {
                     shop_detail();
                 }
             });
 
+            function add_point(pic, Layer) {
+                const point = {
+                    type: "point",
+                    x: view.popup.selectedFeature.attributes.X,
+                    y: view.popup.selectedFeature.attributes.Y
+                };
+                var stopSymbol = new PictureMarkerSymbol({
+                    url: pic,
+                    width: "20px",
+                    height: "31px"
+                });
+                var stop = new Graphic({
+                    geometry: point,
+                    symbol: stopSymbol
+                });
+                Layer.removeAll();
+                Layer.add(stop);
+            }
+
             //店の詳細ページに飛ぶときに送信するデータ
             function shop_detail() {
                 var spot_id = view.popup.selectedFeature.attributes.id;
                 var form = document.createElement('form');
                 form.method = 'GET';
-                form.action = './shopdetail.php';
+                form.action = './shopdetail2.php';
                 var reqElm = document.createElement('input');
                 reqElm.name = 'spot_id';
                 reqElm.value = spot_id;
@@ -609,9 +611,9 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
 <body>
     <div class="container">
         <main>
-            <h3 id="search_start">飲食店検索</h3>
+            <h3 id="search_start">飲食店の検索・決定</h3>
             <a id="list_result" name="list_result" href="search.php">一覧で結果を表示</a><br>
-            <div id="search_forms">
+            <div class="search_form">
                 <form action="search_viewmode.php" method="post">
                     予約の可否：
                     <input type="radio" id="yoyaku" name="yoyaku" value="0" <?php set_checked("search_yoyaku", "0"); ?>>指定なし
@@ -653,8 +655,10 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
                     <input type="submit" name="submit" value="検索する"><br>
                 </form>
             </div>
-            <a id="prev_station" name="prev_station" href="set_station.php">開始・終了駅選択に戻る</a>
-            <a id="next_keiro" name="next_keiro" href="keiro.php">観光スポット選択へ</a><br>
+            <div class="move_box">
+                <a class="prev_page" name="prev_station" href="set_station.php">開始・終了駅選択に戻る</a>
+                <a class="next_page" name="next_keiro" href="keiro.php">観光スポット選択へ</a><br>
+            </div>
             <?php
             if ($count == 0) {
                 echo "検索条件に該当する飲食店はありませんでした";
@@ -663,7 +667,6 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
             <div id="viewbox">
                 <div id="viewDiv"></div>
             </div>
-
         </main>
         <footer>
             <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>

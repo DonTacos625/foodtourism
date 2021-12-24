@@ -127,9 +127,6 @@ if (!empty($_POST["login"])) {
 
     <link rel="stylesheet" type="text/css" href="css/copyright.css">
     <style>
-        body {
-            background: linear-gradient(45deg, #99ffff, #ffffff);
-        }
 
         #loginbox {
             width: 768px;

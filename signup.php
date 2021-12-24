@@ -128,9 +128,6 @@ if (!empty($_POST["signup"])) {
 
     <link rel="stylesheet" type="text/css" href="css/copyright.css">
     <style>
-        body {
-            background: linear-gradient(45deg, #99ffff, #ffffff);
-        }
 
         #signupbox {
             width: 768px;

@@ -169,41 +169,28 @@ $count = 0;
         gtag('config', 'UA-214561408-1');
     </script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <title>飲食店検索</title>
+    <title>飲食店の検索・決定（一覧表示）</title>
     <style>
         h3 {
             border-left: 5px solid #000080;
             margin: 0px;
         }
 
-        #search_forms {
-            width: 80vh;
-            height: 20vh;
-        }
-
         #detailbox {
             position: relative;
             float: left;
-            margin-left: 25px;
+            margin-left: 0px;
         }
 
         #detailbox #infobox {
             float: left;
-            width: 60vw;
+            width: 75vw;
             margin-left: 5px;
-        }
-
-        .clearfix:after {
-            display: block;
-            clear: both;
-            height: 0px;
-            visibility: hidden;
-            content: ".";
         }
 
         #detailbox #infobox table {
             width: 100%;
-            border: solid 3px #99ffff;
+            border: solid 3px #ffffff;
         }
 
         #detailbox #infobox table th {
@@ -225,11 +212,6 @@ $count = 0;
             display: inline-block;
         }
 
-        #detailbox #infobox:hover {
-            background: #000080;
-            border: solid 1px #99ffff;
-        }
-
         #detailbox #infobox table td pre {
             white-space: pre-wrap;
         }
@@ -245,11 +227,6 @@ $count = 0;
             h3 {
                 margin: 0px;
                 font-size: 17px;
-            }
-
-            #search_forms {
-                width: 95%;
-                height: 95%;
             }
 
             #detailbox {
@@ -300,19 +277,6 @@ $count = 0;
         });
     };
 
-    //店の詳細ページに飛ぶときに送信するデータ
-    function shop_detail(id) {
-        var form = document.createElement('form');
-        form.method = 'GET';
-        form.action = './shopdetail.php';
-        var reqElm = document.createElement('input');
-        reqElm.name = 'spot_id';
-        reqElm.value = id;
-        form.appendChild(reqElm);
-        document.body.appendChild(form);
-        form.submit();
-    };
-
     //セレクトボックスから選ばれたワードを検索ワードボックスに入れる　もっといい方法あるかも
     function input_search_name(word) {
         const update = document.getElementById("search_name");
@@ -323,126 +287,123 @@ $count = 0;
 <body>
     <div class="container">
         <main>
-            <h3 id="search_start">飲食店検索</h3>
-            <a id="view_result" name="view_result" href="search_viewmode.php">地図上で結果を表示</a><br>
-            <div id="search_forms">
-                <form action="search.php" method="post">
-                    予約の可否：
-                    <input type="radio" id="yoyaku" name="yoyaku" value="0" <?php set_checked("search_yoyaku", "0"); ?>>指定なし
-                    <input type="radio" id="yoyaku" name="yoyaku" value="予約可" <?php set_checked("search_yoyaku", "予約可"); ?>>予約可
-                    <input type="radio" id="yoyaku" name="yoyaku" value="予約不可" <?php set_checked("search_yoyaku", "予約不可"); ?>>予約不可<br>
+            <div id="detailbox">
+                <h3 id="search_start">飲食店の検索・決定</h3>
+                <a id="view_result" name="view_result" href="search_viewmode.php">地図上で結果を表示</a><br>
+                <div class="search_form">
+                    <form action="search.php" method="post">
+                        予約の可否：
+                        <input type="radio" id="yoyaku" name="yoyaku" value="0" <?php set_checked("search_yoyaku", "0"); ?>>指定なし
+                        <input type="radio" id="yoyaku" name="yoyaku" value="予約可" <?php set_checked("search_yoyaku", "予約可"); ?>>予約可
+                        <input type="radio" id="yoyaku" name="yoyaku" value="予約不可" <?php set_checked("search_yoyaku", "予約不可"); ?>>予約不可<br>
 
-                    昼食の予算：
-                    <input type="radio" id="lanch_money" name="lanch_money" value="0" <?php set_checked("search_lanch_money", "0"); ?>>指定なし
-                    <input type="radio" id="lanch_money" name="lanch_money" value="[昼]～￥999" <?php set_checked("search_lanch_money", "[昼]～￥999"); ?>>～￥999
-                    <input type="radio" id="lanch_money" name="lanch_money" value="[昼]￥1,000～￥1,999" <?php set_checked("search_lanch_money", "[昼]￥1,000～￥1,999"); ?>>￥1,000～￥1,999
-                    <input type="radio" id="lanch_money" name="lanch_money" value="[昼]￥2,000～￥2,999" <?php set_checked("search_lanch_money", "[昼]￥2,000～￥2,999"); ?>>￥2,000～￥2,999
-                    <input type="radio" id="lanch_money" name="lanch_money" value="[昼]<3000" <?php set_checked("search_lanch_money", "[昼]<3000"); ?>>￥3,000～<br>
+                        昼食の予算：
+                        <input type="radio" id="lanch_money" name="lanch_money" value="0" <?php set_checked("search_lanch_money", "0"); ?>>指定なし
+                        <input type="radio" id="lanch_money" name="lanch_money" value="[昼]～￥999" <?php set_checked("search_lanch_money", "[昼]～￥999"); ?>>～￥999
+                        <input type="radio" id="lanch_money" name="lanch_money" value="[昼]￥1,000～￥1,999" <?php set_checked("search_lanch_money", "[昼]￥1,000～￥1,999"); ?>>￥1,000～￥1,999
+                        <input type="radio" id="lanch_money" name="lanch_money" value="[昼]￥2,000～￥2,999" <?php set_checked("search_lanch_money", "[昼]￥2,000～￥2,999"); ?>>￥2,000～￥2,999
+                        <input type="radio" id="lanch_money" name="lanch_money" value="[昼]<3000" <?php set_checked("search_lanch_money", "[昼]<3000"); ?>>￥3,000～<br>
 
-                    夕食の予算：
-                    <input type="radio" id="dinner_money" name="dinner_money" value="0" <?php set_checked("search_dinner_money", "0"); ?>>指定なし
-                    <input type="radio" id="dinner_money" name="dinner_money" value="[夜]～￥999" <?php set_checked("search_dinner_money", "[夜]～￥999"); ?>>～￥999
-                    <input type="radio" id="dinner_money" name="dinner_money" value="[夜]￥1,000～￥1,999" <?php set_checked("search_dinner_money", "[夜]￥1,000～￥1,999"); ?>>￥1,000～￥1,999
-                    <input type="radio" id="dinner_money" name="dinner_money" value="[夜]￥2,000～￥2,999" <?php set_checked("search_dinner_money", "[夜]￥2,000～￥2,999"); ?>>￥2,000～￥2,999
-                    <input type="radio" id="dinner_money" name="dinner_money" value="[夜]<3000" <?php set_checked("search_dinner_money", "[夜]<3000"); ?>>￥3,000～<br>
+                        夕食の予算：
+                        <input type="radio" id="dinner_money" name="dinner_money" value="0" <?php set_checked("search_dinner_money", "0"); ?>>指定なし
+                        <input type="radio" id="dinner_money" name="dinner_money" value="[夜]～￥999" <?php set_checked("search_dinner_money", "[夜]～￥999"); ?>>～￥999
+                        <input type="radio" id="dinner_money" name="dinner_money" value="[夜]￥1,000～￥1,999" <?php set_checked("search_dinner_money", "[夜]￥1,000～￥1,999"); ?>>￥1,000～￥1,999
+                        <input type="radio" id="dinner_money" name="dinner_money" value="[夜]￥2,000～￥2,999" <?php set_checked("search_dinner_money", "[夜]￥2,000～￥2,999"); ?>>￥2,000～￥2,999
+                        <input type="radio" id="dinner_money" name="dinner_money" value="[夜]<3000" <?php set_checked("search_dinner_money", "[夜]<3000"); ?>>￥3,000～<br>
 
-                    検索の設定：
-                    <input type="radio" id="name_genre" name="name_genre" value="0" <?php set_checked("search_name_genre", "0"); ?>>ジャンルで検索
-                    <input type="radio" id="name_genre" name="name_genre" value="1" <?php set_checked("search_name_genre", "1"); ?>>店名で検索<br>
+                        検索の設定：
+                        <input type="radio" id="name_genre" name="name_genre" value="0" <?php set_checked("search_name_genre", "0"); ?>>ジャンルで検索
+                        <input type="radio" id="name_genre" name="name_genre" value="1" <?php set_checked("search_name_genre", "1"); ?>>店名で検索<br>
 
-                    検索ワード：
-                    <input type="text" value="<?php echo $search_word; ?>" id="search_name" name="search_name">
-                    <select name="genre_example" size="1" onclick="input_search_name(value)">
-                        <option value=""> ワードを入力するか以下から選択してください </option>
-                        <option value="中華"> 中華 </option>
-                        <option value="和食"> 和食 </option>
-                        <option value="洋食"> 洋食 </option>
-                        <option value="イタリアン"> イタリアン </option>
-                        <option value="フレンチ"> フレンチ </option>
-                        <option value="居酒屋"> 居酒屋 </option>
-                        <option value="バイキング"> バイキング </option>
-                        <option value="カフェ"> カフェ </option>
-                    </select>
-                    <br>
-                    <input type="submit" name="submit" value="検索する">
-                </form>
-            </div>
-            <a id="prev_station" name="prev_station" href="set_station.php">開始・終了駅選択に戻る</a>
-            <a id="next_keiro" name="next_keiro" href="keiro.php">観光スポット選択へ</a><br>
-            <br>
-
-            <?php foreach ($stmt as $row) : ?>
-                <?php $count += 1; ?>
-                <div id="detailbox">
-
-                    <div id="box" class="clearfix">
-
-                        <div id="infobox" value=<?php echo $row["id"]; ?>>
-                            <table>
-                                <tr>
-                                    <th>店舗名</th>
-                                    <td><?php echo $row["name"]; ?></td>
-                                </tr>
-
-                                <tr>
-                                    <th>ジャンル</th>
-                                    <td><?php echo $row["genre"]; ?></td>
-                                </tr>
-
-                                <tr>
-                                    <th>営業時間</th>
-                                    <td><?php echo nl2br($row["time"]); ?></td>
-                                </tr>
-
-                                <tr>
-                                    <th>予算</th>
-                                    <td><?php echo $row["money"]; ?></td>
-                                </tr>
-
-                                <tr>
-                                    <th>予約</th>
-                                    <td><?php echo nl2br($row["yoyaku"]); ?></td>
-                                </tr>
-
-                                <tr>
-                                    <th>お問い合わせ</th>
-                                    <td><?php echo $row["tel"]; ?></td>
-                                </tr>
-
-                                <tr>
-                                    <th>ホームページURL</th>
-                                    <td>
-                                        <?php
-                                        if (!empty($row["homepage"])) {
-                                            print "<a href = " . $row["homepage"] . " target=_blank>ホームページにアクセスする</a>";
-                                        }
-                                        ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>設定する</th>
-                                    <td>
-                                        <button type="button" id="lanch_id" name="lanch_id" value=<?php echo $row["id"]; ?> onclick="post_food(value, '1')">昼食に設定する</button>
-                                        <button type="button" id="dinner_id" name="dinner_id" value=<?php echo $row["id"]; ?> onclick="post_food(value, '2')">夕食に設定する</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>地図付き詳細ページへ</th>
-                                    <td>
-                                        <button type="button" value=<?php echo $row["id"]; ?> onclick="shop_detail(value)">詳細ページに移動する</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <a href="#search_start">▲ページ上部に戻る</a><br>
+                        検索ワード：
+                        <input type="text" value="<?php echo $search_word; ?>" id="search_name" name="search_name">
+                        <select name="genre_example" size="1" onclick="input_search_name(value)">
+                            <option value=""> ワードを入力するか以下から選択してください </option>
+                            <option value="中華"> 中華 </option>
+                            <option value="和食"> 和食 </option>
+                            <option value="洋食"> 洋食 </option>
+                            <option value="イタリアン"> イタリアン </option>
+                            <option value="フレンチ"> フレンチ </option>
+                            <option value="居酒屋"> 居酒屋 </option>
+                            <option value="バイキング"> バイキング </option>
+                            <option value="カフェ"> カフェ </option>
+                        </select>
+                        <br>
+                        <input type="submit" name="submit" value="検索する">
+                    </form><br>
                 </div>
-            <?php endforeach; ?>
-            <?php
-            if ($count == 0) {
-                echo "検索条件に該当する飲食店はありませんでした";
-            }
-            ?>
+                <div class="move_box">
+                    <a class="prev_page" name="prev_station" href="set_station.php">開始・終了駅選択に戻る</a>
+                    <a class="next_page" name="next_keiro" href="keiro.php">観光スポット選択へ</a><br>
+                </div>
+
+                <?php foreach ($stmt as $row) : ?>
+                    <?php $count += 1; ?>
+                    <div id="infobox" value=<?php echo $row["id"]; ?>>
+                        <table>
+                            <tr>
+                                <th>店舗名</th>
+                                <td><?php echo $row["name"]; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>ジャンル</th>
+                                <td><?php echo $row["genre"]; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>営業時間</th>
+                                <td><?php echo nl2br($row["time"]); ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>予算</th>
+                                <td><?php echo $row["money"]; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>予約</th>
+                                <td><?php echo nl2br($row["yoyaku"]); ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>お問い合わせ</th>
+                                <td><?php echo $row["tel"]; ?></td>
+                            </tr>
+
+                            <tr>
+                                <th>ホームページURL</th>
+                                <td>
+                                    <?php
+                                    if (!empty($row["homepage"])) {
+                                        print "<a href = " . $row["homepage"] . " target=_blank>ホームページにアクセスする</a>";
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>設定する</th>
+                                <td>
+                                    <button type="button" id="lanch_id" name="lanch_id" value=<?php echo $row["id"]; ?> onclick="post_food(value, '1')">昼食に設定する</button>
+                                    <button type="button" id="dinner_id" name="dinner_id" value=<?php echo $row["id"]; ?> onclick="post_food(value, '2')">夕食に設定する</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>地図付き詳細ページへ</th>
+                                <td>
+                                    <a href="shopdetail.php?spot_id=<?php echo $row["id"]; ?>">詳細ページに移動する</a>
+                                </td>
+                            </tr>
+                        </table>
+                        <a href="#search_start">▲ページ上部に戻る</a>
+                    </div><br>
+                <?php endforeach; ?>
+                <?php
+                if ($count == 0) {
+                    echo "検索条件に該当する飲食店はありませんでした";
+                }
+                ?>
+            </div>
             <br>
         </main>
         <footer>

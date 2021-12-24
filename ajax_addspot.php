@@ -5,27 +5,13 @@ require_once("connect_database.php");
 $post_data_1 = $_POST['post_data_1'];
 $post_data_2 = json_decode($_POST['post_data_2'], true);
 
-try{
-    /*
-    //恐らくherokuでのDB接続に必要
-    $db = parse_url(getenv("DATABASE_URL"));
-
-    $pdo = new PDO("pgsql:" . sprintf(
-        "host=%s;port=%s;user=%s;password=%s;dbname=%s",
-        $db["host"],
-        $db["port"],
-        $db["user"],
-        $db["pass"],
-        ltrim($db["path"], "/")
-    ));
-    */
+try {
 
     $stmt1 = $pdo->prepare("SELECT * FROM minatomirai_kankou_data where id = :id");
-    $stmt1 -> bindParam(":id", $post_data_1, PDO::PARAM_INT);
-    $stmt1 -> execute();
+    $stmt1->bindParam(":id", $post_data_1, PDO::PARAM_INT);
+    $stmt1->execute();
     $result1 = $stmt1->fetch(PDO::FETCH_ASSOC);
-
-}catch(PDOException $e){
+} catch (PDOException $e) {
     //デバッグ用
     echo $e->getMessage();
 }
@@ -35,11 +21,15 @@ try{
 switch ($post_data_2) {
     case "1":
         //セッション変数を配列にする
-        //スポットは3個以上登録できないようにする設定がまだ未完成
+        //スポットは3個以上登録できないようにする設定
         if (isset($_SESSION["s_l_kankou_spots_id"])) {
             if (!(in_array($post_data_1, $_SESSION["s_l_kankou_spots_id"]))) {
-                $_SESSION["s_l_kankou_spots_id"][] = $post_data_1;
-                $spotname = $result1["name"];
+                if (count($_SESSION["s_l_kankou_spots_id"]) < 3) {
+                    $_SESSION["s_l_kankou_spots_id"][] = $post_data_1;
+                    $spotname = $result1["name"];
+                } else {
+                    $spotname = "3";
+                }
             } else {
                 $spotname = "";
             }
@@ -51,8 +41,12 @@ switch ($post_data_2) {
     case "2":
         if (isset($_SESSION["l_d_kankou_spots_id"])) {
             if (!(in_array($post_data_1, $_SESSION["l_d_kankou_spots_id"]))) {
-                $_SESSION["l_d_kankou_spots_id"][] = $post_data_1;
-                $spotname = $result1["name"];
+                if (count($_SESSION["l_d_kankou_spots_id"]) < 3) {
+                    $_SESSION["l_d_kankou_spots_id"][] = $post_data_1;
+                    $spotname = $result1["name"];
+                } else {
+                    $spotname = "3";
+                }
             } else {
                 $spotname = "";
             }
@@ -64,8 +58,12 @@ switch ($post_data_2) {
     case "3":
         if (isset($_SESSION["d_g_kankou_spots_id"])) {
             if (!(in_array($post_data_1, $_SESSION["d_g_kankou_spots_id"]))) {
-                $_SESSION["d_g_kankou_spots_id"][] = $post_data_1;
-                $spotname = $result1["name"];
+                if (count($_SESSION["d_g_kankou_spots_id"]) < 3) {
+                    $_SESSION["d_g_kankou_spots_id"][] = $post_data_1;
+                    $spotname = $result1["name"];
+                } else {
+                    $spotname = "3";
+                }
             } else {
                 $spotname = "";
             }
@@ -78,7 +76,7 @@ switch ($post_data_2) {
 
 //name_array = [["スポット名", "スポットID"]]を作り出す
 
-try{
+try {
     switch ($post_data_2) {
         case "1":
             if (!isset($_SESSION["s_l_kankou_spots_id"])) {
@@ -120,8 +118,7 @@ try{
             }
             break;
     }
-
-}catch(PDOException $e){
+} catch (PDOException $e) {
     echo $e->getMessage();
 }
 

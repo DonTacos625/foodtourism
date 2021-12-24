@@ -95,49 +95,42 @@ try {
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>スポット一覧</title>
     <style>
-        #viewbox #icon_explain {
+        h3 {
+            border-left: 5px solid #000080;
+            margin: 0px;
+        }
+
+        .icon_explain {
             position: relative;
             float: left;
             width: 100%;
-            height: 5vw;
+            height: 15%;
         }
 
-        #viewbox #icon_explain #pin_list1 {
+        .pin_list1 {
             width: 315px;
             height: 75px;
         }
 
-        #viewbox #icon_explain #pin_list2 {
+        .pin_list2 {
             width: 390px;
             height: 75px;
         }
 
-        #viewbox #icon_explain #pin_list3 {
+        .pin_list3 {
             width: 192px;
             height: 75px;
         }
 
         @media screen and (max-width:768px) {
-            #viewbox #icon_explain {
-                position: relative;
-                float: left;
-                width: 100%;
-                height: 5vw;
+            .icon_explain {
+                width: 50%;
+                height: 20%;
             }
-
-            #viewbox #icon_explain #pin_list1 {
-                width: 315px;
-                height: 75px;
-            }
-
-            #viewbox #icon_explain #pin_list2 {
-                width: 390px;
-                height: 75px;
-            }
-
-            #viewbox #icon_explain #pin_list3 {
-                width: 192px;
-                height: 75px;
+            .container {
+                display: flex;
+                flex-direction: column;
+                min-height: 220vh;
             }
         }
     </style>
@@ -513,13 +506,13 @@ try {
 <body>
     <div class="container">
         <main>
+            <h3>スポット一覧</h3>
+            <div class="icon_explain">
+                <img class="pin_list1" src="./marker/icon_explain_s_f.png" alt="昼食予定地のアイコン" title="アイコン説明1">
+                <img class="pin_list2" src="./marker/icon_explain_spots.png" alt="昼食予定地のアイコン" title="アイコン説明2">
+                <img class="pin_list3" src="./marker/icon_explain_view.png" alt="昼食予定地のアイコン" title="アイコン説明3">
+            </div>
             <div id="viewbox">
-                <h3>スポット一覧</h3>
-                <div id="icon_explain">
-                    <img id="pin_list1" src="./marker/icon_explain_s_f.png" alt="昼食予定地のアイコン" title="アイコン説明1">
-                    <img id="pin_list2" src="./marker/icon_explain_spots.png" alt="昼食予定地のアイコン" title="アイコン説明2">
-                    <img id="pin_list3" src="./marker/icon_explain_view.png" alt="昼食予定地のアイコン" title="アイコン説明3">
-                </div>
                 <div id="viewDiv"></div>
             </div>
         </main>

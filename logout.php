@@ -35,9 +35,6 @@ $_SESSION = array();
 
     <link rel="stylesheet" type="text/css" href="css/copyright.css">
     <style>
-        body {
-            background: linear-gradient(45deg, #99ffff, #ffffff);
-        }
 
         #logoutbox {
             width: 768px;

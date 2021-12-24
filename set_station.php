@@ -70,9 +70,13 @@ try {
         gtag('config', 'UA-214561408-1');
     </script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <title>開始・終了駅決定</title>
+    <title>開始・終了駅の設定</title>
 
     <style>
+        h3 {
+            border-left: 5px solid #000080;
+            margin: 0px;
+        }
 
         #editbox {
             position: relative;
@@ -91,11 +95,6 @@ try {
 
         #editbox #post_station {
             float: right;
-        }
-
-        #editbox h3 {
-            border-left: 5px solid #000080;
-            margin: 0px;
         }
 
         @media screen and (min-width:769px) and (max-width:1366px) {
@@ -271,47 +270,41 @@ try {
             view.popup.on("trigger-action", function(event) {
                 if (event.action.id === "start_station_id") {
                     add_spots("1");
-
-                    const point = {
-                        type: "point",
-                        x: view.popup.selectedFeature.attributes.X,
-                        y: view.popup.selectedFeature.attributes.Y
-                    };
-                    var stopSymbol = new PictureMarkerSymbol({
-                        url: "./marker/start.png",
-                        width: "20px",
-                        height: "31px"
-                    });
-                    var stop = new Graphic({
-                        geometry: point,
-                        symbol: stopSymbol
-                    });
-                    start_station_pointLayer.removeAll();
-                    start_station_pointLayer.add(stop);
+                    add_point("./marker/start.png", start_station_pointLayer);
+                }
+                if (event.action.id === "lanch_id") {
+                    add_spots("2");
+                    add_point("./marker/lanch.png", lanch_pointLayer);
+                }
+                if (event.action.id === "dinner_id") {
+                    add_spots("3");
+                    add_point("./marker/dinner.png", dinner_pointLayer);
                 }
                 if (event.action.id === "goal_station_id") {
                     add_spots("4");
-
-                    const point = {
-                        type: "point",
-                        x: view.popup.selectedFeature.attributes.X,
-                        y: view.popup.selectedFeature.attributes.Y
-                    };
-                    var stopSymbol = new PictureMarkerSymbol({
-                        url: "./marker/goal.png",
-                        width: "20px",
-                        height: "31px"
-                    });
-                    var stop = new Graphic({
-                        geometry: point,
-                        symbol: stopSymbol
-                    });
-                    goal_station_pointLayer.removeAll();
-                    goal_station_pointLayer.add(stop);
-
+                    add_point("./marker/goal.png", goal_station_pointLayer);
                 }
-
             });
+
+            //マップ上にポイントを追加
+            function add_point(pic, Layer) {
+                const point = {
+                    type: "point",
+                    x: view.popup.selectedFeature.attributes.X,
+                    y: view.popup.selectedFeature.attributes.Y
+                };
+                var stopSymbol = new PictureMarkerSymbol({
+                    url: pic,
+                    width: "20px",
+                    height: "31px"
+                });
+                var stop = new Graphic({
+                    geometry: point,
+                    symbol: stopSymbol
+                });
+                Layer.removeAll();
+                Layer.add(stop);
+            }
 
             //マップ上から開始駅・終了駅を設定する
             function add_spots(num) {
@@ -363,15 +356,6 @@ try {
             }
         };
 
-        //開始駅・終了駅の両方を設定してるかどうか
-        function stations() {
-            if (!($start_id == "") && !($goal_id == "")) {
-                post_stations($start_id, $goal_id);
-            } else {
-                alert("開始駅と終了駅の両方を設定してください");
-            }
-        };
-
         //セレクトボックスから駅を設定
         function add_spots_select(id, num) {
             if (id != "0") {
@@ -407,35 +391,35 @@ try {
 <body>
     <div class="container">
         <main>
-            <div id="viewbox">
-                <h3>スポット一覧</h3>
-                <div id="editbox">
-                    <div id="start_box">
-                        <b>開始駅を選択する：</b><br>
-                        <select name="start_station_id" size="1" onchange="add_spots_select(value, '1')">
-                            <option value=<?php echo $start_keep_name[0]; ?>> <?php echo $start_keep_name[1]; ?> </option>
-                            <?php foreach ($stmt as $row) : ?>
-                                <option value=<?php echo $row["id"]; ?>> <?php echo $row["name"]; ?> </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div id="goal_box">
-                        <b>終了駅を選択する：</b><br>
-                        <select name="goal_station_id" size="1" onchange="add_spots_select(value, '4')">
-                            <option value=<?php echo $goal_keep_name[0]; ?>> <?php echo $goal_keep_name[1]; ?> </option>
-                            <?php foreach ($stmt2 as $row2) : ?>
-                                <option value=<?php echo $row2["id"]; ?>> <?php echo $row2["name"]; ?> </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <br><br>
-
-                    <div><br>
-                        <a href="search.php">飲食店の検索・決定へ</a>
-                    </div>
+            <h3>開始・終了駅の設定</h3>
+            <div id="editbox">
+                <div id="start_box">
+                    <b>開始駅を選択する：</b><br>
+                    <select name="start_station_id" size="1" onchange="add_spots_select(value, '1')">
+                        <option value=<?php echo $start_keep_name[0]; ?>> <?php echo $start_keep_name[1]; ?> </option>
+                        <?php foreach ($stmt as $row) : ?>
+                            <option value=<?php echo $row["id"]; ?>> <?php echo $row["name"]; ?> </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
+
+                <div id="goal_box">
+                    <b>終了駅を選択する：</b><br>
+                    <select name="goal_station_id" size="1" onchange="add_spots_select(value, '4')">
+                        <option value=<?php echo $goal_keep_name[0]; ?>> <?php echo $goal_keep_name[1]; ?> </option>
+                        <?php foreach ($stmt2 as $row2) : ?>
+                            <option value=<?php echo $row2["id"]; ?>> <?php echo $row2["name"]; ?> </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <br><br>
+
+                <div><br>
+                    <a href="search.php">飲食店の検索・決定へ</a>
+                </div>
+            </div>
+            <div id="viewbox">
                 <div id="viewDiv"></div>
             </div>
         </main>

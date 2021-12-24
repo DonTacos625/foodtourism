@@ -5,8 +5,7 @@ require "frame.php";
 $message = "";
 if (!isset($_SESSION["start_station_id"]) || !isset($_SESSION["goal_station_id"])) {
     $message = "開始・終了駅が設定されていません";
-}
-if (!isset($_SESSION["lanch_id"]) || !isset($_SESSION["dinner_id"])) {
+} else if (!isset($_SESSION["lanch_id"]) || !isset($_SESSION["dinner_id"])) {
     $message = "昼食・夕食予定地が設定されていません";
 }
 
@@ -201,23 +200,110 @@ function set_checked($session_name, $value)
         gtag('config', 'UA-214561408-1');
     </script>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>観光スポット選択 | 経路作成</title>
+    <title>観光スポット選択（一覧表示）</title>
     <style>
-        #viewbox #btn {
-            width: 80%;
-            height: 5vh;
-            color: #fff;
-            background-color: #3399ff;
-            border-bottom: 5px solid #33ccff;
-            -webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, .3);
-            box-shadow: 0 3px 5px rgba(0, 0, 0, .3);
+        h3 {
+            border-left: 5px solid #000080;
+            margin: 0px;
         }
 
-        #viewbox #btn:hover {
-            margin-top: 3px;
-            color: #fff;
-            background: #0099ff;
-            border-bottom: 2px solid #00ccff;
+        #viewbox {
+            position: relative;
+            float: left;
+            width: 1px;
+            height: 1px;
+            margin-left: 5px;
+        }
+
+        #detailbox {
+            position: relative;
+            float: left;
+            margin-left: 0px;
+        }
+
+        #detailbox #infobox {
+            float: left;
+            width: 75vw;
+            margin-left: 5px;
+        }
+
+        #detailbox #infobox table {
+            width: 100%;
+            border: solid 3px #ffffff;
+        }
+
+        #detailbox #infobox table th {
+            white-space: nowrap;
+            background: #EEEEEE;
+            width: 15vw;
+        }
+
+        #detailbox #infobox table td {
+            background: #EEEEEE;
+            padding: 3px;
+        }
+
+        #detailbox #infobox table td ul {
+            margin: 0px;
+        }
+
+        #detailbox #infobox table td ul li {
+            display: inline-block;
+        }
+
+        #detailbox #infobox table td pre {
+            white-space: pre-wrap;
+        }
+
+        .spots_set_btn {
+            width: 20px;
+            height: 20px;
+        }
+
+        .spots_set_btn:hover {
+            width: 22px;
+            height: 22px;
+        }
+
+        @media screen and (min-width:769px) and (max-width:1366px) {
+            h3 {
+                margin: 0px;
+                font-size: 18px;
+            }
+        }
+
+        @media screen and (max-width:768px) {
+
+            h3 {
+                margin: 0px;
+                font-size: 17px;
+            }
+
+            #detailbox {
+                width: auto;
+                margin: 0px;
+                float: none;
+            }
+
+            #detailbox #infobox {
+                width: 100%;
+                float: none;
+            }
+
+            #detailbox #infobox table {
+                font-size: 13px;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                min-height: 250vh;
+            }
+
+            .search_form {
+                font-size: 15px;
+            }
+
         }
     </style>
 
@@ -227,6 +313,7 @@ function set_checked($session_name, $value)
 
     <script>
         var pointpic = "";
+        var spot_array = [];
         require([
             "esri/Map",
             "esri/views/MapView",
@@ -351,8 +438,25 @@ function set_checked($session_name, $value)
                         fieldName: "ID",
                         label: "ID",
                         visible: true
+                    }, {
+                        fieldName: "category",
+                        label: "カテゴリー",
+                        visible: true
+                    }, {
+                        fieldName: "homepage",
+                        label: "ホームページ",
+                        visible: true
+                    }, {
+                        fieldName: "X",
+                        label: "経度",
+                        visible: true
+                    }, {
+                        fieldName: "Y",
+                        label: "緯度",
+                        visible: true
                     }]
-                }]
+                }],
+                actions: [s_l_Action, l_d_Action, d_g_Action]
             };
 
             //スタートとゴールの駅を決める
@@ -456,8 +560,10 @@ function set_checked($session_name, $value)
                 outSpatialReference: {
                     // autocasts as new SpatialReference()
                     wkid: 3857
-                }
+                },
+                directionsLengthUnits: "kilometers"
             });
+            routeParams.returnDirections = true;
 
             // Define the symbology used to display the stops
             const CheckSymbol = {
@@ -577,56 +683,56 @@ function set_checked($session_name, $value)
             //phpの経路情報をjavascript用に変換           
             var keikaku = <?php echo json_encode($keikaku); ?>;
 
-            function display_route(keikaku) {
+            function display_route(plan) {
                 //最初に経路表示する処理
                 //開始駅と終了駅が同じの場合のフラグを設定
-                var start_point = keikaku[0];
-                var goal_point = keikaku.slice(-1)[0];
+                var start_point = plan[0];
+                var goal_point = plan.slice(-1)[0];
                 var mode_change = 0;
                 if (start_point[0] == goal_point[0] && start_point[1] == goal_point[1]) {
                     mode_change = 1;
                 }
-                for (var j = 0; j < keikaku.length; j++) {
-                    if (!(keikaku[j][0] == 0)) {
+                for (var j = 0; j < plan.length; j++) {
+                    if (!(plan[j][0] == 0)) {
                         var point = {
                             type: "point",
-                            x: keikaku[j][0],
-                            y: keikaku[j][1]
+                            x: plan[j][0],
+                            y: plan[j][1]
                         };
-                        if (keikaku[j].length > 2) {
-                            if (keikaku[j][2] == "start") {
+                        if (plan[j].length > 2) {
+                            if (plan[j][2] == "start") {
                                 if (mode_change == 1) {
                                     pointpic = "./marker/start_and_goal.png";
                                 } else {
                                     pointpic = "./marker/start.png";
                                 }
-                            } else if (keikaku[j][2] == "lanch") {
+                            } else if (plan[j][2] == "lanch") {
                                 pointpic = "./marker/lanch.png";
-                            } else if (keikaku[j][2] == "dinner") {
+                            } else if (plan[j][2] == "dinner") {
                                 pointpic = "./marker/dinner.png";
-                            } else if (keikaku[j][2] == "goal") {
+                            } else if (plan[j][2] == "goal") {
                                 if (mode_change == 1) {
                                     pointpic = "./marker/start_and_goal.png";
                                 } else {
                                     pointpic = "./marker/goal.png";
                                 }
-                            } else if (keikaku[j][2] == 11) {
+                            } else if (plan[j][2] == 11) {
                                 pointpic = "./marker/s_l_spot1.png";
-                            } else if (keikaku[j][2] == 12) {
+                            } else if (plan[j][2] == 12) {
                                 pointpic = "./marker/s_l_spot2.png";
-                            } else if (keikaku[j][2] == 13) {
+                            } else if (plan[j][2] == 13) {
                                 pointpic = "./marker/s_l_spot3.png";
-                            } else if (keikaku[j][2] == 21) {
+                            } else if (plan[j][2] == 21) {
                                 pointpic = "./marker/l_d_spot1.png";
-                            } else if (keikaku[j][2] == 22) {
+                            } else if (plan[j][2] == 22) {
                                 pointpic = "./marker/l_d_spot2.png";
-                            } else if (keikaku[j][2] == 23) {
+                            } else if (plan[j][2] == 23) {
                                 pointpic = "./marker/l_d_spot3.png";
-                            } else if (keikaku[j][2] == 31) {
+                            } else if (plan[j][2] == 31) {
                                 pointpic = "./marker/d_g_spot1.png";
-                            } else if (keikaku[j][2] == 32) {
+                            } else if (plan[j][2] == 32) {
                                 pointpic = "./marker/d_g_spot2.png";
-                            } else if (keikaku[j][2] == 33) {
+                            } else if (plan[j][2] == 33) {
                                 pointpic = "./marker/d_g_spot3.png";
                             } else {
                                 pointpic = "./marker/ltblue.png";
@@ -643,44 +749,32 @@ function set_checked($session_name, $value)
                         });
                         routeLayer.add(stop);
                         routeParams.stops.features.push(stop);
-                        if (routeParams.stops.features.length >= 2) {
-                            route.solve(routeUrl, routeParams).then(showRoute);
-                        }
                     }
+                }
+                if (routeParams.stops.features.length >= 2) {
+                    route.solve(routeUrl, routeParams).then(showRoute);
                 }
             }
             display_route(keikaku);
 
-            /*
-            //恐らく　var featuresの形は複数のnew Graphic
-            var features = featureSet.features.map(function(graphic) {
-                graphic.symbol = {
-                    type: "simple-marker",
-                    style: "diamond",
-                    size: 9.0,
-                    color: "darkorange"
-                };
-                graphic.popupTemplate = spots_template;
-                return graphic;
-            });
-            */
-
             //押したボタンによって
             view.popup.on("trigger-action", function(event) {
                 if (event.action.id === "s_l") {
-                    hozon("1", s_l_pointLayer);
+                    const spot_id = view.popup.selectedFeature.attributes.id;
+                    hozon(spot_id, "1", s_l_pointLayer);
                 }
                 if (event.action.id === "l_d") {
-                    hozon("2", l_d_pointLayer);
+                    const spot_id = view.popup.selectedFeature.attributes.id;
+                    hozon(spot_id, "2", l_d_pointLayer);
                 }
                 if (event.action.id === "d_g") {
-                    hozon("3", d_g_pointLayer);
+                    const spot_id = view.popup.selectedFeature.attributes.id;
+                    hozon(spot_id, "3", d_g_pointLayer);
                 }
             });
 
-            function hozon(time, Layer) {
+            function hozon(spot_id, time, Layer) {
                 //スポット取得
-                const spot_id = view.popup.selectedFeature.attributes.id;
                 jQuery(function($) {
                     $.ajax({
                         url: "./ajax_addspot.php",
@@ -700,6 +794,8 @@ function set_checked($session_name, $value)
 
                             if (response[0] == "") {
                                 alert("同じスポットは登録できません");
+                            } else if (response[0] == "3") {
+                                alert("各時間帯に登録できるスポットは3つまでです");
                             } else {
                                 alert("「" + response[0] + "」を訪問する観光スポットに追加しました");
                                 //選択したスポットの座標に印を
@@ -714,18 +810,20 @@ function set_checked($session_name, $value)
                                 });
                                 //Layer.removeAll();
                                 Layer.add(stop);
+
                             }
                         }
                     });
                 });
             };
 
+
             //初期検索範囲と初期カテゴリー
             $search_distance = <?php echo json_encode($search_distance); ?>;
             $categoryName = <?php echo json_encode($categoryName); ?>;
             //ルート形状沿いの観光地検索
             queryAroundSpot = (geom) => {
-                //ルート形状から 100m のバッファ内の観光スポットを検索するための query式を作成
+                spot_array = [];
                 let query = spotLayer.createQuery();
                 query.geometry = geom;
                 query.outFields = ["*"];
@@ -738,7 +836,7 @@ function set_checked($session_name, $value)
                 //観光スポットに対する検索の実行
                 spotLayer.queryFeatures(query).then(function(featureSet) {
                     var result_fs = featureSet.features;
-                    //alert(featureSet.fields[0]);
+
                     //前回の検索結果を、グラフィックスレイヤーから削除
                     resultsLayer.removeAll();
                     //検索結果に対する設定
@@ -750,43 +848,18 @@ function set_checked($session_name, $value)
                             color: "darkorange"
                         };
                         graphic.popupTemplate = spots_template;
-                        //$say = graphic.popupTemplate.content.fieldInfos.fieldName["ID"];
+                        //$say = graphic.attributes.id;
+                        //alert($say);
+                        $say = [graphic.attributes.name, graphic.attributes.category, graphic.attributes.homepage, graphic.attributes.id, graphic.attributes.id];
+                        spot_array.push($say);
                         return graphic;
                     });
                     //今回のクリックによる検索結果を、グラフィックスレイヤーに登録（マップに表示）
                     resultsLayer.addMany(features);
+                    //esriの外の関数呼び出し
+                    tomake_table();
                 })
             };
-
-            addResponseData = function addResponseData(layer, fieldname, array) {
-                for (feature in layer.graphics) {
-                    var attributes = layer.graphics[feature].attributes;
-                    $say = attributes[fieldName];
-                    array.push($say);
-                }
-            }
-            var array = [];
-            addResponseData(spotLayer, "id", array);
-            alert($say);
-            // レイヤーのカラムを取得
-            function getFieldName(layer) {
-                // セレクトボックスに要素を追加
-                layer.fields.forEach(function(field) {
-                    $array.push(field.name);
-                    alert("now");
-                });
-            }
-            getFieldName(resultLayer);
-
-            resultLayer.forEach(function(results) {
-                results.popupTemplate.content.fieldInfos.forEach(function(fieldinfo) {
-                    if (fieldinfo.label == "ID") {
-                        alert(fieldinfo.fieldName);
-                    }
-                })
-            })
-
-
 
             // ルート表示用のレイヤーにデータを追加　＋　周辺スポット表示関数呼び出し
             function showRoute(data) {
@@ -795,6 +868,8 @@ function set_checked($session_name, $value)
                 routeLayer.add(routeResult);
                 queryAroundSpot(routeResult.geometry);
                 $route_result_data = routeResult.geometry;
+
+                $totalLength = data.routeResults[0].directions.totalLength;
             }
         });
 
@@ -816,13 +891,11 @@ function set_checked($session_name, $value)
         //表示する観光スポットのカテゴリーを変える
         function change_distance(distance) {
             $search_distance = distance;
-            queryAroundSpot($route_result_data);
         }
 
         //表示する観光スポットのカテゴリーを変える
         function change_category(category_name) {
             $categoryName = category_name;
-            queryAroundSpot($route_result_data);
         }
 
         //frame関数内のoverwriteを実行する
@@ -836,6 +909,147 @@ function set_checked($session_name, $value)
         function kousin() {
             location.reload();
         }
+
+        function hozon_out(spot_id, time) {
+            //スポット取得
+            jQuery(function($) {
+                $.ajax({
+                    url: "./ajax_addspot.php",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        post_data_1: spot_id,
+                        post_data_2: time
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert("ajax通信に失敗しました");
+                    },
+                    success: function(response) {
+                        toframe(time, response[1]);
+
+                        if (response[0] == "") {
+                            alert("同じスポットは登録できません");
+                        } else if (response[0] == "3") {
+                            alert("各時間帯に登録できるスポットは3つまでです");
+                        } else {
+                            alert("「" + response[0] + "」を訪問する観光スポットに追加しました");
+                        }
+                    }
+                });
+            });
+        };
+
+
+        var table_column = ["名称", "カテゴリー", "ホームページ", "設定する", "地図付き詳細ページへ"];
+
+        //テーブルのセルを作成
+        function make_tablecell(column, s_num, c_num) {
+            const newtr = document.createElement("tr");
+
+            const newth = document.createElement("th");
+            newth.innerHTML = column;
+            const newtd = document.createElement("td");
+            if (c_num == 2 && spot_array[s_num][c_num]) {
+                const newa = document.createElement("a");
+                newa.innerHTML = "ホームページにアクセスする";
+                newa.href = spot_array[s_num][c_num];
+                newa.target = "_blank";
+                newtd.appendChild(newa);
+            } else if (c_num == 3) {
+                //観光スポット設定用ボタン
+                /*
+                const s_l_Btn = document.createElement("img");
+                s_l_Btn.src = "pop_icon1.png";
+                s_l_Btn.title = "昼食前に訪れる観光スポットに追加"
+                s_l_Btn.className = 'spots_set_btn';
+                s_l_Btn.onclick = () => {
+                    hozon_out(spot_array[s_num][c_num], "1");
+                }
+                const l_d_Btn = document.createElement("img");
+                l_d_Btn.src = "pop_icon2.png";
+                l_d_Btn.title = "昼食後に訪れる観光スポットに追加"
+                l_d_Btn.className = 'spots_set_btn';
+                l_d_Btn.onclick = () => {
+                    hozon_out(spot_array[s_num][c_num], "2");
+                }
+                const d_g_Btn = document.createElement("img");
+                d_g_Btn.src = "pop_icon3.png";
+                d_g_Btn.title = "夕食後に訪れる観光スポットに追加"
+                d_g_Btn.className = 'spots_set_btn';
+                d_g_Btn.onclick = () => {
+                    hozon_out(spot_array[s_num][c_num], "3");
+                }
+                */
+                const s_l_Btn = document.createElement("button");
+                s_l_Btn.innerHTML = "昼食前に訪れる";
+
+                s_l_Btn.onclick = () => {
+                    hozon_out(spot_array[s_num][c_num], "1");
+                }
+                const l_d_Btn = document.createElement("button");
+                l_d_Btn.innerHTML = "昼食後に訪れる";
+
+                l_d_Btn.onclick = () => {
+                    hozon_out(spot_array[s_num][c_num], "2");
+                }
+                const d_g_Btn = document.createElement("button");
+                d_g_Btn.innerHTML = "夕食後に訪れる";
+
+                d_g_Btn.onclick = () => {
+                    hozon_out(spot_array[s_num][c_num], "3");
+                }
+                //const newa = document.createElement("a");
+                //newa.innerHTML = "昼食前に訪れる観光スポットに追加";
+                newtd.appendChild(s_l_Btn);
+                //newtd.appendChild(newa);
+                newtd.appendChild(l_d_Btn);
+                newtd.appendChild(d_g_Btn);
+            } else if (c_num == 4) {
+                const newa = document.createElement("a");
+                newa.innerHTML = "詳細ページに移動する";
+                newa.href = "spotdetail.php?spot_id=" + spot_array[s_num][c_num];
+                newtd.appendChild(newa);
+            } else {
+                newtd.innerHTML = spot_array[s_num][c_num];
+            }
+
+            newtr.appendChild(newth);
+            newtr.appendChild(newtd);
+            return newtr;
+        }
+
+        //検索結果を表示する
+        function make_table(array, columns) {
+            var count = 0;
+            $results_form = document.getElementById("result_table");
+            $results_form.innerHTML = "";
+            $results_form.className = 'tables';
+            for (var i = 0; i < array.length; i++) {
+                count += 1;
+                const newTable = document.createElement("table");
+                for (var j = 0; j < columns.length; j++) {
+                    const newtablecell = make_tablecell(columns[j], i, j);
+                    newTable.appendChild(newtablecell);
+                }
+                $results_form.appendChild(newTable);
+                const newa = document.createElement("a");
+                newa.href = "#search_start";
+                newa.innerHTML = "▲ページ上部に戻る";
+                $results_form.appendChild(newa);
+            }
+            if (count == 0) {
+                $results_form.innerHTML = "検索条件に該当する観光スポットはありませんでした";
+            }
+        }
+
+        function tomake_table() {
+            //alert(spot_array[0][0]);
+            make_table(spot_array, table_column);
+        }
+
+        function display_results() {
+            queryAroundSpot($route_result_data);
+        }
     </script>
 
 </head>
@@ -843,35 +1057,46 @@ function set_checked($session_name, $value)
 <body>
     <div class="container">
         <main>
-            <div id="viewbox">
-                <div>
-                    <font color="#ff0000"><?php echo htmlspecialchars($message, ENT_QUOTES); ?></font>
-                </div>
-                <h3>観光ルート</h3>
-                <div id="search_forms2">
-                    <form action="">
-                        観光スポットの表示範囲：
-                        <input type="radio" id="distance" name="distance" value="100" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "100"); ?>>周囲100m
-                        <input type="radio" id="distance" name="distance" value="200" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "200"); ?>>周囲200m
-                        <input type="radio" id="distance" name="distance" value="300" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "300"); ?>>周囲300m
-                        <input type="radio" id="distance" name="distance" value="400" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "400"); ?>>周囲400m
-                        <input type="radio" id="distance" name="distance" value="500" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "500"); ?>>周囲500m
-                        <input type="radio" id="distance" name="distance" value="600" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "600"); ?>>周囲600m<br>
-                    </form>
-
-                    <form action="">
-                        観光スポットのカテゴリー：
-                        <input type="radio" id="category" name="category" value="0" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "0"); ?>>指定なし
-                        <input type="radio" id="category" name="category" value="名所・史跡" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "名所・史跡"); ?>>名所・史跡
-                        <input type="radio" id="category" name="category" value="ショッピング" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "ショッピング"); ?>>ショッピング
-                        <input type="radio" id="category" name="category" value="芸術・博物館" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "芸術・博物館"); ?>>芸術・博物館
-                        <input type="radio" id="category" name="category" value="テーマパーク・公園" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "テーマパーク・公園"); ?>>テーマパーク・公園
-                        <input type="radio" id="category" name="category" value="その他" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "その他"); ?>>その他<br>
-                    </form>
-                </div><br>
-                <a id="prev_search" name="prev_search" href="search.php">飲食店検索・決定に戻る</a>
-                <a id="see_myroute" name="see_myroute" href="see_myroute.php">作成した観光経路を見るへ</a><br>
+            <div>
+                <font color="#ff0000"><?php echo htmlspecialchars($message, ENT_QUOTES); ?></font>
             </div>
+            <h3 id="search_start">観光スポット選択</h3>
+            <a id="map_result" name="map_result" href="keiro.php">地図上で結果を表示</a><br>
+            <div class="search_form">
+                <form action="">
+                    観光スポットの表示範囲：
+                    <input type="radio" id="distance" name="distance" value="100000" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "100000"); ?>>指定なし
+                    <input type="radio" id="distance" name="distance" value="100" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "100"); ?>>周囲100m
+                    <input type="radio" id="distance" name="distance" value="200" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "200"); ?>>周囲200m
+                    <input type="radio" id="distance" name="distance" value="300" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "300"); ?>>周囲300m
+                    <input type="radio" id="distance" name="distance" value="400" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "400"); ?>>周囲400m
+                    <input type="radio" id="distance" name="distance" value="500" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "500"); ?>>周囲500m
+                    <input type="radio" id="distance" name="distance" value="600" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "600"); ?>>周囲600m<br>
+                </form>
+
+                <form action="">
+                    観光スポットのカテゴリー：
+                    <input type="radio" id="category" name="category" value="0" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "0"); ?>>指定なし
+                    <input type="radio" id="category" name="category" value="名所・史跡" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "名所・史跡"); ?>>名所・史跡
+                    <input type="radio" id="category" name="category" value="ショッピング" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "ショッピング"); ?>>ショッピング
+                    <input type="radio" id="category" name="category" value="芸術・博物館" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "芸術・博物館"); ?>>芸術・博物館
+                    <input type="radio" id="category" name="category" value="テーマパーク・公園" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "テーマパーク・公園"); ?>>テーマパーク・公園
+                    <input type="radio" id="category" name="category" value="その他" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "その他"); ?>>その他<br>
+                </form>
+                <button type="button" onclick="display_results()">観光スポットを絞り込む</button>
+            </div><br>
+
+            <div class="move_box">
+                <a class="prev_page" name="prev_search" href="search.php">飲食店検索・決定に戻る</a>
+                <a class="next_page" name="see_myroute" href="see_myroute.php">作成した観光経路を見るへ</a>
+            </div><br>
+
+            <div id="detailbox">
+                <div id="infobox">
+                    <div id="result_table"></div>
+                </div>
+            </div>
+
         </main>
         <footer>
             <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>
