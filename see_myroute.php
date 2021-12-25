@@ -207,7 +207,7 @@ $keikaku[] = $goal_station_info;
 
         #viewbox #btn {
             width: 80%;
-            height: 10%;
+            height: 40px;
             color: #fff;
             background-color: #3399ff;
             border-bottom: 5px solid #33ccff;
@@ -226,9 +226,34 @@ $keikaku[] = $goal_station_info;
 
         @media screen and (max-width:768px) {
 
+            h3 {
+                margin: 0px;
+                font-size: 17px;
+            }
+
             .icon_explain {
-                width: 50%;
-                height: 20%;
+                width: 95vw;
+            }
+
+            .pin_list1 {
+                width: 100%;
+                height: 100%;
+            }
+
+            .pin_list2 {
+                width: 100%;
+                height: 100%;
+            }
+
+            .pin_list3 {
+                width: 100%;
+                height: 100%;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                min-height: 160vh;
             }
         }
     </style>
@@ -707,6 +732,11 @@ $keikaku[] = $goal_station_info;
             update_frame($length, "length_km");
             update_frame($time, "time_h_m");
         }
+
+        //観光経路表示を更新する
+        function kousin() {
+            location.reload();
+        }
     </script>
 
 </head>
@@ -721,19 +751,19 @@ $keikaku[] = $goal_station_info;
             <div class="icon_explain">
                 <img class="pin_list1" src="./marker/icon_explain_s_f.png" alt="昼食予定地のアイコン" title="アイコン説明１">
                 <img class="pin_list2" src="./marker/icon_explain_spots.png" alt="昼食予定地のアイコン" title="アイコン説明２">
-            <b>
-                <div id="length_km">総歩行距離：0.00 km</div>
-            </b>
-            <b>
-                <div id="time_h_m">総歩行時間：0時間0分</div>
-            </b><br>
+                <b>
+                    <div id="length_km">総歩行距離：0.00 km</div>
+                </b>
+                <b>
+                    <div id="time_h_m">総歩行時間：0時間0分</div>
+                </b><br>
             </div>
             <div class="move_box">
                 <a class="prev_page" name="prev_keiro" href="keiro.php">観光スポット選択に戻る</a>
             </div><br>
             <div id="viewbox">
                 <div id="viewDiv"></div>
-                <button type="button" id="btn" onclick="database_hozon()">観光計画を保存する</button>
+                <button type="button" id="btn" onclick="database_hozon()" title="観光経路を保存します"><b>観光計画を保存する</b></button>
             </div>
         </main>
         <footer>

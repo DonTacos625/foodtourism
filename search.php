@@ -330,8 +330,8 @@ $count = 0;
                         </select>
                         <br>
                         <input type="submit" name="submit" value="検索する">
-                    </form><br>
-                </div>
+                    </form>
+                </div><br>
                 <div class="move_box">
                     <a class="prev_page" name="prev_station" href="set_station.php">開始・終了駅選択に戻る</a>
                     <a class="next_page" name="next_keiro" href="keiro.php">観光スポット選択へ</a><br>

@@ -126,9 +126,9 @@ function display_frame($name_row, $time)
         $frame_spot_name = " " . $count . ":" . $spot_name[0] . " ";
         print "
     <div id=\"frame_spot_name\">$frame_spot_name</div>
-    <button class=\"btn2\" type=\"button\" id=\"removebtn\" value=$spot_name[1] onclick=\"remove_spot($time, value)\">×</button>
-    <button type=\"button\" id=\"swapupbtn\" value=$spot_name[1] onclick=\"swap_spots($time, value, 'up')\">↑</button>
-    <button type=\"button\" id=\"swapdownbtn\" value=$spot_name[1] onclick=\"swap_spots($time, value, 'down')\">↓</button><br>
+    <button class=\"btn2\" type=\"button\" id=\"removebtn\" value=$spot_name[1] onclick=\"remove_spot($time, value)\" title=\"このスポットを削除します\">×</button>
+    <button type=\"button\" id=\"swapupbtn\" value=$spot_name[1] onclick=\"swap_spots($time, value, 'up')\" title=\"このスポットを一つ上に移動します\">↑</button>
+    <button type=\"button\" id=\"swapdownbtn\" value=$spot_name[1] onclick=\"swap_spots($time, value, 'down')\" title=\"このスポットを一つ下に移動します\">↓</button><br>
     ";
     };
 };
@@ -155,7 +155,7 @@ function display_frame($name_row, $time)
         #dropmenu {
             list-style-type: none;
             position: relative;
-            width: 75vw;
+            width: 77vw;
             height: 35px;
             padding: 0;
             background: #0099ff;
@@ -292,7 +292,7 @@ function display_frame($name_row, $time)
             }
 
             #dropmenu {
-                width: 70vw;
+                width: 75vw;
                 height: 30px;
                 border-bottom: 4px solid #000080;
             }
@@ -473,11 +473,14 @@ function display_frame($name_row, $time)
                 newDiv.innerHTML = j + ":" + name_array[i][0];
                 const removeBtn = document.createElement("button");
                 removeBtn.innerHTML = "×";
+                removeBtn.title = "このスポットを削除します";
                 removeBtn.className = 'btn2';
                 const swapupBtn = document.createElement("button");
                 swapupBtn.innerHTML = "↑";
+                swapupBtn.title = "このスポットを一つ上に移動します";
                 const swapdownBtn = document.createElement("button");
                 swapdownBtn.innerHTML = "↓";
+                swapdownBtn.title = "このスポットを一つ下に移動します";
 
                 const spot_id = name_array[i][1];
                 removeBtn.onclick = () => {
@@ -490,9 +493,17 @@ function display_frame($name_row, $time)
                     swap_spots(time, spot_id, 'down', toggle);
                 }
 
+                //ボタン間の隙間
+                const newa1 = document.createElement("a");
+                const newa2 = document.createElement("a");
+                newa1.innerHTML = " ";
+                newa2.innerHTML = " ";
+
                 newDiv.appendChild(document.createElement("br"));
                 newDiv.appendChild(removeBtn);
+                newDiv.appendChild(newa1);
                 newDiv.appendChild(swapupBtn);
+                newDiv.appendChild(newa2);
                 newDiv.appendChild(swapdownBtn);
 
                 $div1.appendChild(newDiv);

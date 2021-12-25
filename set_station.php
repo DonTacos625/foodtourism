@@ -97,6 +97,12 @@ try {
             float: right;
         }
 
+        .move_box {
+            position: relative;
+            width: 76vw;
+            float: left;
+        }
+
         @media screen and (min-width:769px) and (max-width:1366px) {
             h2 {
                 font-size: 20px;
@@ -108,6 +114,13 @@ try {
                 font-size: 19px;
             }
 
+            .move_box {
+                width: 100%;
+            }
+
+            #editbox {
+                width: 100%;
+            }
         }
     </style>
 
@@ -413,11 +426,12 @@ try {
                     </select>
                 </div>
 
-                <br><br>
+                <br><br><br>
 
-                <div><br>
-                    <a href="search.php">飲食店の検索・決定へ</a>
-                </div>
+                <div class="move_box">
+                    <a class="prev_page" name="prev_explain" href="explain.php#set_station">使い方に戻る</a>
+                    <a class="next_page" name="next_search" href="search.php">飲食店の検索・決定へ</a>
+                </div><br>
             </div>
             <div id="viewbox">
                 <div id="viewDiv"></div>

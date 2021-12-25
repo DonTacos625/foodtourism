@@ -157,7 +157,7 @@ try {
                 position: relative;
                 float: left;
                 width: 95%;
-                height: 50vw;
+                height: 70vh;
                 margin-bottom: 15px;
                 justify-content: center;
                 align-items: center;

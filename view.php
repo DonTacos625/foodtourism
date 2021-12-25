@@ -123,14 +123,24 @@ try {
         }
 
         @media screen and (max-width:768px) {
+
             .icon_explain {
-                width: 50%;
-                height: 20%;
+                width: 95vw;
             }
-            .container {
-                display: flex;
-                flex-direction: column;
-                min-height: 220vh;
+
+            .pin_list1 {
+                width: 90%;
+                height: 90%;
+            }
+
+            .pin_list2 {
+                width: 95%;
+                height: 95%;
+            }
+
+            .pin_list3 {
+                width: 60%;
+                height: 60%;
             }
         }
     </style>

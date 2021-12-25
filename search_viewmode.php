@@ -213,10 +213,15 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
         }
 
         @media screen and (max-width:768px) {
+            h3 {
+                margin: 0px;
+                font-size: 17px;
+            }
+
             .container {
                 display: flex;
                 flex-direction: column;
-                min-height: 250vh;
+                min-height: 180vh;
             }
 
             .move_box {
@@ -654,7 +659,7 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
                     <br>
                     <input type="submit" name="submit" value="検索する"><br>
                 </form>
-            </div>
+            </div><br>
             <div class="move_box">
                 <a class="prev_page" name="prev_station" href="set_station.php">開始・終了駅選択に戻る</a>
                 <a class="next_page" name="next_keiro" href="keiro.php">観光スポット選択へ</a><br>

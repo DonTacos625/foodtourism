@@ -39,7 +39,7 @@
             .container {
                 display: flex;
                 flex-direction: column;
-                min-height: 250vh;
+                min-height: 130vh;
             }
 
             .move_box {

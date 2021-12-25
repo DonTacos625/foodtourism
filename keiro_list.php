@@ -956,7 +956,7 @@ function set_checked($session_name, $value)
                 newa.target = "_blank";
                 newtd.appendChild(newa);
             } else if (c_num == 3) {
-                //観光スポット設定用ボタン
+                //観光スポット設定用ボタン(画像型)
                 /*
                 const s_l_Btn = document.createElement("img");
                 s_l_Btn.src = "pop_icon1.png";
@@ -980,6 +980,7 @@ function set_checked($session_name, $value)
                     hozon_out(spot_array[s_num][c_num], "3");
                 }
                 */
+                //観光スポット設定用ボタン(通常ボタン型)
                 const s_l_Btn = document.createElement("button");
                 s_l_Btn.innerHTML = "昼食前に訪れる";
 
@@ -998,11 +999,16 @@ function set_checked($session_name, $value)
                 d_g_Btn.onclick = () => {
                     hozon_out(spot_array[s_num][c_num], "3");
                 }
-                //const newa = document.createElement("a");
-                //newa.innerHTML = "昼食前に訪れる観光スポットに追加";
+                //ボタン間の隙間
+                const newa1 = document.createElement("a");
+                const newa2 = document.createElement("a");
+                newa1.innerHTML = " ";
+                newa2.innerHTML = " ";
+
                 newtd.appendChild(s_l_Btn);
-                //newtd.appendChild(newa);
+                newtd.appendChild(newa1);
                 newtd.appendChild(l_d_Btn);
+                newtd.appendChild(newa2);
                 newtd.appendChild(d_g_Btn);
             } else if (c_num == 4) {
                 const newa = document.createElement("a");

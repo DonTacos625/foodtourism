@@ -209,7 +209,7 @@ function set_checked($session_name, $value)
 
         #viewbox #btn {
             width: 80%;
-            height: 8%;
+            height: 40px;
             color: #fff;
             background-color: #3399ff;
             border-bottom: 5px solid #33ccff;
@@ -231,8 +231,19 @@ function set_checked($session_name, $value)
         }
 
         @media screen and (max-width:768px) {
+            h3 {
+                margin: 0px;
+                font-size: 17px;
+            }
+
             .move_box {
                 width: 100%;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                min-height: 160vh;
             }
         }
     </style>
@@ -698,15 +709,15 @@ function set_checked($session_name, $value)
             view.popup.on("trigger-action", function(event) {
                 if (event.action.id === "s_l") {
                     hozon("1", s_l_pointLayer);
-                    remake_route();
+                    //remake_route();
                 }
                 if (event.action.id === "l_d") {
                     hozon("2", l_d_pointLayer);
-                    remake_route();
+                    //remake_route();
                 }
                 if (event.action.id === "d_g") {
                     hozon("3", d_g_pointLayer);
-                    remake_route();
+                    //remake_route();
                 }
                 if (event.action.id === "detail") {
                     var spot_id = view.popup.selectedFeature.attributes.id;
@@ -727,6 +738,7 @@ function set_checked($session_name, $value)
                 form.submit();
             };
 
+            //読み込みせずに経路を更新したかった
             function remake_route() {
                 jQuery(function($) {
                     const dummy = 1;
@@ -773,7 +785,7 @@ function set_checked($session_name, $value)
                                 alert("各時間帯に登録できるスポットは3つまでです");
                             } else {
                                 alert("「" + response[0] + "」を訪問する観光スポットに追加しました");
-                                /*
+                                
                                 //選択したスポットの座標に印を
                                 const point = {
                                     type: "point",
@@ -786,7 +798,7 @@ function set_checked($session_name, $value)
                                 });
                                 //Layer.removeAll();
                                 Layer.add(stop);
-                                */
+                                
                             }
                         }
                     });
@@ -847,29 +859,6 @@ function set_checked($session_name, $value)
             }
 
         });
-
-        /*
-        //屋い読み込みせずに経路を更新したかった
-        function remake_route() {
-            jQuery(function($) {
-                const dummy = 1;
-                $.ajax({
-                    url: "./ajax_remake_route.php",
-                    type: "POST",
-                    dataType: "json",
-                    data: {
-                        post_data_1: dummy
-                    },
-                    error: function(XMLHttpRequest, textStatus, errorThrown) {
-                        alert("ajax通信に失敗しました");
-                    },
-                    success: function(response) {
-                        display_route(response);
-                    }
-                });
-            });
-        };
-        */
 
         //検索結果を保存する関数
         function keep_radio(value, mode) {
@@ -969,7 +958,7 @@ function set_checked($session_name, $value)
             <div id="result_table"></div>
             <div id="viewbox">
                 <div id="viewDiv"></div>
-                <button type="button" id="btn" onclick="kousin()"><b>経路再計算</b></button>
+                <button type="button" id="btn" onclick="kousin()" title="経路を更新し表示します"><b>経路再表示</b></button>
             </div>
         </main>
         <footer>
