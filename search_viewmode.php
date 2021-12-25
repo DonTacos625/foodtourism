@@ -218,15 +218,20 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
                 font-size: 17px;
             }
 
+            .move_box {
+                width: 100%;
+            }
+
+            .search_form {
+                font-size: 12px;
+            }
+
             .container {
                 display: flex;
                 flex-direction: column;
                 min-height: 180vh;
             }
 
-            .move_box {
-                width: 100%;
-            }
         }
     </style>
 
@@ -405,18 +410,38 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
             }
             //document.write(food_feature_sql);
 
+            // スポット名を表示するラベルを定義
+            var labelClass = {
+                symbol: {
+                    type: "text",
+                    color: "white",
+                    haloColor: "black",
+                    haloSize: 1
+                },
+                font: {
+                    size: 15,
+                    widget: "bold"
+                },
+                labelPlacement: "above-center",
+                labelExpressionInfo: {
+                    expression: "$feature.name"
+                }
+            };
+
             //spotLayer
             var foodLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_shop_new_UTF_8/FeatureServer",
                 id: "foodLayer",
                 popupTemplate: food_template,
-                definitionExpression: food_feature_sql
+                definitionExpression: food_feature_sql,
+                labelingInfo: [labelClass]
             });
 
             var all_foodLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_shop_new_UTF_8/FeatureServer",
                 id: "all_foodLayer",
-                popupTemplate: food_template
+                popupTemplate: food_template,
+                labelingInfo: [labelClass]
             });
 
             var stationLayer = new FeatureLayer({

@@ -229,6 +229,10 @@ $count = 0;
                 font-size: 17px;
             }
 
+            .search_form {
+                font-size: 12px;
+            }
+
             #detailbox {
                 width: auto;
                 margin: 0px;

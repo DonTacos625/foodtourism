@@ -430,26 +430,47 @@ $keikaku[] = $goal_station_info;
                 }
             }
 
+            // スポット名を表示するラベルを定義
+            var labelClass = {
+                symbol: {
+                    type: "text",
+                    color: "white",
+                    haloColor: "black",
+                    haloSize: 1
+                },
+                font: {
+                    size: 15,
+                    widget: "bold"
+                },
+                labelPlacement: "above-center",
+                labelExpressionInfo: {
+                    expression: "$feature.name"
+                }
+            };
+
             //spotLayer
             var foodLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_shop_new_UTF_8/FeatureServer",
                 id: "foodLayer",
                 popupTemplate: food_template,
-                definitionExpression: food_feature_sql
+                definitionExpression: food_feature_sql,
+                labelingInfo: [labelClass]
             });
 
             var stationLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_station/FeatureServer",
                 id: "stationLayer",
                 popupTemplate: station_template,
-                definitionExpression: station_feature_sql
+                definitionExpression: station_feature_sql,
+                labelingInfo: [labelClass]
             });
 
             var spotLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_kankou_UTF_8/FeatureServer",
                 id: "spotLayer",
                 popupTemplate: spots_template,
-                definitionExpression: spots_feature_sql
+                definitionExpression: spots_feature_sql,
+                labelingInfo: [labelClass]
             });
 
             //ルート表示のレイヤー

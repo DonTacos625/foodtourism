@@ -46,4 +46,12 @@
                 width: 100%;
             }
 
+            .prev_page {
+                font-size: 13px;
+            }
+    
+            .next_page {
+                font-size: 13px;
+            }
+
         }

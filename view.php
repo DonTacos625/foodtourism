@@ -142,6 +142,15 @@ try {
                 width: 60%;
                 height: 60%;
             }
+
+            #viewbox {
+                position: relative;
+                float: left;
+                width: 95vw;
+                height: 85vh;
+                margin: 0px;
+            }
+
         }
     </style>
 
@@ -296,23 +305,44 @@ try {
                 }]
             };
 
+            // スポット名を表示するラベルを定義
+            var labelClass = {
+                symbol: {
+                    type: "text",
+                    color: "white",
+                    haloColor: "black",
+                    haloSize: 1
+                },
+                font: {
+                    size: 15,
+                    widget: "bold"
+                },
+                labelPlacement: "above-center",
+                labelExpressionInfo: {
+                    expression: "$feature.name"
+                }
+            };
+
             //spotLayer
             var foodLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_shop_new_UTF_8/FeatureServer",
                 id: "foodLayer",
-                popupTemplate: food_template
+                popupTemplate: food_template,
+                labelingInfo: [labelClass]
             });
 
             var stationLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_station/FeatureServer",
                 id: "stationLayer",
-                popupTemplate: station_template
+                popupTemplate: station_template,
+                labelingInfo: [labelClass]
             });
 
             var spotLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_kankou_UTF_8/FeatureServer",
                 id: "spotLayer",
-                popupTemplate: spots_template
+                popupTemplate: spots_template,
+                labelingInfo: [labelClass]
             });
 
             //選択したスポットの表示レイヤー

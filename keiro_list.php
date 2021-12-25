@@ -279,6 +279,10 @@ function set_checked($session_name, $value)
                 font-size: 17px;
             }
 
+            .search_form {
+                font-size: 12px;
+            }
+
             #detailbox {
                 width: auto;
                 margin: 0px;
@@ -298,10 +302,6 @@ function set_checked($session_name, $value)
                 display: flex;
                 flex-direction: column;
                 min-height: 250vh;
-            }
-
-            .search_form {
-                font-size: 15px;
             }
 
         }

@@ -193,11 +193,30 @@ try {
                 actions: [start_Action, goal_Action]
             };
 
+            // スポット名を表示するラベルを定義
+            var labelClass = {
+                symbol: {
+                    type: "text",
+                    color: "white",
+                    haloColor: "black",
+                    haloSize: 1
+                },
+                font: {
+                    size: 15,
+                    widget: "bold"
+                },
+                labelPlacement: "above-center",
+                labelExpressionInfo: {
+                    expression: "$feature.name"
+                }
+            };
+
             //spotLayer
             var stationLayer = new FeatureLayer({
                 url: "https://services7.arcgis.com/rbNS7S9fqH4JaV7Y/arcgis/rest/services/minatomirai_station/FeatureServer",
                 id: "stationLayer",
-                popupTemplate: station_template
+                popupTemplate: station_template,
+                labelingInfo: [labelClass]
             });
 
             //選択したスポットの表示レイヤー
@@ -407,7 +426,7 @@ try {
             <h3>開始・終了駅の設定</h3>
             <div id="editbox">
                 <div id="start_box">
-                    <b>開始駅を選択する：</b><br>
+                    開始駅を選択する：<br>
                     <select name="start_station_id" size="1" onchange="add_spots_select(value, '1')">
                         <option value=<?php echo $start_keep_name[0]; ?>> <?php echo $start_keep_name[1]; ?> </option>
                         <?php foreach ($stmt as $row) : ?>
@@ -417,7 +436,7 @@ try {
                 </div>
 
                 <div id="goal_box">
-                    <b>終了駅を選択する：</b><br>
+                    終了駅を選択する：<br>
                     <select name="goal_station_id" size="1" onchange="add_spots_select(value, '4')">
                         <option value=<?php echo $goal_keep_name[0]; ?>> <?php echo $goal_keep_name[1]; ?> </option>
                         <?php foreach ($stmt2 as $row2) : ?>

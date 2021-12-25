@@ -236,6 +236,10 @@ function set_checked($session_name, $value)
                 font-size: 17px;
             }
 
+            .search_form {
+                font-size: 12px;
+            }
+
             .move_box {
                 width: 100%;
             }
@@ -450,6 +454,24 @@ function set_checked($session_name, $value)
                     spots_feature_sql += spots_id[i];
                 }
             }
+
+                        // スポット名を表示するラベルを定義
+                        var labelClass = {
+                symbol: {
+                    type: "text",
+                    color: "white",
+                    haloColor: "black",
+                    haloSize: 1
+                },
+                font: {
+                    size: 15,
+                    widget: "bold"
+                },
+                labelPlacement: "above-center",
+                labelExpressionInfo: {
+                    expression: "$feature.name"
+                }
+            };
 
             //spotLayer
             var foodLayer = new FeatureLayer({
@@ -785,7 +807,7 @@ function set_checked($session_name, $value)
                                 alert("各時間帯に登録できるスポットは3つまでです");
                             } else {
                                 alert("「" + response[0] + "」を訪問する観光スポットに追加しました");
-                                
+
                                 //選択したスポットの座標に印を
                                 const point = {
                                     type: "point",
@@ -798,7 +820,7 @@ function set_checked($session_name, $value)
                                 });
                                 //Layer.removeAll();
                                 Layer.add(stop);
-                                
+
                             }
                         }
                     });
@@ -840,10 +862,12 @@ function set_checked($session_name, $value)
                             color: "darkorange"
                         };
                         graphic.popupTemplate = spots_template;
+                        //graphic.labelingInfo = [labelClass];
                         return graphic;
                     });
                     //今回のクリックによる検索結果を、グラフィックスレイヤーに登録（マップに表示）
                     resultsLayer.addMany(features);
+                    resultsLayer.labelingInfo = [labelClass];
                 })
             };
 
