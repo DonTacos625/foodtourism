@@ -87,6 +87,11 @@ if (!empty($_POST["editpass"])) {
     <title>パスワード変更</title>
 
     <style>
+        h2 {
+            border-left: 5px solid #000080;
+            margin: 0px;
+        }
+
         #editbox {
             float: left;
             width: 500px;

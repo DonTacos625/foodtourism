@@ -157,7 +157,7 @@ try {
                 position: relative;
                 float: left;
                 width: 95%;
-                height: 70vh;
+                height: 50vh;
                 margin-bottom: 15px;
                 justify-content: center;
                 align-items: center;
@@ -170,12 +170,6 @@ try {
 
             #detailbox #infobox table {
                 font-size: 13px;
-            }
-
-            #detailbox #viewbox {
-                width: 100%;
-                height: 80vw;
-                float: none;
             }
 
         }

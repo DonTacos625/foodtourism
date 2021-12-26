@@ -200,7 +200,7 @@ $keikaku[] = $goal_station_info;
                 position: relative;
                 float: left;
                 width: 95%;
-                height: 70vh;
+                height: 50vh;
                 margin-bottom: 15px;
                 justify-content: center;
                 align-items: center;

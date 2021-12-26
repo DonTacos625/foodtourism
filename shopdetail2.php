@@ -157,7 +157,7 @@ try {
                 position: relative;
                 float: left;
                 width: 95%;
-                height: 70vh;
+                height: 50vh;
                 margin-bottom: 15px;
                 justify-content: center;
                 align-items: center;
@@ -170,12 +170,6 @@ try {
 
             #detailbox #infobox table {
                 font-size: 13px;
-            }
-
-            #detailbox #viewbox {
-                width: 100%;
-                height: 80vw;
-                float: none;
             }
 
         }
@@ -323,10 +317,12 @@ try {
             //選択したスポットの表示レイヤー
             const station_pointLayer = new GraphicsLayer();
             const food_pointLayer = new GraphicsLayer();
+            
+            const center_pointLayer = new GraphicsLayer();
 
             const map = new Map({
                 basemap: "streets",
-                layers: [foodLayer, stationLayer, station_pointLayer, food_pointLayer]
+                layers: [foodLayer, stationLayer, station_pointLayer, food_pointLayer, center_pointLayer]
             });
 
             const view = new MapView({
@@ -341,6 +337,26 @@ try {
                     }
                 }
             });
+
+            //中心地点にマーカーを
+            function make_center_maker(pic,Layer,X,Y) {
+                const point = {
+                    type: "point",
+                    x: X,
+                    y: Y
+                };
+                var stopSymbol = new PictureMarkerSymbol({
+                    url: pic,
+                    width: "20px",
+                    height: "31px"
+                });
+                var stop = new Graphic({
+                    geometry: point,
+                    symbol: stopSymbol
+                });
+                Layer.add(stop);
+            }
+            make_center_maker("./marker/red_pin.png",center_pointLayer,result1["x"], result1["y"])
 
             //phpの経路情報をjavascript用に変換           
             var station_keikaku = <?php echo json_encode($station_keikaku); ?>;
@@ -401,43 +417,32 @@ try {
             view.popup.on("trigger-action", function(event) {
                 if (event.action.id === "lanch_id") {
                     add_spots("2");
-                    const point = {
-                        type: "point",
-                        x: view.popup.selectedFeature.attributes.X,
-                        y: view.popup.selectedFeature.attributes.Y
-                    };
-                    var stopSymbol = new PictureMarkerSymbol({
-                        url: "./marker/lanch.png",
-                        width: "20px",
-                        height: "31px"
-                    });
-                    var stop = new Graphic({
-                        geometry: point,
-                        symbol: stopSymbol
-                    });
-                    food_pointLayer.removeAll();
-                    food_pointLayer.add(stop);
+                    add_point("./marker/lanch.png", food_pointLayer);
                 }
                 if (event.action.id === "dinner_id") {
                     add_spots("3");
-                    const point = {
-                        type: "point",
-                        x: view.popup.selectedFeature.attributes.X,
-                        y: view.popup.selectedFeature.attributes.Y
-                    };
-                    var stopSymbol = new PictureMarkerSymbol({
-                        url: "./marker/dinner.png",
-                        width: "20px",
-                        height: "31px"
-                    });
-                    var stop = new Graphic({
-                        geometry: point,
-                        symbol: stopSymbol
-                    });
-                    food_pointLayer.removeAll();
-                    food_pointLayer.add(stop);
+                    add_point("./marker/dinner.png", food_pointLayer);
                 }
             });
+
+            function add_point(pic, Layer) {
+                const point = {
+                    type: "point",
+                    x: view.popup.selectedFeature.attributes.X,
+                    y: view.popup.selectedFeature.attributes.Y
+                };
+                var stopSymbol = new PictureMarkerSymbol({
+                    url: pic,
+                    width: "20px",
+                    height: "31px"
+                });
+                var stop = new Graphic({
+                    geometry: point,
+                    symbol: stopSymbol
+                });
+                Layer.removeAll();
+                Layer.add(stop);
+            }
 
             //マップ上から昼食・夕食を設定する
             function add_spots(mode) {
@@ -461,7 +466,7 @@ try {
                             toframe(response[0], response[1]);
                             if (mode == "2") {
                                 alert("「" + response[0] + "」を昼食に設定しました");
-                            } else if(mode == "3"){
+                            } else if (mode == "3") {
                                 alert("「" + response[0] + "」を夕食に設定しました");
                             }
                         }
@@ -484,7 +489,7 @@ try {
     <div class="container">
         <main>
             <div id="detailbox">
-                <h3>飲食店の詳細情報</h3>
+                <h3>観光スポットの詳細情報</h3>
 
                 <div id="box" class="clearfix">
 
@@ -530,8 +535,8 @@ try {
                                 <th>ホームページURL</th>
                                 <td>
                                     <?php
-                                    if (!empty($row["homepage"])) {
-                                        print "<a href = " . $row["homepage"] . " target=_blank>ホームページにアクセスする</a>";
+                                    if (!empty($result1["homepage"])) {
+                                        print "<a href = " . $result1["homepage"] . " target=_blank>ホームページにアクセスする</a>";
                                     }
                                     ?>
                                 </td>

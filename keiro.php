@@ -258,7 +258,6 @@ function set_checked($session_name, $value)
 
     <script>
         var pointpic = "";
-        $plan = <?php echo json_encode($keikaku); ?>;
         require([
             "esri/Map",
             "esri/views/MapView",
@@ -760,6 +759,7 @@ function set_checked($session_name, $value)
                 form.submit();
             };
 
+            /*
             //読み込みせずに経路を更新したかった
             function remake_route() {
                 jQuery(function($) {
@@ -780,6 +780,7 @@ function set_checked($session_name, $value)
                     });
                 });
             };
+            */
 
             function hozon(time, Layer) {
                 //スポット取得
@@ -867,7 +868,6 @@ function set_checked($session_name, $value)
                     });
                     //今回のクリックによる検索結果を、グラフィックスレイヤーに登録（マップに表示）
                     resultsLayer.addMany(features);
-                    resultsLayer.labelingInfo = [labelClass];
                 })
             };
 
