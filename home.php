@@ -24,7 +24,7 @@ require "frame.php";
 
     <style>
         #homebox {
-            width: 50vw;
+            width: 70vw;
             float: left;
             margin-left: 5px;
         }

@@ -194,6 +194,7 @@ $count = 0;
         }
 
         #detailbox #infobox table th {
+            text-align: left;
             white-space: nowrap;
             background: #EEEEEE;
             width: 15vw;

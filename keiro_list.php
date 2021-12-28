@@ -233,6 +233,7 @@ function set_checked($session_name, $value)
         }
 
         #detailbox #infobox table th {
+            text-align: left;
             white-space: nowrap;
             background: #EEEEEE;
             width: 15vw;
@@ -1070,7 +1071,7 @@ function set_checked($session_name, $value)
             <a id="map_result" name="map_result" href="keiro.php">地図上で結果を表示</a><br>
             <div class="search_form">
                 <form action="">
-                    観光スポットの表示範囲：
+                    観光スポットの表示範囲：<br>
                     <input type="radio" id="distance" name="distance" value="100000" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "100000"); ?>>指定なし
                     <input type="radio" id="distance" name="distance" value="100" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "100"); ?>>周囲100m
                     <input type="radio" id="distance" name="distance" value="200" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "200"); ?>>周囲200m
@@ -1081,7 +1082,7 @@ function set_checked($session_name, $value)
                 </form>
 
                 <form action="">
-                    観光スポットのカテゴリー：
+                    観光スポットのカテゴリー：<br>
                     <input type="radio" id="category" name="category" value="0" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "0"); ?>>指定なし
                     <input type="radio" id="category" name="category" value="名所・史跡" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "名所・史跡"); ?>>名所・史跡
                     <input type="radio" id="category" name="category" value="ショッピング" onclick="change_category(value) ; keep_radio(value, '2')" <?php set_checked("search_spots_category", "ショッピング"); ?>>ショッピング

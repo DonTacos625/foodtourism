@@ -24,7 +24,7 @@ require "frame.php";
 
     <style>
         #explainbox {
-            width: 60vw;
+            width: 70vw;
             float: left;
             margin-left: 5px;
         }
@@ -90,7 +90,7 @@ require "frame.php";
                     <li>マイページ</li>
                     <ul>
                         <li><a href="#see_route">作成した観光経路を見る</a></li>
-                        <li><a href="#editpassword">パスワード変更</a></li>
+                        <li><a href="#password">パスワード変更</a></li>
                         <li><a href="#logout">ログアウト</a></li>
                     </ul>
                 </ul>

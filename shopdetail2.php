@@ -117,6 +117,7 @@ try {
         }
 
         #detailbox #infobox table th {
+            text-align: left;
             white-space: nowrap;
             background: #EEEEEE;
         }

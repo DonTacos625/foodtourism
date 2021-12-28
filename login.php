@@ -146,6 +146,9 @@ if (!empty($_POST["login"])) {
             white-space: nowrap;
             border-left: 5px solid #000080;
         }
+        #loginbox table td {
+            text-align: right;
+        }
 
         @media screen and (max-width: 768px) {
             h2 {

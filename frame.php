@@ -148,6 +148,7 @@ function display_frame($name_row, $time)
             margin: 0px;
         }
 
+
         .search_form {
             line-height: 200%;
         }
@@ -255,30 +256,9 @@ function display_frame($name_row, $time)
             margin-left: 10px;
         }
 
-        /*
-        button.btn2 {
-            color: #fff;
-            background-color: #eb6100;
+        #leftbox #kankou_plan {
+            width: 19vw;
         }
-
-        button.btn2:hover {
-            color: #fff;
-            background: #f56500;
-        }
-
-        button.btn2 {
-            -webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        button.btn2 {
-            border-radius: 50%;
-            line-height: 100px;
-            width: 20px;
-            height: 20px;
-            padding: 0;
-        }
-        */
 
         @media screen and (min-width:769px) {
             #toggle_menu {
@@ -292,7 +272,7 @@ function display_frame($name_row, $time)
             }
 
             #dropmenu {
-                width: 75vw;
+                width: 77vw;
                 height: 30px;
                 border-bottom: 4px solid #000080;
             }
@@ -541,7 +521,7 @@ function display_frame($name_row, $time)
 
     <div id="leftbox">
         <h2>会員情報</h2>
-        <p>
+
             <b>ID:</b><?php echo htmlspecialchars($_SESSION["user"], ENT_QUOTES); ?><br>
 
             <b>年代:</b><?php echo htmlspecialchars($frameresult["age"], ENT_QUOTES); ?>代<br>
@@ -551,60 +531,71 @@ function display_frame($name_row, $time)
             <?php } elseif ($frameresult["gender"]) { ?>
                 女性
             <?php } ?><br>
-        </p>
+
 
         <h2>現在の観光計画</h2>
+        <div id="kankou_plan">
+            <b>開始駅:</b>
+            <img id="pin" width="20" height="30" src="./marker/start.png" alt="開始駅のアイコン" title="開始駅">
+            <div id="start_name">
+                <?php echo htmlspecialchars($start_station_name, ENT_QUOTES); ?>
+            </div><br>
 
-        <b>開始駅：</b>
-        <img id="pin" width="20" height="30" src="./marker/start.png" alt="開始駅のアイコン" title="開始駅">
-        <div id="start_name"><?php echo htmlspecialchars($start_station_name, ENT_QUOTES); ?></div><br>
+            <b>昼食前に訪れる観光スポット:</b>
+            <img id="pin" width="20" height="30" src="./marker/s_l_icon_explain.png" alt="昼食前に訪れる観光スポットのアイコン" title="昼食前に訪れる観光スポット">
+            <div id="s_l_spots_line">
+                <?php display_frame($s_l_spots_name, 1) ?>
+            </div>
+            <br>
 
-        <b>昼食前に訪れる観光スポット：</b>
-        <img id="pin" width="20" height="30" src="./marker/s_l_icon_explain.png" alt="昼食前に訪れる観光スポットのアイコン" title="昼食前に訪れる観光スポット">
-        <div id="s_l_spots_line">
-            <?php display_frame($s_l_spots_name, 1) ?>
+            <b>昼食予定地:</b>
+            <img id="pin" width="20" height="30" src="./marker/lanch.png" alt="昼食予定地のアイコン" title="昼食予定地">
+            <div id="lanch_name">
+                <?php echo htmlspecialchars($lanch_name, ENT_QUOTES); ?>
+            </div><br>
+
+            <b>昼食後に訪れる観光スポット:</b>
+            <img id="pin" width="20" height="30" src="./marker/l_d_icon_explain.png" alt="昼食後に訪れる観光スポットのアイコン" title="昼食後に訪れる観光スポット">
+            <div id="l_d_spots_line">
+                <?php display_frame($l_d_spots_name, 2) ?>
+            </div>
+            <br>
+
+            <b>夕食予定地:</b>
+            <img id="pin" width="20" height="30" src="./marker/dinner.png" alt="夕食予定地のアイコン" title="夕食予定地">
+            <div id="dinner_name">
+                <?php echo htmlspecialchars($dinner_name, ENT_QUOTES); ?>
+            </div><br>
+
+            <b>夕食前に訪れる観光スポット:</b>
+            <img id="pin" width="20" height="30" src="./marker/d_g_icon_explain.png" alt="夕食後に訪れる観光スポットのアイコン" title="夕食後に訪れる観光スポット">
+            <div id="d_g_spots_line">
+                <?php display_frame($d_g_spots_name, 3) ?>
+            </div>
+            <br>
+
+            <b>終了駅:</b>
+            <img id="pin" width="20" height="30" src="./marker/goal.png" alt="終了駅のアイコン" title="終了駅">
+            <div id="goal_name">
+                <?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?>
+            </div>
         </div>
-        <br>
-
-        <b>昼食予定地:</b>
-        <img id="pin" width="20" height="30" src="./marker/lanch.png" alt="昼食予定地のアイコン" title="昼食予定地">
-        <div id="lanch_name"><?php echo htmlspecialchars($lanch_name, ENT_QUOTES); ?></div><br>
-
-        <b>昼食後に訪れる観光スポット：</b>
-        <img id="pin" width="20" height="30" src="./marker/l_d_icon_explain.png" alt="昼食後に訪れる観光スポットのアイコン" title="昼食後に訪れる観光スポット">
-        <div id="l_d_spots_line">
-            <?php display_frame($l_d_spots_name, 2) ?>
-        </div>
-        <br>
-
-        <b>夕食予定地:</b>
-        <img id="pin" width="20" height="30" src="./marker/dinner.png" alt="夕食予定地のアイコン" title="夕食予定地">
-        <div id="dinner_name"><?php echo htmlspecialchars($dinner_name, ENT_QUOTES); ?></div><br>
-
-        <b>夕食前に訪れる観光スポット：</b>
-        <img id="pin" width="20" height="30" src="./marker/d_g_icon_explain.png" alt="夕食後に訪れる観光スポットのアイコン" title="夕食後に訪れる観光スポット">
-        <div id="d_g_spots_line">
-            <?php display_frame($d_g_spots_name, 3) ?>
-        </div>
-        <br>
-
-        <b>終了駅：</b>
-        <img id="pin" width="20" height="30" src="./marker/goal.png" alt="終了駅のアイコン" title="終了駅">
-        <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div>
-
 
         <h2>アンケート</h2>
-        <?php
-        if ($frameresult["survey"]) {
-            print "<form action=\"\" method=\"POST\">";
-            print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://forms.gle/3ViWpWr2vpDPkCmf7','_blank')\"><br>";
-            print "</form>";
-            print "回答は<font color=\"red\">1回</font>のみです<br>";
-            print "<b>システムを1度以上利用してからご回答ください</b>";
-        } else {
-            print "ご回答ありがとうございました";
-        }
-        ?>
+        <p>
+            <?php
+            if ($frameresult["survey"]) {
+                print "<form action=\"\" method=\"POST\">";
+                print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://forms.gle/3ViWpWr2vpDPkCmf7','_blank')\"><br>";
+                print "</form>";
+                print "回答は<font color=\"red\">1回</font>のみです<br>";
+                print "<b>システムを1度以上利用してからご回答ください</b>";
+            } else {
+                print "ご回答ありがとうございました";
+            }
+            ?>
+        </p>
+
     </div>
 
     <div id="toggle_menu">
@@ -662,13 +653,13 @@ function display_frame($name_row, $time)
                 <li>
                     <h2>現在の観光計画</h2>
                     <ul>
-                        <li><b>開始駅：</b>
+                        <li><b>開始駅:</b>
                             <img id="pin" width="20" height="20" src="./pop_start.png" alt="開始駅のアイコン" title="開始駅">
                             <div id="start_name"><?php echo htmlspecialchars($start_station_name, ENT_QUOTES); ?></div>
                         </li><br>
 
                         <li>
-                            <b>昼食前に訪れる観光スポット：</b>
+                            <b>昼食前に訪れる観光スポット:</b>
                             <img id="pin" width="20" height="20" src="./marker/pop_icon1_f.png" alt="昼食前に訪れる観光スポットのアイコン" title="昼食前に訪れる観光スポット">
                             <div id="toggle_s_l_spots_line">
                                 <?php display_frame($s_l_spots_name, 1) ?>
@@ -681,7 +672,7 @@ function display_frame($name_row, $time)
                         </li><br>
 
                         <li>
-                            <b>昼食後に訪れる観光スポット：</b>
+                            <b>昼食後に訪れる観光スポット:</b>
                             <img id="pin" width="20" height="20" src="./marker/pop_icon2_f.png" alt="昼食後に訪れる観光スポットのアイコン" title="昼食後に訪れる観光スポット">
                             <div id="toggle_l_d_spots_line">
                                 <?php display_frame($l_d_spots_name, 2) ?>
@@ -694,14 +685,14 @@ function display_frame($name_row, $time)
                         </li><br>
 
                         <li>
-                            <b>夕食前に訪れる観光スポット：</b>
+                            <b>夕食前に訪れる観光スポット:</b>
                             <img id="pin" width="20" height="20" src="./marker/pop_icon3_f.png" alt="夕食後に訪れる観光スポットのアイコン" title="夕食後に訪れる観光スポット">
                             <div id="toggle_d_g_spots_line">
                                 <?php display_frame($d_g_spots_name, 3) ?>
                             </div>
                         </li><br>
 
-                        <li><b>終了駅：</b>
+                        <li><b>終了駅:</b>
                             <img id="pin" width="20" height="20" src="./pop_goal.png" alt="終了駅のアイコン" title="終了駅">
                             <div id="goal_name"><?php echo htmlspecialchars($goal_station_name, ENT_QUOTES); ?></div>
                         </li>
