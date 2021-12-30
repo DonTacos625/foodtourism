@@ -107,8 +107,7 @@ require "frame.php";
                 <p>
                     不具合等ございましたら、下記のメールアドレスまでご連絡下さい。<br>
                     作成者:平野<br>
-                    mhirano_0730[アットマーク]yahoo.co.jp<br>
-                    ※[アットマーク]を@へ置換して下さい。<br>
+                    mhirano_0730@yahoo.co.jp<br>
                 </p>
                 <div>
         </main>
