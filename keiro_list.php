@@ -1071,7 +1071,7 @@ function set_checked($session_name, $value)
             <a id="map_result" name="map_result" href="keiro.php">地図上で結果を表示</a><br>
             <div class="search_form">
                 <form action="">
-                    観光スポットの表示範囲：<br>
+                    経路からの観光スポットの表示範囲：<br>
                     <input type="radio" id="distance" name="distance" value="100000" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "100000"); ?>>指定なし
                     <input type="radio" id="distance" name="distance" value="100" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "100"); ?>>周囲100m
                     <input type="radio" id="distance" name="distance" value="200" onclick="change_distance(value) ; keep_radio(value, '1')" <?php set_checked("search_spots_distance", "200"); ?>>周囲200m
