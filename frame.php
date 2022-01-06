@@ -586,7 +586,7 @@ function display_frame($name_row, $time)
             <?php
             if ($frameresult["survey"]) {
                 print "<form action=\"\" method=\"POST\">";
-                print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://forms.gle/YthBpvBbkitnuEDfA','_blank')\"><br>";
+                print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://forms.gle/amw8j1wJDPcAn29h7','_blank')\"><br>";
                 print "</form>";
                 print "回答は<font color=\"red\">1回</font>のみです<br>";
                 print "<b>システムを1度以上利用してからご回答ください</b>";
@@ -704,7 +704,7 @@ function display_frame($name_row, $time)
                     <?php
                     if ($frameresult["survey"]) {
                         print "<form action=\"\" method=\"POST\">";
-                        print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://forms.gle/YthBpvBbkitnuEDfA','_blank')\"><br>";
+                        print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://forms.gle/amw8j1wJDPcAn29h7','_blank')\"><br>";
                         print "</form>";
                         print "回答は<font color=\"red\">1回</font>のみです<br>";
                         print "<b>システムを1度以上利用してからご回答ください</b>";
