@@ -172,7 +172,7 @@ if (!empty($_POST["signup"])) {
     <div class="container">
         <main>
             <div id="signupbox">
-                <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
+                <h2>横浜みなとみらいフードツーリズム計画作成支援システム</h2>
 
                 <h3>利用者登録</h3>
                 <form id="signupform" name="signupForm" action="" method="POST" autocomplete="off">

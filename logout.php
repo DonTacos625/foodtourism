@@ -64,7 +64,7 @@ $_SESSION = array();
     <div class="container">
         <main>
             <div id="logoutbox"><br><br><br>
-                <h2>横浜みなとみらいフードツーリズム計画作成システム</h2>
+                <h2>横浜みなとみらいフードツーリズム計画作成支援システム</h2>
                 <h3>ログアウト</h3>
                 <a href="login.php">ログイン画面</a>
                 <div><?php echo htmlspecialchars($errormessage, ENT_QUOTES); ?></div>

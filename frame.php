@@ -493,7 +493,7 @@ function display_frame($name_row, $time)
     </script>
 
 
-    <h1>横浜みなとみらいフードツーリズム計画作成システム</h1>
+    <h1>横浜みなとみらいフードツーリズム計画作成支援システム</h1>
 
     <ul id="dropmenu">
         <li><a href="home.php">ホーム</a></li>
