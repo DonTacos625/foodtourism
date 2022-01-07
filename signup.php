@@ -77,8 +77,9 @@ if (!empty($_POST["signup"])) {
                 $stmt3->bindParam(":survey", $survey, PDO::PARAM_INT);
                 $stmt3->execute();
 
+                $databasename = "d{$user}";
                 //DB作成
-                $sql = "CREATE TABLE userdata." . $user . " (
+                $sql = "CREATE TABLE userdata." . $databasename . " (
 		            start_id int,
                     s_l_ids int,
                     lanch_id int,
