@@ -72,7 +72,7 @@ require "frame.php";
                 <h2>ホーム</h2>
 
                 <h2>
-                    <font color=#000080>&emsp;試験運用中</font>
+                    <font color=#000080>&emsp;本運用中</font>
                 </h2>
 
                 <h3>目的</h3>
