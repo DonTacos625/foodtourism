@@ -175,6 +175,7 @@ if (!empty($_POST["login"])) {
                     こちらは横浜みなとみらい近隣でのフードツーリズム計画の作成を支援するシステムです。<br>
                     本システムは、PC・スマートフォン・タブレット端末でご利用可能です。<br>
                     利用には<a href="signup.php">利用者登録</a>が必要となります。<br>
+                    利用方法につきましては、ログイン後に使い方をご覧になるか、<a href="https://drive.google.com/file/d/1mlQpnjmVcnnn_Qqt2BwjwZzFUHGAplDD/view?usp=sharing" target="blank">こちら</a>のマニュアルからご覧ください<br>
                 </p>
 
                 <h3>ログイン</h3>
