@@ -18,6 +18,7 @@ require "connect_database.php";
 
 //user_idを格納
 $user_id = $_SESSION["user"];
+$d_user_id = "d{$user_id}";
 
 if (isset($_SESSION["start_station_id"]) && isset($_SESSION["lanch_id"]) && isset($_SESSION["dinner_id"]) && isset($_SESSION["goal_station_id"])) {
     $start_id = $_SESSION["start_station_id"];
@@ -27,11 +28,11 @@ if (isset($_SESSION["start_station_id"]) && isset($_SESSION["lanch_id"]) && isse
 
     try {
         //今までのテーブルをまずリセット
-        $stmt0 = $pdo->prepare("DELETE FROM userdata." . $user_id . " ");
+        $stmt0 = $pdo->prepare("DELETE FROM userdata." . $d_user_id . " ");
         $stmt0->execute();
         
         //ユーザー情報書き込み
-        $stmt = $pdo->prepare("INSERT INTO userdata." . $user_id . "(start_id, lanch_id, dinner_id, goal_id) VALUES(:start_id, :lanch_id, :dinner_id, :goal_id)");
+        $stmt = $pdo->prepare("INSERT INTO userdata." . $d_user_id . "(start_id, lanch_id, dinner_id, goal_id) VALUES(:start_id, :lanch_id, :dinner_id, :goal_id)");
         $stmt->bindParam(":start_id", $start_id, PDO::PARAM_INT);
         $stmt->bindParam(":lanch_id", $lanch_id, PDO::PARAM_INT);
         $stmt->bindParam(":dinner_id", $dinner_id, PDO::PARAM_INT);
@@ -40,21 +41,21 @@ if (isset($_SESSION["start_station_id"]) && isset($_SESSION["lanch_id"]) && isse
 
         if (isset($_SESSION["s_l_kankou_spots_id"])) {
             foreach ($_SESSION["s_l_kankou_spots_id"] as $s_l_id) {
-                $stmt1 = $pdo->prepare("INSERT INTO userdata." . $user_id . "(s_l_ids) VALUES(:s_l_id)");
+                $stmt1 = $pdo->prepare("INSERT INTO userdata." . $d_user_id . "(s_l_ids) VALUES(:s_l_id)");
                 $stmt1->bindParam(":s_l_id", $s_l_id);
                 $stmt1->execute();
             }
         }
         if (isset($_SESSION["l_d_kankou_spots_id"])) {
             foreach ($_SESSION["l_d_kankou_spots_id"] as $l_d_id) {
-                $stmt2 = $pdo->prepare("INSERT INTO userdata." . $user_id . "(l_d_ids) VALUES(:l_d_id)");
+                $stmt2 = $pdo->prepare("INSERT INTO userdata." . $d_user_id . "(l_d_ids) VALUES(:l_d_id)");
                 $stmt2->bindParam(":l_d_id", $l_d_id);
                 $stmt2->execute();
             }
         }
         if (isset($_SESSION["d_g_kankou_spots_id"])) {
             foreach ($_SESSION["d_g_kankou_spots_id"] as $d_g_id) {
-                $stmt3 = $pdo->prepare("INSERT INTO userdata." . $user_id . "(d_g_ids) VALUES(:d_g_id)");
+                $stmt3 = $pdo->prepare("INSERT INTO userdata." . $d_user_id . "(d_g_ids) VALUES(:d_g_id)");
                 $stmt3->bindParam(":d_g_id", $d_g_id);
                 $stmt3->execute();
             }

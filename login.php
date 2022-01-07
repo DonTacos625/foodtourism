@@ -60,7 +60,8 @@ if (!empty($_POST["login"])) {
                     //ユーザーのデータベースから値を入れる
                     //開始・終了駅と昼食・夕食店舗をセッション変数に格納
                     $user_id = $_SESSION["user"];
-                    $userdatastmt = $pdo->prepare("SELECT * FROM userdata.$user_id WHERE start_id IS NOT NULL ");
+                    $d_user_id = "d{$user_id}";
+                    $userdatastmt = $pdo->prepare("SELECT * FROM userdata.$d_user_id WHERE start_id IS NOT NULL ");
                     $userdatastmt->execute();
                     foreach ($userdatastmt as $row) {
                         $_SESSION["start_station_id"] = $row["start_id"];
@@ -69,11 +70,11 @@ if (!empty($_POST["login"])) {
                         $_SESSION["goal_station_id"] = $row["goal_id"];
                     }
                     //各スポットIdをセッション変数に格納
-                    $userdatastmt1 = $pdo->prepare("SELECT * FROM userdata.$user_id WHERE s_l_ids IS NOT NULL ");
+                    $userdatastmt1 = $pdo->prepare("SELECT * FROM userdata.$d_user_id WHERE s_l_ids IS NOT NULL ");
                     $userdatastmt1->execute();
-                    $userdatastmt2 = $pdo->prepare("SELECT * FROM userdata.$user_id WHERE l_d_ids IS NOT NULL ");
+                    $userdatastmt2 = $pdo->prepare("SELECT * FROM userdata.$d_user_id WHERE l_d_ids IS NOT NULL ");
                     $userdatastmt2->execute();
-                    $userdatastmt3 = $pdo->prepare("SELECT * FROM userdata.$user_id WHERE d_g_ids IS NOT NULL ");
+                    $userdatastmt3 = $pdo->prepare("SELECT * FROM userdata.$d_user_id WHERE d_g_ids IS NOT NULL ");
                     $userdatastmt3->execute();
                     foreach ($userdatastmt1 as $row1) {
                         $_SESSION["s_l_kankou_spots_id"][] = $row1["s_l_ids"];
