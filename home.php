@@ -109,7 +109,7 @@ require "frame.php";
                 <p>
                     不具合等ございましたら、下記のメールアドレスまでご連絡下さい。<br>
                     作成者:平野<br>
-                    h1810536@edhu.cc.uec.ac.jp<br>
+                    h1810536@edu.cc.uec.ac.jp<br>
                 </p>
                 <div>
         </main>
