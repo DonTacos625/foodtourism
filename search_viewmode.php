@@ -670,7 +670,7 @@ if ($yoyaku == "0" && $lanch_money == "0" && $dinner_money == "0" && $search_wor
 
                     検索ワード：
                     <input type="text" value="<?php echo $search_word; ?>" id="search_name" name="search_name">
-                    <select name="genre_example" size="1" onclick="input_search_name(value)">
+                    <select name="genre_example" size="1" onchange="input_search_name(value)">
                         <option value=""> ワードを入力するか以下から選択してください </option>
                         <option value="中華"> 中華 </option>
                         <option value="和食"> 和食 </option>
