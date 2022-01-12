@@ -281,7 +281,6 @@ $count = 0;
             });
         });
     };
-
 </script>
 
 <body>
@@ -316,8 +315,8 @@ $count = 0;
                         <input type="radio" id="name_genre" name="name_genre" value="1" <?php set_checked("search_name_genre", "1"); ?>>店名で検索<br>
 
                         検索ワード：
-                        <input type="text" value="<?php echo $search_word; ?>" id="search_name" name="search_name">
-                        <select name="genre_example" size="1" onclick="input_search_name(value)">
+                        <input type="text" value=<?php echo $search_word; ?> id="search_name" name="search_name">
+                        <select name="genre_example" size="1" onchange="input_search_name(value)">
                             <option value=""> ワードを入力するか以下から選択してください </option>
                             <option value="中華"> 中華 </option>
                             <option value="和食"> 和食 </option>
@@ -411,12 +410,15 @@ $count = 0;
         </footer>
     </div>
     <script>
-            //セレクトボックスから選ばれたワードを検索ワードボックスに入れる　もっといい方法あるかも
-    function input_search_name(word) {
-        const update = document.getElementById("search_name");
-        update.value = word;
-    };
-        </script>
+        //セレクトボックスから選ばれたワードを検索ワードボックスに入れる　もっといい方法あるかも
+        function input_search_name(word) {
+            
+            const update = document.getElementById("search_name");
+            update.value = word;
+            
+            //document.getElementById("search_name") = word;
+        };
+    </script>
 </body>
 
 </html>
