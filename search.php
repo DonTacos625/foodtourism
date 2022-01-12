@@ -282,11 +282,6 @@ $count = 0;
         });
     };
 
-    //セレクトボックスから選ばれたワードを検索ワードボックスに入れる　もっといい方法あるかも
-    function input_search_name(word) {
-        const update = document.getElementById("search_name");
-        update.value = word;
-    };
 </script>
 
 <body>
@@ -415,6 +410,13 @@ $count = 0;
             <p>Copyright(c) 2021 山本佳世子研究室 All Rights Reserved.</p>
         </footer>
     </div>
+    <script>
+            //セレクトボックスから選ばれたワードを検索ワードボックスに入れる　もっといい方法あるかも
+    function input_search_name(word) {
+        const update = document.getElementById("search_name");
+        update.value = word;
+    };
+        </script>
 </body>
 
 </html>
