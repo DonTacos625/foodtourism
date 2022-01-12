@@ -227,7 +227,8 @@ if (!empty($_POST["signup"])) {
 
                         <tr>
                             <td></td>
-                            <td><input type="submit" id="signup" name="signup" value="登録"><a href="login.php">ログイン画面</a></td>
+                            <td><input type="submit" id="signup" name="signup" value="登録"><br><br>
+                            <a href="login.php">ログイン画面</a></td>
                         </tr>
                     </table>
                 </form>
