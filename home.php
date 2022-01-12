@@ -104,6 +104,7 @@ require "frame.php";
                     地図上のアイコンを押すことでポップアップが表示されます。<br>
                     詳しい使い方は<a href="explain.php#set_station">こちら</a><br><br>
                     <font color=#000080><big>利用後、アンケートへのご回答をお願いします。</big>></font>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScQcIeHdLfLpeNjIDbjEBCPtureGZi007aUUhgwqXhQffXR_A/viewform?usp=sf_link" target="blank">アンケートに回答する</a>
                 </p><br>
 
                 <h3>連絡先</h3>
