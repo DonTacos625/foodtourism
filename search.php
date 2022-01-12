@@ -315,7 +315,7 @@ $count = 0;
                         <input type="radio" id="name_genre" name="name_genre" value="1" <?php set_checked("search_name_genre", "1"); ?>>店名で検索<br>
 
                         検索ワード：
-                        <input type="text" value=<?php echo $search_word; ?> id="search_name" name="search_name">
+                        <input type="text" value="<?php echo $search_word; ?>" id="search_name" name="search_name">
                         <select name="genre_example" size="1" onchange="input_search_name(value)">
                             <option value=""> ワードを入力するか以下から選択してください </option>
                             <option value="中華"> 中華 </option>
