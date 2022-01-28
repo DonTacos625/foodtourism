@@ -91,6 +91,7 @@ require "frame.php";
 
                 <h3>更新履歴</h3>
                 <p>
+                    2022/1/28 本運用終了<br>
                     2022/1/10 LINEの内部ブラウザからだとアンケートに回答できない問題を修正<br>
                     2022/1/7 IDの頭文字を数字にした場合データベースエラーが起きる問題を修正<br>
                     2022/1/7 本運用開始<br>
@@ -103,8 +104,11 @@ require "frame.php";
                     ページ上部の観光計画作成から情報を登録することで観光計画を作成することが可能です。<br>
                     地図上のアイコンを押すことでポップアップが表示されます。<br>
                     詳しい使い方は<a href="explain.php#set_station">こちら</a><br><br>
+                    <font color=#000080><big>アンケートの回答を締め切りました。ご回答くださった方々、誠にありがとうございました。</big></font>
+                    <!--
                     <font color=#000080><big>利用後、アンケートへのご回答をお願いします。</big>></font>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScQcIeHdLfLpeNjIDbjEBCPtureGZi007aUUhgwqXhQffXR_A/viewform?usp=sf_link" target="blank">アンケートに回答する</a>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLScQcIeHdLfLpeNjIDbjEBCPtureGZi007aUUhgwqXhQffXR_A/viewform?usp=sf_link" target="blank">回答する</a>
+                    -->
                 </p><br>
 
                 <h3>連絡先</h3>

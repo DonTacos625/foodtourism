@@ -584,6 +584,8 @@ function display_frame($name_row, $time)
         <h2>アンケート</h2>
         <p>
             <?php
+            print "アンケートの回答を締め切りました。ご回答くださった方々、誠にありがとうございました。";
+            /*
             if ($frameresult["survey"]) {
                 print "<form action=\"\" method=\"POST\">";
                 print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://forms.gle/amw8j1wJDPcAn29h7?openExternalBrowser=1','_blank')\"><br>";
@@ -593,6 +595,7 @@ function display_frame($name_row, $time)
             } else {
                 print "ご回答ありがとうございました";
             }
+            */
             ?>
         </p>
 
@@ -702,6 +705,8 @@ function display_frame($name_row, $time)
                 <li>
                     <h2>アンケート</h2>
                     <?php
+                    print "アンケートの回答を締め切りました。ご回答くださった方々、誠にありがとうございました。";
+                    /*
                     if ($frameresult["survey"]) {
                         print "<form action=\"\" method=\"POST\">";
                         print "<input type=\"submit\" id=\"survey\" name=\"survey\" value=\"回答する\" onClick=\"window.open('https://forms.gle/amw8j1wJDPcAn29h7?openExternalBrowser=1','_blank')\"><br>";
@@ -711,6 +716,7 @@ function display_frame($name_row, $time)
                     } else {
                         print "ご回答ありがとうございました";
                     }
+                    */
                     ?>
                 </li>
 
