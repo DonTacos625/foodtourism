@@ -2,6 +2,7 @@
 	"require": {
         "php": ">=8.0",
         "ext-mbstring": "*",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "twig/twig": "2.15.3"
     }
 }
